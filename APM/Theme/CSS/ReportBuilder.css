@@ -1,0 +1,99 @@
+﻿input,
+.stiDesignerClearAllStyles,
+.stiDesignerCaptionControlsBigIntervals,
+.stiDesignerPropertyCaption,
+.stiDesignerToolTipTextCell,
+.stiJsViewerToolBarTable td,
+.stiJsViewerInnerContainerParametersPanel *,
+.stiJsViewerToolTipTextCell,
+.stiJsViewerNavigatePanel * {
+    font-family: IRANSans !important;
+}
+
+.stiJsViewerToolBarTable,
+.stiJsViewerNavigatePanel table table,
+.stiJsViewerInnerContainerParametersPanel table,
+.stiJsViewerMenuStandartItem table {
+    direction: rtl !important;
+}
+
+    .stiJsViewerMenuStandartItem table tbody tr td.stiJsViewerClearAllStyles {
+        text-align: right !important;
+        padding: 0px 4px 0px 2px !important;
+    }
+
+.stiJsViewerVerticalMenuSeparator {
+    margin: 1px 30px 1px 2px !important;
+}
+
+.stiJsViewerMainPanel .stiJsViewerToolBar:first-of-type .stiJsViewerToolBarTable > tbody > tr > td > table,
+.stiJsViewerInnerContainerParametersPanel > table > tbody > tr:last-child table {
+    direction: ltr !important;
+}
+
+    .stiJsViewerMainPanel .stiJsViewerToolBar:first-of-type .stiJsViewerToolBarTable > tbody > tr > td > table table {
+        direction: rtl !important;
+    }
+
+    .stiJsViewerInnerContainerParametersPanel > table > tbody > tr:last-child table td:last-child .stiJsViewerFormButton td {
+        background-color: #428bca;
+        color: #ffffff;
+    }
+
+input[name="PageControl"] {
+    text-align: center;
+    width: 32px !important;
+    margin: 0px 4px !important;
+}
+
+.stiDesignerToolBar,
+.stiDesignerWorkPanel,
+.stiDesignerPropertiesPanelInnerContent,
+.stiDesignerPropertiesPanelHeader,
+.stiDesignerPropertiesPanelFooter,
+.stiDesignerPagesContainer {
+    direction: rtl !important;
+}
+
+    .stiDesignerWorkPanel .stiDesignerGroupBlock,
+    .stiDesignerPropertiesPanelInnerContent .stiDesignerPropertiesGroupContainer table td:nth-child(2) {
+        direction: ltr !important;
+    }
+
+    .stiDesignerPropertiesPanelHeader td:nth-child(1) {
+        padding-right: 8px;
+    }
+
+#MvcDesignerdictionaryActions {
+    margin: 5px !important;
+}
+
+.stiDesignerToolBar,
+.stiDesignerStatusPanel,
+.stiJsViewerNavigatePanel {
+    background: #428bca !important;
+}
+
+.stiDesignerToolButton_Mouse {
+    background: #3379b5 !important;
+}
+
+.stiDesignerToolButton_Mouse,
+.stiDesignerToolButtonOver_Mouse,
+.stiDesignerToolButtonSelected_Mouse {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+}
+
+textarea[name="textEditorFormExpression"] {
+    font-family: IRANSans !important;
+    direction: rtl;
+}
+
+textarea[name="editDataSourceFormQueryTextControl"] {
+    font-family: IRANSans !important;
+}
+
+.stiDesignerTextEditorFormPanel div.stiDesignerFormButton_Mouse {
+    display: none;
+}

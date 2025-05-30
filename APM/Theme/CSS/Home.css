@@ -1,0 +1,501 @@
+﻿
+
+.k-popover-body {
+    overflow-y: auto;
+}
+
+.appTitle {
+    font-size: 16px;
+    font-weight: 600;
+}
+
+#new-count{
+    border-radius:25px;
+}
+
+#appbar {
+    padding: 0px 25px 0px 24px;
+    height: 48px;
+}
+
+.TimeDateCounter {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'B Nazanin';
+    margin-right: 5px;
+}
+
+.TimerCounter {
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'B Nazanin';
+    margin-right: 5px;
+}
+.TimeDateFont {
+    font-size: 14px;
+    font-weight: 700;
+    font-family: 'B Nazanin'; 
+}
+
+.calendar-details-row {
+    display: block;
+    width: 380px;
+    margin-bottom: 10px;
+}
+
+#calendar-grid .description {
+    color: #252525;
+}
+
+#calendar-grid .k-grid-content {
+    overflow-x: hidden;
+}
+
+.Calender-Button {
+    margin-inline: 5px;
+}
+
+.Holiday {
+    float: left;
+}
+
+#UserPhoto_RightSide {
+    margin: 32px auto 0;
+    width: 64px;
+    border-radius: 50%;
+}
+
+.Logo_HeaderLayout {
+    margin: 5px 8px 5px 0px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    position: absolute;
+    z-index: 1;
+}
+
+.HeaderMessage {
+    display: inline;
+    margin-top: 5px;
+}
+
+#signOutButton {
+    pointer-events: auto;
+    margin: 12px 0 9px 0;
+}
+
+.k-popover-callout {
+    display: none;
+}
+
+.k-popover-body {
+    padding: 0px;
+}
+
+.user-photo {
+    display: inline-block;
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background-size: 60px 64px;
+    background-position: center center;
+    vertical-align: middle;
+    line-height: 64px;
+    box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, 0.2);
+    margin-left: 5px;
+}
+
+.customer-name {
+    display: inline-block;
+    vertical-align: middle;
+    padding-left: 3px;
+}
+
+#HomeMainDiv {
+    background-color: #f1f1f1;
+    width: 100%;
+    height: inherit;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: #eaecef;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+
+#MainTab {
+    margin: 5px;
+}
+
+
+.Button {
+    background: #FF6358;
+    color: #FFFFFF;
+    border-radius: 5px;
+    font-weight: 600;
+    border-color: #FF6358;
+}
+
+    .Button:hover {
+        background: #eb3024;
+        border-color: #eb3024;
+    }
+
+#SysSettingWin, #RoleTypePermission, #SysSettingDetail, .SettingBackground {
+    background-image: url(../Image/images/SettingBackground.png);
+    background-repeat: no-repeat;
+}
+
+
+.k-picker {
+    border-color: #e4e7eb;
+    color: #212529;
+    background-color: #ffffff;
+}
+
+.marquee {
+    position: absolute;
+    white-space: nowrap;
+    -webkit-animation: rightThenLeft 30s linear infinite;
+}
+
+@-webkit-keyframes rightThenLeft {
+    0% {
+        left: 0%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.CalendarDaily, .CalendarWeekly, .CalendarMonthly, .CalendarYearly {
+    display: none;
+}
+
+.C-G-k-button {
+    background: rgba(242, 242, 242, 0.7);
+    border-radius: 8px;
+    box-shadow: 0 2px 2px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgb(229 229 229 / 92%);
+    margin-inline: 1.5px;
+}
+
+    .C-G-k-button .k-icon:hover {
+        color: red;
+        font-weight: 900;
+    }
+
+#UserCalendarWin, #UserCalendarEditWin {
+    background-image: url(../Image/images/calendar.png);
+    background-repeat: no-repeat;
+}
+
+.Lodar {
+    display: none;
+    position: absolute;
+    z-index: 100000000000;
+    height: 100vh;
+    width: 100%;
+    background: rgba(242, 242, 242, 0);
+    border-radius: 8px;
+    box-shadow: 0 2px 2px rgb(0 0 0 / 15%);
+    backdrop-filter: blur(2px);
+    -webkit-backdrop-filter: blur(1px);
+    border: 1px solid rgb(229 229 229 / 92%);
+}
+
+    .Lodar .animate-charcter {
+        text-align: center;
+        font-weight: bold;
+        font-size: 20px;
+        text-transform: uppercase;
+        background-image: linear-gradient( -225deg, #231557 0%, #44107a 29%, #ff1361 67%, #fff800 100% );
+        background-size: auto auto;
+        background-clip: border-box;
+        background-size: 200% auto;
+        color: #fff;
+        background-clip: text;
+        text-fill-color: transparent;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        animation: textclip 2s linear infinite;
+        display: inline-block;
+    }
+
+@keyframes textclip {
+    to {
+        background-position: 200% center;
+    }
+}
+
+
+.lds-spinner {
+    /*    color: official;
+    display: inline-block;
+    position: relative;
+    width: 60px;
+    height: 40px;*/
+    color: official;
+    position: relative;
+    width: 50%;
+    height: 242px;
+    margin: auto;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 20%;
+}
+
+    .lds-spinner div {
+        /*transform-origin: 40px 20px;*/
+        transform-origin: 40px 110px;
+        animation: lds-spinner 1.2s linear infinite;
+    }
+
+        .lds-spinner div:after {
+            content: " ";
+            display: block;
+            position: absolute;
+            top: 3px;
+            left: 37px;
+            /*  width: 3px;
+  height: 9px;*/
+            width: 7px;
+            height: 75px;
+            border-radius: 50%;
+            background: #0b0771;
+        }
+
+        .lds-spinner div:nth-child(1) {
+            transform: rotate(0deg);
+            animation-delay: -1.1s;
+        }
+
+        .lds-spinner div:nth-child(2) {
+            transform: rotate(30deg);
+            animation-delay: -1s;
+        }
+
+        .lds-spinner div:nth-child(3) {
+            transform: rotate(60deg);
+            animation-delay: -0.9s;
+        }
+
+        .lds-spinner div:nth-child(4) {
+            transform: rotate(90deg);
+            animation-delay: -0.8s;
+        }
+
+        .lds-spinner div:nth-child(5) {
+            transform: rotate(120deg);
+            animation-delay: -0.7s;
+        }
+
+        .lds-spinner div:nth-child(6) {
+            transform: rotate(150deg);
+            animation-delay: -0.6s;
+        }
+
+        .lds-spinner div:nth-child(7) {
+            transform: rotate(180deg);
+            animation-delay: -0.5s;
+        }
+
+        .lds-spinner div:nth-child(8) {
+            transform: rotate(210deg);
+            animation-delay: -0.4s;
+        }
+
+        .lds-spinner div:nth-child(9) {
+            transform: rotate(240deg);
+            animation-delay: -0.3s;
+        }
+
+        .lds-spinner div:nth-child(10) {
+            transform: rotate(270deg);
+            animation-delay: -0.2s;
+        }
+
+        .lds-spinner div:nth-child(11) {
+            transform: rotate(300deg);
+            animation-delay: -0.1s;
+        }
+
+        .lds-spinner div:nth-child(12) {
+            transform: rotate(330deg);
+            animation-delay: 0s;
+        }
+
+@keyframes lds-spinner {
+    0% {
+        opacity: 1;
+    }
+
+    100% {
+        opacity: 0;
+    }
+}
+
+
+.R-IconTooltip .R-Tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background: rgba(250, 250, 250, 0.2);
+    border-radius: 16px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgba(131, 131, 131, 0.3);
+    color: #0f0f0f;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: fixed;
+    margin-right: -10%;
+    z-index: 1;
+    font-family: IRANSans;
+    font-size: 12px;
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+    .R-IconTooltip .R-Tooltiptext::after {
+        content: "";
+        position: absolute;
+        top: 30%;
+        right: 102%;
+        border-width: 5px;
+        border-style: solid;
+        border-color: transparent rgba(131, 131, 131, 0.5) transparent transparent;
+    }
+
+.R-IconTooltip:hover .R-Tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+@media (min-width: 576px) {
+    .FullScreen .col-sm-2 {
+        -ms-flex: 0 0 100%;
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+
+    .LawsInfo {
+        width: 300px;
+        height: 300px;
+    }
+}
+
+.LawsInfo {
+    width: 600px;
+    height: 600px;
+}
+
+#appbar .k-button-solid-base {
+    background-color: transparent;
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.DateCalendar-template-MainDiv {
+    width: 250px;
+    font-weight: 700;
+    font-family: 'B Nazanin';
+    padding: 10px;
+}
+
+.DayOfWeek {
+    font-size: 18px;
+}
+
+.DateOfYear {
+    font-family: 'B Nazanin';
+    text-align: center;
+    font-size: 16px;
+    font-weight: 600;
+    margin: 15px 0px;
+}
+
+.CalendarEvents {
+    font-family: 'B Nazanin';
+    text-align: justify;
+    font-size: 12px;
+    height: 50px;
+}
+
+.SharedPublicFileDiv {
+    border-radius: 5px;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    width: 250px;
+    padding: 10px;
+    background-color: #f8f9fa;
+}
+
+
+.MasterLayout {
+    height: 88.8vh;
+    border-width: 0;
+    overflow: hidden;
+    margin: 0px 8px;
+    border-radius: 20px;
+}
+
+@media only screen and (min-width: 300px) and (max-width: 400px) {
+    .MasterLayout {
+        height: 83.8vh;
+        border-width: 0;
+        overflow: hidden;
+        margin: 0px 8px;
+        border-radius: 20px;
+    }
+}
+
+
+/* Small devices (portrait tablets and large phones, 600px and up) */
+@media only screen and (min-width: 400px) and (max-width: 600px) {
+    .MasterLayout {
+        height: 87.8vh;
+        border-width: 0;
+        overflow: hidden;
+        margin: 0px 8px;
+        border-radius: 20px;
+    }
+}
+
+/* Medium devices (landscape tablets, 768px and up) */
+@media only screen and (min-width: 768px) and (max-width: 992px) {
+    .MasterLayout {
+        height: 89vh;
+        border-width: 0;
+        overflow: hidden;
+        margin: 0px 8px;
+        border-radius: 20px;
+    }
+}
+
+@media only screen and (min-width: 800px) and (max-width: 992px) {
+ 
+}
+
+/* Large devices (laptops/desktops, 992px and up) */
+@media only screen and (min-width: 992px) {
+    .MasterLayout {
+        height: 88.8vh;
+        border-width: 0;
+        overflow: hidden;
+        margin: 0px 8px;
+        border-radius: 20px;
+    }
+}
+
+/* Extra large devices (large laptops and desktops, 1200px and up) */
+@media only screen and (min-width: 1200px) {
+
+}

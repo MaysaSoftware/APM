@@ -1,0 +1,55 @@
+﻿@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.Tools;
+@using APM.Models.APMObject;
+
+@{
+    string MainGridDetailTemplate = (string)ViewData["MainGridDetailTemplate"];
+    string MasterDataKey = (string)ViewData["MasterDataKey"];
+    long ProcessID = ViewData["ProcessID"] == null ? 0 : long.Parse(ViewData["ProcessID"].ToString());
+    long ProcessStepID = ViewData["ProcessStepID"] == null ? 0 : long.Parse(ViewData["ProcessStepID"].ToString());
+    CoreObject Form = CoreObject.Find(long.Parse(MasterDataKey));
+} 
+<script id=@MainGridDetailTemplate type="text/kendo-tmpl">
+    @if(Form.Entity==CoreDefine.Entities.فرم_ورود_اطلاعات)
+    {
+        InformationEntryForm informationEntryForm = new InformationEntryForm(Form);
+        Table TableInfo = new Table(CoreObject.Find(informationEntryForm.RelatedTable));
+        string IdentityField = TableInfo.IDField().FieldName;
+        string MainDivID = "TMainDiv" + MasterDataKey + "_#="+ IdentityField + "#";
+        string TreeDivID = "TTreeDiv" + MasterDataKey + "_#=" + IdentityField + "#";
+        string GridDivID = "TGridDiv" + MasterDataKey + "_#=" + IdentityField + "#";
+        <div style="height: @Desktop.DataInformationEntryForm[MasterDataKey].Height;" id=@MainDivID >
+            <div class="TTreeDiv" id=@TreeDivID>
+                    @foreach(InformationEntryForm TableFormItem in Desktop.DataInformationEntryForm[MasterDataKey].Childs(APM.Models.Tools.CoreDefine.Entities.فرم_ورود_اطلاعات))
+                    {
+                        if(new PermissionBase(TableFormItem.CoreObjectID, Referral.UserAccount.Permition).IsAllow && TableFormItem.ShowInMenueTreeList)
+                        {
+                            Table SubTableInfo = new Table(CoreObject.Find(TableFormItem.RelatedTable));
+                            string DetailGridName = "DetailMainGrid_" + MasterDataKey+"_"+ TableFormItem.CoreObjectID + "_#="+ SubTableInfo.IDField().FieldName+ "#";
+                            <div class="TreeItem" onclick="DetailMainTreeClickItem(this)" id=@DetailGridName><span class="k-icon k-i-form-element"></span><span class="DetailTitle">@TableFormItem.UnsafeFullName()</span> </div>
+                        }
+                    }
+
+                    @if(ProcessID>0 && ProcessStepID==0)
+                    {
+                        string DetailGridName = "DetailMainGrid_" + MasterDataKey+"_"+ ProcessID + "_#=شناسه#";
+                        <div class="TreeItem" onclick="ProcessStepDetailMainTreeClickItem(this)" id=@DetailGridName><span class="k-icon k-i-form-element"></span><span class="DetailTitle">ارجاعات فرآیند</span> </div>
+                    }
+
+                    @*@if(Referral.AdminSetting.ShowCommentInAllForm|| Array.IndexOf(Referral.AdminSetting.AllowFormShowComment,MasterDataKey)>-1)
+                    {
+                        CoreObject CommentTableCore = CoreObject.Find(0, CoreDefine.Entities.فرم_ورود_اطلاعات, "یادداشت_های_سیستمی");
+                        if(CommentTableCore.CoreObjectID>0)
+                        {
+                            InformationEntryForm informationEntry = new InformationEntryForm(CommentTableCore);
+                            string DetailGridName = "DetailMainGrid_" + MasterDataKey+"_"+ informationEntry.RelatedTable.ToString() + "_#=شناسه#";
+                            <div class="TreeItem" onclick="DetailMainTreeClickItem(this)" id=@DetailGridName><span class="k-icon k-i-form-element"></span><span class="DetailTitle">یادداشت</span> </div>
+                        }
+                    }*@
+            </div>
+            <div style="margin-right: 200px;" id=@GridDivID>
+            </div>
+        </div>
+    }
+</script>

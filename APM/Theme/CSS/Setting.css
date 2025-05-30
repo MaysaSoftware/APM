@@ -1,0 +1,58 @@
+﻿.APMCoreSettingInnerTab {
+    height: calc(100vh - 280px) !important;
+    width: 100%;
+}
+
+
+
+@media only screen and (min-width: 300px)  and (max-width: 400px)  {
+    .APMCoreSettingInnerTab {
+        height: 300px;
+    }
+    #APMCoreSettingMainDiv .col-auto {
+        margin: 5px 0px;
+        width: 100%;
+    }
+}
+
+
+
+@media only screen and (min-width: 400px)  and (max-width: 600px)  {
+    .APMCoreSettingInnerTab {
+        height: 500px;
+    }
+
+    #APMCoreSettingMainDiv .col-auto {
+        margin: 5px 0px;
+        width: 100%;
+    }
+}
+
+
+
+@media only screen and (min-width: 500px)  and (max-width: 600px)  {
+    .APMCoreSettingInnerTab {
+        height: 340px;
+    }
+}
+
+
+@media only screen and (min-width: 600px) and (max-width: 800px) {
+    .APMCoreSettingInnerTab {
+        height: 780px;
+    }
+}
+
+@media only screen and (min-width: 800px) and (max-width: 1000px) {
+    .APMCoreSettingInnerTab {
+        height: 880px;
+    }
+}
+
+
+/*@media only screen and (min-width: 1024px)   {
+    .APMCoreSettingInnerTab {
+        height: 1080px;
+    }
+}
+*/

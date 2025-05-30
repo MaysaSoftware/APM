@@ -1,0 +1,29 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@Scripts.Render("~/DesktopJS")
+@Scripts.Render("~/RoleTypePermissionJS")
+@Html.Partial("/Views/Shared/PublicLinkScript.cshtml")
+@*@RenderSection("PageLinkScript", false)*@
+
+@{
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+    ViewBag.Title = Referral.PublicSetting.AppPersianName;
+    string _Message = ViewData["_Message"].ToString().Replace(" ", "_");
+    long ChangePasswordForm = CoreObject.Find(0, CoreDefine.Entities.فرم_ورود_اطلاعات, "تغییر_کلمه_عبور").CoreObjectID;
+}
+<div hidden>
+    <input type="text" id="HomeErrorMessage" value=@_Message>
+</div>
+@*@Scripts.Render("~/ReportJS")*@
+@*@Styles.Render("~/DesktopCSS")
+
+
+    @Styles.Render("~/DiagramCSS")
+    @Styles.Render("~/BPMNCSS")
+    @Scripts.Render("~/BPMNViewerJS")
+    @Scripts.Render("~/SignalRJS")
+*@
+
+

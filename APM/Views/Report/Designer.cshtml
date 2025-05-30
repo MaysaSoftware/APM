@@ -1,0 +1,67 @@
+﻿@using Stimulsoft.Report.Mvc;
+
+<style>
+    .stiJsViewerPage {
+        direction: ltr;
+    }
+    #MvcDesigner{
+        text-align:left;
+    }
+</style>
+
+
+    @Html.Stimulsoft().StiMvcDesigner("MvcDesigner",
+        new StiMvcDesignerOptions()
+        {
+            Actions =
+            {
+                GetReport = "StiDesigner",
+                PreviewReport = "PreviewReport",
+                SaveReport = "SaveReport",
+                DesignerEvent = "DesignerEvent"
+            },
+            Localization = "~/Views/Shared/Report/PersianReport.xml",
+            Server =
+            {
+                CacheMode = Stimulsoft.Report.Web.StiServerCacheMode.ObjectSession,
+                CacheTimeout = 10,
+                RequestTimeout = 1110,
+
+            },
+            //Behavior =
+            //{
+            //    UndoMaxLevel = 100,
+            //    AllowChangeWindowTitle = false,
+            //    ShowSaveDialog = false
+            //},
+            //Appearance =
+            //{
+            //    ShowTooltipsHelp = false,
+            //    ShowDialogsHelp = false,
+            //    ShowSystemFonts = false
+            //},
+            PreviewToolbar = {
+                 DisplayMode = Stimulsoft.Report.Web.StiToolbarDisplayMode.Separated,
+                 FontFamily = "IRANSans",
+                 PrintDestination = Stimulsoft.Report.Web.StiPrintDestination.Pdf,
+                 ViewMode = Stimulsoft.Report.Web.StiWebViewMode.Continuous
+            },
+            //Exports =
+            //{
+            //    ShowExportToDocument = false
+            //},
+            //FileMenu =
+            //{
+            //    Visible = false
+            //},
+            Dictionary =
+            {
+                //PermissionDataConnections = Stimulsoft.Report.Web.StiDesignerPermissions.View
+            },
+            PropertiesGrid =
+            {
+                PropertiesGridPosition = Stimulsoft.Report.Web.StiPropertiesGridPosition.Right
+            }
+        })
+
+    @Styles.Render("~/ReportBuilderCSS") 

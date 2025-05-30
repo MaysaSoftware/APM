@@ -1,0 +1,34 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@{
+    long ParentID = (long)ViewData["ParentID"];
+    CoreDefine.Entities Entity =(CoreDefine.Entities) ViewData["Entity"];
+}
+ 
+<input type="text" id="CoreObjectTreeViewText" hidden value="" />
+<p>
+    @(Html.Kendo().TreeView()
+        .Name("CoreObjectTreeView")
+        .Checkboxes(checkboxes => checkboxes
+            .Name("CheckedCoreObjectTreeView")
+            .CheckChildren(true)
+        )
+        .Events(events => events.Check("onCheckedCoreObjectTreeView"))
+        .Items(items => {
+            items.Add().Text(@"<span class=""k-icon " + Icon.IconName(Entity) + @" TreeIconColor""></span>" + Entity.ToString()).Encoded(false).Id("0_base").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(ParentID, Entity), "")); 
+        })
+        .LoadOnDemand(true)
+    )
+</p>
+<p>
+    @(Html.Kendo().Button()
+        .Name("SaveCoreObjectTreeViewButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content("بارگذاری")
+        .Enable(false)
+        .Events(e=>e.Click("SaveCoreObjectTreeViewButton"))
+    )
+</p> 
+

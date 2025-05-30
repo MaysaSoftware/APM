@@ -1,0 +1,32 @@
+ @{ 
+     bool Checked = ViewData["FieldValue"] ==null?false : ViewData["FieldValue"].ToString() != "" ? ViewData["FieldValue"].ToString()=="False"?false:true : false;
+
+     string ShowHideElement = "ShowHideElement_" + (string)ViewData["FieldName"];
+     string ShowHideElementValue = ViewData["ShowHideElement"] == null ? "" : (ViewData["ShowHideElement"].ToString());
+     string FieldClass = ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString();
+
+     Dictionary<string, object> Attrs = new Dictionary<string, object>();
+     Attrs.Add("class", FieldClass+" "+(ShowHideElementValue != "" ? "ActiveLoadElement" : ""));
+
+ }
+  
+ 
+@(Html.Kendo().Switch()
+    .Name((string)ViewData["FieldName"])
+    .Checked(Checked)
+    .HtmlAttributes(Attrs)
+    .Enabled(!(bool)ViewData["IsReadonly"])
+    .ReadOnly((bool)ViewData["IsReadonly"])
+    .Messages(c => c.Checked((string)ViewData["TrueValue"]).Unchecked((string)ViewData["FalseValue"])) 
+)  
+
+@if (ShowHideElementValue != "")
+{ 
+    <div hidden>
+        <input type="hidden" id=@ShowHideElement value=@ShowHideElementValue />
+    </div>
+
+    <script>
+        LoadElement(@ViewData["FieldName"])
+    </script>
+}

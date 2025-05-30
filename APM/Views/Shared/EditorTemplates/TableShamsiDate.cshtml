@@ -1,0 +1,55 @@
+﻿ 
+@{
+    // Secure value handling with null coalescing and type conversion
+    var value = ViewData["FieldValue"] == null ? "" : (ViewData["FieldValue"].ToString());
+    var isReadonly = ViewData["IsReadonly"] == null ? false : (bool)ViewData["IsReadonly"];
+    var activeOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    var relatedField = ViewData["RelatedField"] == null ? "" : ViewData["RelatedField"].ToString();
+    var fieldClass =(ViewData["FieldClass"] == null ? "" : (ViewData["FieldClass"].ToString())) + " " + (relatedField != "" ? "ActiveRelatedField" : "");
+    var fieldName = ViewData["FieldName"].ToString();
+    var isRequired = ViewData["IsRequired"] as bool? ?? false;
+}
+
+<!-- Secured container with aria attributes -->
+<div class="@fieldClass.Trim()" style="width: 100%; height: 37px" role="group" aria-labelledby="@(fieldName+"-label")">
+
+    <!-- Consolidated input element with conditional attributes -->
+    <input data-jdp
+           autocomplete="off"
+           id="@fieldName"
+           name="@fieldName"
+           data-role="textbox"
+           aria-disabled="@isReadonly.ToString().ToLower()"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers @(isReadonly ? "ISReadOnlyField" : "")"
+           style="width: 100%"
+           value="@value"
+           @(isReadonly ? "disabled readonly" : "")
+           @(isRequired && !isReadonly ? "required validationmessage='ورود داده الزامی است'" : "")
+           @(activeOnKeyDown ? "onload='AddListenerCalendar(this)' onchange='OnKeyDownElement'" : "")>
+
+
+    <!-- Secure calendar button -->
+    <span tabindex="-1"
+          class="k-input-button k-icon-button k-button-md @(isReadonly ? "" : "k-button-solid") AppendButton"
+          onclick="@(isReadonly ? "" : @"CalenderClick('"+fieldName+"')")"
+          aria-label="تقویم">
+        <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+</div>
+
+<!-- Secure script handling -->
+<script>
+    (function() {
+        const field = document.getElementById('@fieldName');
+        if(field) {
+            @if(activeOnKeyDown) {
+                <text>AddListenerCalendarWithOnKeyDown(field);</text>
+            } else {
+                <text>AddListenerCalendar(field);</text>
+            }
+            field.addEventListener('focusout', DatePickers_onfocusout);
+        }
+    })();
+</script>
+
+ 

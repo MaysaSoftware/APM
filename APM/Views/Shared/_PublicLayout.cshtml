@@ -1,0 +1,104 @@
+﻿@using APM.Models
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Referral.PublicSetting.AppPersianName</title>
+    <link rel="icon" type="image/png" href="~/Theme/Image/@Referral.CustomerName.ToString()/favicon.ico" />
+
+    @Scripts.Render("~/DesktopJS")
+    @Scripts.Render("~/RoleTypePermissionJS")
+    @Html.Partial("/Views/Shared/PublicLinkScript.cshtml")
+    @RenderSection("PageLinkScript", false)
+
+</head>
+<body class="k-rtl" onbeforeunload="ConfirmClose()" onunload="HandleOnClose()">
+
+    <div class="modal fade ScannerDalert" role="dialog" style="z-index:10000000">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="background-color:#ffcccc">
+                <div class="modal-header">
+                    عدم برقراری ارتباط با اسکنر
+                </div>
+                <div class="modal-body">
+                    هیچ راه انداز اسکنری یافت نشد. لطفا راه انداز اسکنر را از
+                    <a href="~/Tools/ScannerDriver.zip" download>اینجا</a> دانلود نمایید.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade MessageDalert" role="dialog" style="z-index:10000000">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header"></div>
+                <div class="modal-body"></div>
+            </div>
+        </div>
+    </div>
+
+    <input hidden type="text" id="DataRecoveryMinutesInput" value=@Referral.PublicSetting.DataRecoveryMinutes />
+
+    <div id="BaseUrl" data-baseurl="@Context.Request.Url.GetLeftPart(UriPartial.Authority)@Url.Content("~/")"></div>
+    @Html.Partial("/Views/Shared/PublicDialog.cshtml")
+    @Html.Partial("/Views/Shared/Lodar.cshtml")
+    @Html.Partial("/Views/Shared/HeaderLayout.cshtml")
+
+    @(Html.Kendo().Splitter()
+        .Name("MasterLayout")
+        .Orientation(SplitterOrientation.Horizontal)
+        .HtmlAttributes(new { @class="MasterLayout" })
+        .Panes(verticalPanes =>
+        {
+            verticalPanes.Add()
+                .HtmlAttributes(new { id = "CenterLayout" })
+                .Content(@<text> <section class="main-section horizontal" id="HomeMainDiv">
+                                      @RenderBody()
+                                </section>
+                          </text>);
+
+            verticalPanes.Add()
+                .HtmlAttributes(new { id = "RightLayout" })
+                .Collapsible(true)
+                .Resizable(true)
+                .Size("240px")
+                .Content(@<text>@Html.Partial("/Views/Home/RightSide.cshtml")</text>);
+
+        })
+    )
+
+
+    @Scripts.Render("~/LodarJS")
+    @Scripts.Render("~/Home/IndexJS")
+    @Styles.Render("~/PersionDatePickerCSS")
+    @Scripts.Render("~/PersionDatePickerJS")
+    @Styles.Render("~/MiladyDatePickerCSS")
+    @Scripts.Render("~/MiladyDatePickerJS")
+    @Styles.Render("~/DiagramCSS")
+    @Styles.Render("~/BPMNCSS")
+    @Scripts.Render("~/BPMNViewerJS")
+
+    <script>
+        jalaliDatepicker.startWatch({
+            separatorChar: "/",
+            minDate: "attr",
+            maxDate: "attr",
+            changeMonthRotateYear: true,
+            showTodayBtn: true,
+            showEmptyBtn: true
+        });
+
+
+        MiladiDatepicker.startWatch({
+            separatorChar: "/",
+            minDate: "attr",
+            maxDate: "attr",
+            changeMonthRotateYear: true,
+            showTodayBtn: true,
+            showEmptyBtn: true
+        });
+
+    </script>
+</body>
+</html>

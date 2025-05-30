@@ -1,0 +1,66 @@
+﻿@using APM.Models.DesktopManagement;
+﻿@using APM.Models;
+@using APM.Models.Database;
+
+<section>
+
+    <div class="FormItemInput1" style="float:inherit; min-height:10px">
+        <input id="MainRightMenuTreeFilter" class="k-input k-textbox k-input-solid k-input-md k-rounded-md " style="width: 100%;" autocomplete="off" />
+        <span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton">
+            <span class="k-icon k-i-search k-button-icon"></span>
+        </span>
+    </div>
+
+    @*<div style="padding:10px"> 
+        <button onclick="CollapseAllNodes('MainRightMenuTree')" class='k-button k-button-md C-G-k-button'><span class='k-icon k-i-caret-double-alt-up'></span></button>
+        <button onclick="ExpandAllNodes('MainRightMenuTree')" class='k-button k-button-md C-G-k-button'><span class='k-icon k-i-caret-double-alt-down'></span></button>
+    </div>*@
+
+    @(Html.Kendo().TreeView()
+        .Name("MainRightMenuTree")
+        .Events(events => events.Change("DefaultRightMenuSelect"))
+        .LoadOnDemand(true)
+        .Items(root => {
+            root.RightBaseMenuFiller();
+        })
+    )
+
+    <div style=" margin-top:30px;padding-bottom:30px;background-color:@Referral.PublicSetting.MainColor;width: 98%;">
+        <div style=" text-align: center; font-size: 10px; font-weight: 400;color:@Referral.PublicSetting.TitleColor">
+            نسخه : @Referral.AppVersion
+        </div>
+        <div style=" text-align: center; font-size: 10px; font-weight: 500;color:@Referral.PublicSetting.TitleColor">
+            @Referral.PublicSetting.AppPersianName
+        </div>
+        @if (Referral.AdminSetting.ShowAllRights)
+        {
+            <div style=" text-align: center; font-size: 10px; font-weight: 500;color:@Referral.PublicSetting.TitleColor">
+                کلیه حقوق برای گروه مالی و مالیاتی فرابین تاو محفوظ می باشد
+            </div>
+        }
+        <a href="http://maysasoftware.com/" target="_blank" style="width: 100%;display: block;text-align: center;">
+            <span class="TitleColor" style="font-size: 12px;">طراحی شده توسط شرکت سامانه گستر مایسا</span>
+        </a>
+    </div>
+</section>
+
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingMainRightMenuTree")
+    .Target("#MainRightMenuTree")
+    .Filter(".k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"باز کردن در تب جدید").Encoded(false); 
+    })
+    .Events(e=>e.Select("Select_MainRightMenuTree") )
+)

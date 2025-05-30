@@ -1,0 +1,138 @@
+﻿@using APM.Models.Database;
+@using APM.Models.Tools;
+
+@{
+    TemplateField FieldItem = (TemplateField)ViewData["FieldItem"];
+}
+
+@switch (FieldItem.InputTypes)
+{
+    case CoreDefine.InputTypes.CoreRelatedTable:
+        @Html.Editor(FieldItem.FullName, "TCoreObjectList", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.CoreRelatedTableCheckbox:
+        @Html.Editor(FieldItem.FullName, "TCoreObjectListCheckbox", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.RelatedTable:
+        @Html.Editor(FieldItem.FullName, "TForeignKey", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.MultiSelectFromRelatedTable:
+    case CoreDefine.InputTypes.MultiSelectFromComboBox:
+        @Html.Editor(FieldItem.FullName, "MultiSelectFromRelatedTable", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.FillTextAutoComplete:
+        @Html.Editor(FieldItem.FullName, "FillTextAutoComplete", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.RelatedTableTree:
+        @Html.Editor(FieldItem.FullName, "TForeignKeyTree", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.ActionType:
+        @Html.Editor(FieldItem.FullName, "ProcessActionType", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.RecordType:
+        @Html.Editor(FieldItem.FullName, "ProcessRecordType", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.NotificationType:
+        @Html.Editor(FieldItem.FullName, "NotificationType", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.AttachmentUploadType:
+        @Html.Editor(FieldItem.FullName, "AttachmentUploadType", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.LongText:
+        @Html.Editor(FieldItem.FullName, "MultilineString", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Editor:
+        @Html.Editor(FieldItem.FullName, "TEditor", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.TwoValues:
+        @Html.Editor(FieldItem.FullName, "Boolean", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Number:
+        @Html.Editor(FieldItem.FullName, "TableNumber", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Image:
+        @Html.Editor(FieldItem.FullName, "Image", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Upload:
+        @Html.Editor(FieldItem.FullName, "Upload", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Query:
+        @Html.Editor(FieldItem.FullName, "Query", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.MiladyDateTime:
+        @Html.Editor(FieldItem.FullName, "TableMiladiDate", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.PersianDateTime:
+        @Html.Editor(FieldItem.FullName, "TableShamsiDate", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Icon:
+        @Html.Editor(FieldItem.FullName, "Icon", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.ComboBox:
+        @Html.Editor(FieldItem.FullName, "ComboBox", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Sparkline:
+        @Html.Editor(FieldItem.FullName, "Sparkline", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Color:
+        @Html.Editor(FieldItem.FullName, "ColorPicker", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.MultiSelect:
+        @Html.Editor(FieldItem.FullName, "MultiSelect", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Clock:
+        @Html.Editor(FieldItem.FullName, "Time", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.BPMSModel:
+        @Html.Editor(FieldItem.FullName, "BPMSModel", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Password:
+        @Html.Editor(FieldItem.FullName, "Password", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Plaque:
+        @Html.Editor(FieldItem.FullName, "TablePlaque", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.NationalCode:
+        @Html.Editor(FieldItem.FullName, "NationalCode", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.ViewerForm:
+        @Html.Editor(FieldItem.FullName, "ViewerForm", FieldItem.Parameter)
+        break;
+
+    case CoreDefine.InputTypes.Rating:
+        @Html.Editor(FieldItem.FullName, "Rating", FieldItem.Parameter)
+        break;
+
+    default:
+        @Html.Editor(FieldItem.FullName, "String", FieldItem.Parameter)
+        break;
+}

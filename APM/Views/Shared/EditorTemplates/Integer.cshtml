@@ -1,0 +1,20 @@
+@model int?
+
+@if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    @(Html.Kendo().IntegerTextBoxFor(m => m)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .Min(int.MinValue)
+    .Max(int.MaxValue)
+    .HtmlAttributes(new { @class = "LTRTextbox", required = "required", validationMessage = "ورود داده الزامی است", autocomplete = "off" })
+    ) 
+}
+else
+{
+    @(Html.Kendo().IntegerTextBoxFor(m => m)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .Min(int.MinValue)
+    .Max(int.MaxValue)
+    .HtmlAttributes(new { @class = "LTRTextbox", autocomplete = "off" })
+    )
+}

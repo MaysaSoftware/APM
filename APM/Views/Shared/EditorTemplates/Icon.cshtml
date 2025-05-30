@@ -1,0 +1,19 @@
+﻿@model object 
+
+@{
+    string Value = ViewData["FieldValue"] == null ? "0" : ((string)ViewData["FieldValue"]); 
+}
+
+@(Html.Kendo().ComboBox()
+          .Name((string)ViewData["FieldName"])
+          .Filter("contains")
+          .Placeholder("انتخاب نمایید")
+          .DataTextField("Text")
+          .DataValueField("Value")
+          .Value(Value)
+          .DataSource(d=>d.Read("GetIcon", "Desktop"))
+          .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+          .Suggest(true)
+          .HtmlAttributes(new { style="width:100%;" })
+
+    )

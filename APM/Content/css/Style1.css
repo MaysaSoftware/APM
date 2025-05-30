@@ -1,0 +1,9 @@
+﻿
+@media (min-width : 400px) {
+    header, main, footer {
+        padding-left: 0 !important;
+    }
+}
+header, main, footer {
+    padding-left: 240px;
+}

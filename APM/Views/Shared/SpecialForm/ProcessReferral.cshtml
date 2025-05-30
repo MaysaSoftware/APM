@@ -1,0 +1,68 @@
+﻿
+@{
+    string InformationEntryFormID = (string)ViewData["StepEntryFormDataKey"];
+    string Form =(string)Session["MasterDataKey"];
+    bool IsReadonly = (bool)ViewData["IsReadonly"];
+
+    string ClassInformationEntryForm = InformationEntryFormID != "0" ? "Show" : "Hide";
+    string ClassReferralFormMail = InformationEntryFormID != "0" ? "Hide" : "Show";
+}
+
+<style>
+
+    .Show{
+        display:block;
+    }
+
+    .Hide{
+        display:none;
+    }
+</style>
+
+    @(Html.Kendo().Stepper()
+            .Name("ReferralProcessStepper")
+            .Linear(false)
+            .Orientation(StepperOrientationType.Horizontal)
+            .Steps(s =>
+            {
+                if (InformationEntryFormID != "0")
+                    s.Add().Label("اطلاعات").Icon("dictionary-add").Selected(true);
+
+
+                s.Add().Label("ارجاع").Icon("flip-vertical");
+
+                if(!IsReadonly)
+                s.Add().Label("ارسال").Icon(" fa fa-paper-plane");
+            })
+            .Events(events => events.Select("ReferralProcessStepperOnSelect"))
+    )             
+
+<div id="ReferralForm">
+    <div id="ReferralFormInfoDiv" class=@ClassInformationEntryForm>
+        @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["StepFolderDataKey"] }, { "FieldParameterList", @ViewData["StepFieldParameterList"] }, { "DataKey", @ViewData["StepEntryFormDataKey"] }, { "ParentID", @ViewData["StepParentID"] }, { "ProcessStep", "0" }, { "RecordID", @ViewData["StepRecordID"] }, { "ISReadOnly", IsReadonly } })
+    </div>
+
+    <div id="ReferralFormMailDiv" class=@ClassReferralFormMail>
+        @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["ReferralFolderDataKey"] }, { "FieldParameterList", @ViewData["ReferralFieldParameterList"] }, { "DataKey", @ViewData["ReferralDataKey"] }, { "ParentID", @ViewData["ReferralParentID"] }, { "ProcessStep", @ViewData["ProcessStep"] }, { "RecordID", @ViewData["ReferralRecordID"] }, { "ISReadOnly", IsReadonly } })
+    </div>
+
+    @if (!IsReadonly)
+    {
+        <div id="ButtonMailDiv" class="k-edit-buttons k-actions-end" style="display: none; margin:50px 0px">
+
+            @(Html.Kendo().Button()
+            .Name("SaveButton"+ Form)
+            .HtmlAttributes(new {@class= "k-button-solid-primary" })
+            .Content(@"<span class=""k-icon fa fa-paper-plane""></span><span class=""k-button-text"">ارسال</span>")
+            .Events(e=>e.Click("SaveProcessReferral"))
+        )
+            @(Html.Kendo().Button()
+            .Name("CanselButton")
+            .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+            .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">انصراف</span>")
+            .Events(e=>e.Click("CanselProcessReferral"))
+        )
+        </div>
+    }
+
+</div>

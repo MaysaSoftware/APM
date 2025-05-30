@@ -1,0 +1,61 @@
+﻿@{
+    string Format = "n" + (int)ViewData["DigitsAfterDecimal"];
+    int Decimals = (int)ViewData["DigitsAfterDecimal"];
+    string FieldName = (string)ViewData["FieldName"];
+    double Value = ViewData["FieldValue"] == null ? 0 : (ViewData["FieldValue"].ToString() == "" ? 0 : (Double.Parse(ViewData["FieldValue"].ToString().Replace("/","."), System.Globalization.CultureInfo.InvariantCulture)));
+    double MaxValue = ViewData["MaxValue"] == null ? double.MaxValue : double.Parse(ViewData["MaxValue"].ToString());
+    double MinValue = ViewData["MinValue"] == null ? double.MinValue : double.Parse(ViewData["MinValue"].ToString());
+    string FieldClass = "Numeric " + (ViewData["FieldClass"] == null ? "" : (string)ViewData["FieldClass"]);
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("style", "color:" + TextColor);
+    Attrs.Add("class", ((bool)ViewData["IsLeftWrite"] ? "LeftWrite" : "") + " " + (ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString()));
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+}
+
+@if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    @(Html.Kendo().NumericTextBox()
+        .Name(@FieldName)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .Min(MinValue)
+        .Max(MaxValue)
+        .Decimals(1)
+        .Format(@Format)
+        .Value(Value)
+        .SelectOnFocus(true)
+        .HtmlAttributes(Attrs)
+        .Events(events =>
+        {
+            if (ActiveOnKeyDown)
+                events.Change("OnKeyDownElement");
+        })
+    )
+}
+else
+{
+    @(Html.Kendo().NumericTextBox()
+        .Name(@FieldName)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .Min(MinValue)
+        .Max(MaxValue)
+        .Decimals(@Decimals)
+        .Format(@Format)
+        .Value(Value)
+        .SelectOnFocus(true)
+        .HtmlAttributes(Attrs)
+        .Events(events =>
+        {
+            if (ActiveOnKeyDown)
+                events.Change("OnKeyDownElement");
+        })
+    )
+}

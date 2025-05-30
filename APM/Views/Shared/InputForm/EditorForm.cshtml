@@ -1,0 +1,163 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using APM.Models.Database; 
+
+@{
+    string FixItemClearFormInput = "";
+    string DataKey = (string)ViewData["DataKey"];
+    string ParentID = (string)ViewData["ParentID"];
+    string RecordID = (string)ViewData["RecordID"];
+    long ProcessID = ViewData["ProcessID"] == null ? 0 : (long)ViewData["ProcessID"];
+    long ProcessStepID = ViewData["ProcessStepID"] == null ? 0 : (long)ViewData["ProcessStepID"];
+    string InCellGrid = ViewData["InCellGrid"] == null ? "" : ViewData["InCellGrid"].ToString();
+    string InCellGridInput = "InCellGridInput_" + DataKey;
+    bool ISReadOnly = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+    string ButtonName = DataKey + "_" + ParentID + "_" + RecordID;
+    string WindowName = "PopupEditorWindow" + DataKey;
+
+    bool ISDetailGridForm = ViewData["ISDetailGridForm"] == null ? false : (bool)ViewData["ISDetailGridForm"];
+    string CancelButtonName = (ISDetailGridForm ? "Detail" : "") + "CancelButton" + ButtonName + "_" + ProcessID + "_" + ProcessStepID;
+    string SaveButtonName = (ISDetailGridForm ? "Detail" : "") + "SaveButton" + ButtonName + "_" + ProcessID + "_" + ProcessStepID;
+    string NewRecordButtonName = ISDetailGridForm ? "DetailNewRecordButton" + ButtonName : "NewRecordButton" + ButtonName;
+    string FixItemClearForm = ISDetailGridForm ? "DetailFixItemClearFormButton" + ButtonName : "FixItemClearFormButton" + ButtonName;
+    string AttachmentButtonName = ISDetailGridForm ? "DetailAttachmentEditorFormButton" + ButtonName : "AttachmentEditorFormButton" + ButtonName;
+    string ImageButtonName = ISDetailGridForm ? "DetailImageButton" + ButtonName : "ImageButton" + ButtonName;
+    string SaveTitleButton = "ذخیره";
+    string ClearFormWhithOutFixItemButtonName = "فرم مضاعف";
+    bool ShowClearFormWhithOutFixItemButton = false;
+    bool ShowAttachementButton = false;
+    bool ShowNewButton = true;
+    CoreObject coreObject = CoreObject.Find(long.Parse(DataKey));
+    bool IsCloseFormAffterSave = false;
+    if (coreObject.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+    {
+        SaveTitleButton = Desktop.DataInformationEntryForm[DataKey].TitleSaveButton;
+        ShowClearFormWhithOutFixItemButton = Desktop.DataInformationEntryForm[DataKey].ShowClearFormWhithOutFixItemButton;
+        ClearFormWhithOutFixItemButtonName = Desktop.DataInformationEntryForm[DataKey].ClearFormWhithOutFixItemButtonName;
+        ShowAttachementButton = Desktop.DataInformationEntryForm[DataKey].ShowAttachementButton;
+        ShowNewButton = Desktop.DataInformationEntryForm[DataKey].ShowNewButton;
+        SaveButtonName += Desktop.DataInformationEntryForm[DataKey].IsCloseFormAffterSave ? "_1" : "_0";
+        SaveButtonName += Desktop.DataInformationEntryForm[DataKey].SaveParentSubjectSaveChild ? "_1" : "_0";
+        SaveButtonName += Desktop.DataInformationEntryForm[DataKey].SaveAtOnce ? "_1" : "_0";
+        FixItemClearFormInput = Desktop.DataInformationEntryForm[DataKey].FixItemClearForm;
+        IsCloseFormAffterSave = Desktop.DataInformationEntryForm[@DataKey].IsCloseFormAffterSave;
+    }
+    else
+    {
+        SaveButtonName += "_1_0_0";
+    }
+
+    string FixItemClearFormID = (ISDetailGridForm ? "Detail" : "") + "FixItemClearForm_" + DataKey + "_" + ParentID;
+    string IsCloseFormAffterSaveID = (ISDetailGridForm ? "Detail" : "") + "IsCloseFormAffterSave_" + DataKey + "_" + ParentID;
+}
+
+@if (IsCloseFormAffterSave)
+{
+    <input type="checkbox" id=@IsCloseFormAffterSaveID checked hidden />
+}
+else
+{
+    <input type="checkbox" id=@IsCloseFormAffterSaveID hidden />
+}
+<input hidden id=@InCellGridInput value=@InCellGrid />
+<input hidden id=@FixItemClearFormID value=@FixItemClearFormInput />
+
+@(Html.Kendo().Window()
+.Name(@WindowName)
+.HtmlAttributes(new {style="top:0px;"})
+.Draggable()
+.Visible(false)
+.Resizable(resize => resize.Enabled(true))
+.Modal(true)
+.Actions(actions => actions.Close())
+.Events(events => events.Close("OnclickCloseEditorForm"))
+)
+@*<div class="configurator" style="margin-bottom:10px;">
+        @(Html.Kendo().Button()
+        .Name(ImageButtonName)
+        .HtmlAttributes(new {@class= "Button" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">عکس</span>")
+        .Events(e=>e.Click("ExportImage"))
+    )
+    </div>*@
+
+<div class="row content-wrapper">
+
+    @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["FolderDataKey"] }, { "FieldParameterList", @ViewData["FieldParameterList"] }, { "DataKey", DataKey }, { "ParentID", ParentID }, { "ProcessID", ProcessID }, { "ProcessStepID", ProcessStepID }, { "RecordID", RecordID }, { "ISReadOnly", ISReadOnly } })
+
+</div>
+
+
+@if (!ISReadOnly)
+{
+    <div class="row k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style=" border-radius: 60px;  bottom: 0px; background-color: #0bb9a7e3; right: 15px;">
+        @foreach (ReportParameter Parameter in Desktop.DataReport[DataKey])
+        {
+            CoreObject ParameterCore = CoreObject.Find(Parameter.CoreObjectID);
+            CoreObject ReportCore = CoreObject.Find(ParameterCore.ParentID);
+            Report report = new Report(ReportCore);
+            string Icon = report.Icon != "" ? report.Icon : "graph";
+
+            @(Html.Kendo().Button()
+                .Name((ISDetailGridForm ? "Detail" : "") + "Parameter_" + ButtonName + "_" + ReportCore.CoreObjectID.ToString() + "_" + ParameterCore.CoreObjectID.ToString())
+                .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                .Content(@"<span class="""+ Icon + @" k-button-icon""></span><span class=""k-button-text"">"+ Tools.UnSafeTitle(ReportCore.FullName) + "</span>")
+                .Events(e=>e.Click("ShowReportEditorForm"))
+            )
+
+        }
+
+        @(Html.Kendo().Button()
+            .Name(CancelButtonName)
+            .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+            .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">بستن</span>")
+            .Events(e=>e.Click("CancelFormEditor"))
+        )
+
+        @if (RecordID == "0" && ShowAttachementButton)
+        {
+            @(Html.Kendo().Button()
+            .Name(AttachmentButtonName)
+            .HtmlAttributes(new { @class = "AttachmentButton", style = "background-color:#00ffff" })
+            .Content(@"<span class=""k-icon k-i-attachment k-button-icon""></span><span class=""k-button-text"">ضمیمه</span>")
+            .Events(e=>e.Click("AttachmentFormEditor"))
+            )
+
+        }
+
+        @(Html.Kendo().Button()
+            .Name(SaveButtonName)
+            .HtmlAttributes(new {@class= "k-button-solid-primary SaveButton" })
+            .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">"+ SaveTitleButton + "</span>")
+            .Events(e=>e.Click("SaveFormEditor"))
+        )
+
+        @if (RecordID == "0")
+        {
+            if (ShowClearFormWhithOutFixItemButton)
+            {
+                @(Html.Kendo().Button()
+                    .Name(FixItemClearForm)
+                    .HtmlAttributes(new {@class= "k-button-solid-cancel NewButton", style = "background-color:#ffba20" })
+                    .Content(@"<span class=""k-icon k-i-plus k-button-icon""></span><span class=""k-button-text"">"+ ClearFormWhithOutFixItemButtonName + "</span>")
+                    .Events(e=>e.Click("OnClickClearFormWhithOutFixItem"))
+                )
+            }
+
+            if (ShowNewButton)
+            {
+                @(Html.Kendo().Button()
+                    .Name(NewRecordButtonName)
+                    .HtmlAttributes(new {@class= "k-button-solid-cancel NewButton", style = "background-color:#ffee00" })
+                    .Content(@"<span class=""k-icon k-i-plus k-button-icon""></span><span class=""k-button-text"">جدید</span>")
+                    .Events(e=>e.Click("OnclickNewRecordEditorForm"))
+                )
+            }
+
+        }
+
+
+
+    </div>
+
+}

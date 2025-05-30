@@ -1,0 +1,77 @@
+﻿.stiJsViewerClearAllStyles,
+.stiJsViewerToolTipTextCell {
+    font-family: IRANSans !important;
+}
+
+.stiJsViewerToolBarTable,
+tr.stiJsViewerClearAllStyles,
+.stiJsViewerMenuStandartItem table,
+.stiJsViewerInnerContainerParametersPanel table {
+    direction: rtl !important;
+}
+
+.stiJsViewerInnerContainerParametersPanel > table > tbody > tr:last-child table {
+    direction: ltr !important;
+}
+
+    .stiJsViewerInnerContainerParametersPanel > table > tbody > tr:last-child table td:last-child .stiJsViewerFormButton td {
+        background-color: #428bca;
+        color: #ffffff;
+    }
+
+.stiJsViewerMenuStandartItem table tbody tr td.stiJsViewerClearAllStyles {
+    text-align: right !important;
+    padding: 0px 4px 0px 2px !important;
+}
+
+.stiJsViewerVerticalMenuSeparator {
+    margin: 1px 30px 1px 2px !important;
+}
+
+input[name="PageControl"] {
+    text-align: center;
+    width: 32px !important;
+    margin: 0px 4px !important;
+}
+
+#MvcViewer {
+    z-index: 1000 !important;
+}
+
+.stiJsViewerToolBarTable {
+    background-color: #f5f5f5 !important;
+}
+
+.stiJsViewerNavigatePanel {
+    background-color: #428bca !important;
+}
+
+input.stiJsViewerTextBox {
+    padding-left: 0 !important;
+}
+
+.k-widget.k-datepicker {
+    height: 30px !important;
+    line-height: 30px !important;
+}
+
+.k-datepicker input {
+    border-width: 0px !important;
+    text-indent: .8em;
+    height: 26px !important;
+    line-height: 26px !important;
+}
+
+.k-datepicker .k-picker-wrap {
+    height: 30px !important;
+    line-height: 30px !important;
+}
+
+#MvcViewer_ParametersPanelContainer > table > tbody > tr {
+    height: 42px !important;
+    line-height: 42px !important;
+}
+
+#MvcViewer_ParametersPanel{
+    left:320px;
+}

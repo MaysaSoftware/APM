@@ -1,0 +1,28 @@
+﻿@model object
+
+<script>
+$(document).on("keydown", ".PlaqueInput", function (e) {
+    Plaqueonkeydown(this);
+});
+</script>
+
+@if(ViewData["IsReadonly"] == null)
+{
+    @(Html.Kendo().TextBoxFor(model => model)
+        .HtmlAttributes(new { @class = "PlaqueInput", autocomplete = "off" })
+    )
+}
+else if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    @(Html.Kendo().TextBoxFor(model => model)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .HtmlAttributes(new { @class = "PlaqueInput", required = "required", validationMessage = "ورود داده الزامی است", autocomplete = "off" })
+    )
+}
+else
+{
+    @(Html.Kendo().TextBoxFor(model => model)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .HtmlAttributes(new { @class = "PlaqueInput", autocomplete = "off" })
+    )
+}

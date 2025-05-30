@@ -1,0 +1,45 @@
+﻿@using APM.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = Referral.PublicSetting.AppPersianName;
+    string PrintSettingName = Session["PrintSettingName"] == null ? "" : Session["PrintSettingName"].ToString();
+}
+
+@Styles.Render("~/SigninCSS")
+@Html.Partial("/Views/Shared/PublicLinkScript.cshtml")
+@Styles.Render("~/PrintCSS") 
+@Scripts.Render("~/KendoSettingJS")
+@Scripts.Render("~/PrintJS")
+
+
+<span id="PrintButton" title="چاپ" class="k-icon k-i-print PrintToolbarItem" onclick="PagePrint()"></span>
+
+<span id="A4_PortraitButton" title="جهت عمودی" class="k-icon k-i-file-vertical PrintToolbarItem" onclick="PageSize('A4_Portrait')">
+    <span title="جهت عمودی" class="PrintToolbarItemTag PrintToolbarItem" onclick="PageSize('A4_Portrait')">A4</span>
+</span>
+
+<span id="A4_LandscapeButton" title="جهت افقی" class="k-icon k-i-file-horizontal PrintToolbarItem" onclick="PageSize('A4_Landscape')">
+    <span title="جهت افقی" class="PrintToolbarItemTag PrintToolbarItem" onclick="PageSize('A4_Landscape')">A4</span>
+</span>
+
+<span id="A5_PortraitButton" title="جهت عمودی" class="k-icon k-i-file-vertical PrintToolbarItem" onclick="PageSize('A5_Portrait')">
+    <span title="جهت عمودی" class="PrintToolbarItemTag PrintToolbarItem" onclick="PageSize('A5_Portrait')">A5</span>
+</span>
+
+<span id="A5_LandscapeButton" title="جهت افقی" class="k-icon k-i-file-horizontal PrintToolbarItem" onclick="PageSize('A5_Landscape')">
+    <span title="جهت افقی" class="PrintToolbarItemTag PrintToolbarItem" onclick="PageSize('A5_Landscape')">A5</span>
+</span>
+
+<div class="HeaderBound">
+    <div class="HeaderInfo">
+        تاریخ : @(Referral.UserAccount.LoginDate)<br />
+        کاربر : @(Referral.UserAccount.FullName)
+    </div>
+    <div class="HeaderTitle">
+        @Referral.PublicSetting.CompanyName <br />
+        @PrintSettingName
+    </div>
+    <div class="HeaderLogo">
+        <img class="LogoImage" src=@Referral.PublicSetting.AppLogo />
+    </div>
+</div>

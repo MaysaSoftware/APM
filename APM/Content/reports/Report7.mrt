@@ -1,0 +1,754 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<StiSerializer version="1.02" type="Net" application="StiReport">
+  <Dictionary Ref="1" type="Dictionary" isKey="true">
+    <BusinessObjects isList="true" count="0" />
+    <Databases isList="true" count="1">
+      <JSON Ref="2" type="Stimulsoft.Report.Dictionary.StiJsonDatabase" isKey="true">
+        <Alias>JSON</Alias>
+        <Key />
+        <Name>JSON</Name>
+        <PathData>http://localhost:5456/Welfare/Report/Report7Items?startDate=2020/01/01&amp;endDate=2021/01/01</PathData>
+      </JSON>
+    </Databases>
+    <DataSources isList="true" count="2">
+      <data Ref="3" type="DataTableSource" isKey="true">
+        <Alias>data</Alias>
+        <Columns isList="true" count="9">
+          <value>Date,System.String</value>
+          <value>Meal,System.Decimal</value>
+          <value>MealTitle,System.String</value>
+          <value>Count,System.Decimal</value>
+          <value>Office,System.String</value>
+          <value>RequestId,System.Decimal</value>
+          <value>Letter,System.String</value>
+          <value>Restaurant,System.String</value>
+          <value>Sum,System.Decimal</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>2c4f1131266840d9946f482d0c6a5529</Key>
+        <Name>data</Name>
+        <NameInSource>JSON.data</NameInSource>
+      </data>
+      <header Ref="4" type="DataTableSource" isKey="true">
+        <Alias>header</Alias>
+        <Columns isList="true" count="4">
+          <value>StartDate,System.String</value>
+          <value>EndDate,System.String</value>
+          <value>Office,System.String</value>
+          <value>OfficeFor,System.String</value>
+        </Columns>
+        <Dictionary isRef="1" />
+        <Key>326c813192c94c7ea0dd7cfe1ea2b106</Key>
+        <Name>header</Name>
+        <NameInSource>JSON.header</NameInSource>
+      </header>
+    </DataSources>
+    <Relations isList="true" count="0" />
+    <Report isRef="0" />
+    <Resources isList="true" count="0" />
+    <Variables isList="true" count="0" />
+  </Dictionary>
+  <EngineVersion>EngineV2</EngineVersion>
+  <GlobalizationStrings isList="true" count="0" />
+  <Key>fe5c62da09f34a94961fc052e0d3196d</Key>
+  <MetaTags isList="true" count="0" />
+  <Pages isList="true" count="1">
+    <Page1 Ref="5" type="Page" isKey="true">
+      <Border>None;Black;2;Solid;False;4;Black</Border>
+      <Brush>EmptyBrush</Brush>
+      <Components isList="true" count="3">
+        <PageHeaderBand1 Ref="6" type="PageHeaderBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0,0.2,10.91,0.6</ClientRectangle>
+          <Components isList="true" count="8">
+            <Text1 Ref="7" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>9.51,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text1</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>گزارش مصرف </Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text1>
+            <Text2 Ref="8" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>8.11,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text2</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>{header.OfficeFor}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>DataColumn</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text2>
+            <Text7 Ref="9" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>6.71,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="1">
+                <value>header.Office,EqualTo,,,String,Black,Transparent,Arial_x002C_8,False,False,_x0020_بب,,None</value>
+              </Conditions>
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text7</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>اداره معرف</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text7>
+            <Text8 Ref="10" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>5.31,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text8</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>{header.Office}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text8>
+            <Text3 Ref="11" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>4.71,0,0.6,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text3</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>از تاریخ</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text3>
+            <Text4 Ref="12" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>3.31,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text4</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>{header.StartDate}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>DataColumn</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text4>
+            <Text5 Ref="13" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>2.71,0,0.6,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text5</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>تا تاریخ</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text5>
+            <Text6 Ref="14" type="Text" isKey="true">
+              <AutoWidth>True</AutoWidth>
+              <Border>None;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>Transparent</Brush>
+              <CanGrow>True</CanGrow>
+              <CanShrink>True</CanShrink>
+              <ClientRectangle>1.31,0,1.4,0.6</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DockStyle>Right</DockStyle>
+              <Font>B Nazanin,14,Bold</Font>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,2,0,0</Margins>
+              <Name>Text6</Name>
+              <Page isRef="5" />
+              <Parent isRef="6" />
+              <Text>{header.EndDate}</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>DataColumn</Type>
+              <VertAlignment>Center</VertAlignment>
+            </Text6>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <Name>PageHeaderBand1</Name>
+          <Page isRef="5" />
+          <Parent isRef="5" />
+        </PageHeaderBand1>
+        <PageFooterBand1 Ref="15" type="PageFooterBand" isKey="true">
+          <Brush>Transparent</Brush>
+          <ClientRectangle>0,7.19,10.91,0.3</ClientRectangle>
+          <Components isList="true" count="0" />
+          <Conditions isList="true" count="0" />
+          <Name>PageFooterBand1</Name>
+          <Page isRef="5" />
+          <Parent isRef="5" />
+        </PageFooterBand1>
+        <CrossTab1 Ref="16" type="Stimulsoft.Report.CrossTab.StiCrossTab" isKey="true">
+          <Brush>Transparent</Brush>
+          <CanBreak>True</CanBreak>
+          <ClientRectangle>0,1,10.91,5.79</ClientRectangle>
+          <Components isList="true" count="26">
+            <CrossTab1_ColTotal1 Ref="17" type="CrossColumnTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[242:242:242]</Brush>
+              <ClientRectangle>4.52,0.22,0.5,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>561d40d79e724a41b38e5f2bedba6e42</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_ColTotal1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>جمع</Text>
+              <TextBrush>Black</TextBrush>
+              <Type>Expression</Type>
+            </CrossTab1_ColTotal1>
+            <CrossTab1_RowTotal1 Ref="18" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>0,1.04,3.7,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,12,Bold</Font>
+              <Guid>3a3e212bfd6849d38cfbcad50a3d2c0b</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>جمع</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal1>
+            <CrossTab1_Row1_Title Ref="19" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>0,0.22,0.4,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>76db2037c7584c66928df79fa9c81cc6</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row1_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>ردیف</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row1</TypeOfComponent>
+            </CrossTab1_Row1_Title>
+            <CrossTab1_LeftTitle Ref="20" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>0,0,3.7,0.2</ClientRectangle>
+              <Enabled>False</Enabled>
+              <Font>Arial,8</Font>
+              <Guid>65b89d1dfd964a50ad99acf4686c6757</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_LeftTitle</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>data</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>LeftTitle</TypeOfComponent>
+            </CrossTab1_LeftTitle>
+            <CrossTab1_Row2_Title Ref="21" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>0.4,0.22,0.6,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>a96a20c3a5c84de08cc084dfc7ef69bc</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row2_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>اداره معرف</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row2</TypeOfComponent>
+            </CrossTab1_Row2_Title>
+            <CrossTab1_RowTotal2 Ref="22" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>0.4,1.04,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <Guid>6da005a31cad44378783fe979043c7e0</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal2</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Total</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal2>
+            <CrossTab1_RowTotal3 Ref="23" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>1,1.04,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <Guid>be0dc254069a440ebfd7fd0ec066d439</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal3</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Total</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal3>
+            <CrossTab1_Row3_Title Ref="24" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>1,0.22,0.4,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>5a9140350bfd40459384d9052bcdfd3d</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row3_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>تاریخ درخواست</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row3</TypeOfComponent>
+            </CrossTab1_Row3_Title>
+            <CrossTab1_RowTotal4 Ref="25" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>1.4,1.04,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <Guid>33dddb29c36d448d8095cb64b06a751a</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal4</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Total</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal4>
+            <CrossTab1_Row4_Title Ref="26" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>1.4,0.22,0.9,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>f022a0594eb54b17bfd738235befc9ce</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row4_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>شماره درخواست</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row4</TypeOfComponent>
+            </CrossTab1_Row4_Title>
+            <CrossTab1_RowTotal5 Ref="27" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>2.3,1.04,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <Guid>b51796b36162475b976ea073d211e291</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal5</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Total</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal5>
+            <CrossTab1_Row5_Title Ref="28" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>2.3,0.22,0.6,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>e78ffb1544cf458d9c5cc20f749838ef</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row5_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>شماره نامه</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row5</TypeOfComponent>
+            </CrossTab1_Row5_Title>
+            <CrossTab1_RowTotal6 Ref="29" type="CrossRowTotal" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>2.9,1.04,0,0</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>Arial,8</Font>
+              <Guid>c33429304be14730b1423da7f4838e63</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RowTotal6</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Total</Text>
+              <TextBrush>Black</TextBrush>
+            </CrossTab1_RowTotal6>
+            <CrossTab1_Row6_Title Ref="30" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>2.9,0.22,0.8,0.5</ClientRectangle>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>e7ddadd035e74663a4af339f0310c818</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row6_Title</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>رستوران</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>Row:CrossTab1_Row6</TypeOfComponent>
+            </CrossTab1_Row6_Title>
+            <CrossTab1_SumHeader1 Ref="31" type="Stimulsoft.Report.CrossTab.StiCrossSummaryHeader" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>3.72,0.52,0.5,0.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,10</Font>
+              <Guid>9770640812f2430f9c279a119cfb2360</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_SumHeader1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>تعداد</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+            </CrossTab1_SumHeader1>
+            <CrossTab1_SumHeader2 Ref="32" type="Stimulsoft.Report.CrossTab.StiCrossSummaryHeader" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>4.22,0.52,0.3,0.2</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,10</Font>
+              <Guid>6c30199696284519b1938ef137aeb493</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_SumHeader2</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>مبلغ</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+            </CrossTab1_SumHeader2>
+            <CrossTab1_RightTitle Ref="33" type="CrossTitle" isKey="true">
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>3.72,0,1.3,0.2</ClientRectangle>
+              <Font>Arial,8</Font>
+              <Guid>17317aa212f54d30a816985de5d316de</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_RightTitle</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>MealTitle</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TypeOfComponent>RightTitle</TypeOfComponent>
+            </CrossTab1_RightTitle>
+            <CrossTab1_Row1 Ref="34" type="CrossRow" isKey="true">
+              <Alias>Date</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>0,0.74,0.4,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{LineThrough}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>cb7191e685f3408ba6c2edd02fcd5ae6</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>Date</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>3a3e212bfd6849d38cfbcad50a3d2c0b</TotalGuid>
+              <Value>{LineThrough}</Value>
+            </CrossTab1_Row1>
+            <CrossTab1_Row2 Ref="35" type="CrossRow" isKey="true">
+              <Alias>Office</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>0.4,0.74,0.6,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.Office}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>378c90761d904399a9d82f173ac88aca</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row2</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <ShowTotal>False</ShowTotal>
+              <Text>Office</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>6da005a31cad44378783fe979043c7e0</TotalGuid>
+              <Value>{data.Office}</Value>
+            </CrossTab1_Row2>
+            <CrossTab1_Row3 Ref="36" type="CrossRow" isKey="true">
+              <Alias>Date</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>1,0.74,0.4,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.Date}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>8aa56a3e40d54c429cb5c2d7454d3687</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row3</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <ShowTotal>False</ShowTotal>
+              <Text>Date</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>be0dc254069a440ebfd7fd0ec066d439</TotalGuid>
+              <Value>{data.Date}</Value>
+            </CrossTab1_Row3>
+            <CrossTab1_Row4 Ref="37" type="CrossRow" isKey="true">
+              <Alias>RequestId</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>1.4,0.74,0.9,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.RequestId}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>3c2490c4a4fa4ed9a3997e7a83cf4575</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row4</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <ShowTotal>False</ShowTotal>
+              <Text>RequestId</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>33dddb29c36d448d8095cb64b06a751a</TotalGuid>
+              <Value>{data.RequestId}</Value>
+            </CrossTab1_Row4>
+            <CrossTab1_Row5 Ref="38" type="CrossRow" isKey="true">
+              <Alias>Letter</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>2.3,0.74,0.6,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.Letter}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>86310ca6f43f43a2b13dc8a0eaf10e30</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row5</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <ShowTotal>False</ShowTotal>
+              <Text>Letter</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>b51796b36162475b976ea073d211e291</TotalGuid>
+              <Value>{data.Restaurant}</Value>
+            </CrossTab1_Row5>
+            <CrossTab1_Row6 Ref="39" type="CrossRow" isKey="true">
+              <Alias>Restaurant</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>2.9,0.74,0.8,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.Restaurant}</DisplayValue>
+              <Font>B Nazanin,10</Font>
+              <Guid>5620b7c2a4234593a2a78ffa6cb6b7dd</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Row6</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <ShowTotal>False</ShowTotal>
+              <Text>Restaurant</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>c33429304be14730b1423da7f4838e63</TotalGuid>
+              <Value>{data.Restaurant}</Value>
+            </CrossTab1_Row6>
+            <CrossTab1_Column1 Ref="40" type="CrossColumn" isKey="true">
+              <Alias>MealTitle</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>White</Brush>
+              <ClientRectangle>3.72,0.22,0.8,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <DisplayValue>{data.MealTitle}</DisplayValue>
+              <Font>B Nazanin,10,Bold</Font>
+              <Guid>ca30f7bc9487418bb509213c3403b4d7</Guid>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Column1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>MealTitle</Text>
+              <TextBrush>[105:105:105]</TextBrush>
+              <TotalGuid>561d40d79e724a41b38e5f2bedba6e42</TotalGuid>
+              <Value>{data.MealTitle}</Value>
+            </CrossTab1_Column1>
+            <CrossTab1_Sum1 Ref="41" type="CrossSummary" isKey="true">
+              <Alias>Count</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>3.72,0.74,0.5,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,10</Font>
+              <Guid>4107c09641934e7583ff3b0cfd15edd5</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Sum1</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>0</Text>
+              <TextBrush>Black</TextBrush>
+              <Value>{data.Count}</Value>
+            </CrossTab1_Sum1>
+            <CrossTab1_Sum2 Ref="42" type="CrossSummary" isKey="true">
+              <Alias>Sum</Alias>
+              <Border>All;[155:155:155];1;Solid;False;4;Black</Border>
+              <Brush>[255:255:255]</Brush>
+              <ClientRectangle>4.22,0.74,0.3,0.3</ClientRectangle>
+              <Conditions isList="true" count="0" />
+              <Font>B Nazanin,10</Font>
+              <Guid>ba241ae6f6fb49289a616db9176893f1</Guid>
+              <HorAlignment>Center</HorAlignment>
+              <Margins>0,0,0,0</Margins>
+              <Name>CrossTab1_Sum2</Name>
+              <Page isRef="5" />
+              <Parent isRef="16" />
+              <Restrictions>AllowMove, AllowResize, AllowSelect, AllowChange</Restrictions>
+              <Text>0</Text>
+              <TextBrush>Black</TextBrush>
+              <TextFormat Ref="43" type="NumberFormat" isKey="true">
+                <DecimalDigits>0</DecimalDigits>
+                <GroupSeparator>,</GroupSeparator>
+                <NegativePattern>1</NegativePattern>
+                <UseLocalSetting>False</UseLocalSetting>
+              </TextFormat>
+              <Value>{data.Sum}</Value>
+            </CrossTab1_Sum2>
+          </Components>
+          <Conditions isList="true" count="0" />
+          <DataRelationName />
+          <DataSourceName>data</DataSourceName>
+          <DockStyle>Fill</DockStyle>
+          <EmptyValue />
+          <Filters isList="true" count="0" />
+          <HorAlignment>Width</HorAlignment>
+          <Name>CrossTab1</Name>
+          <Page isRef="5" />
+          <Parent isRef="5" />
+          <RightToLeft>True</RightToLeft>
+          <Sort isList="true" count="0" />
+          <SummaryDirection>LeftToRight</SummaryDirection>
+        </CrossTab1>
+      </Components>
+      <Conditions isList="true" count="0" />
+      <Guid>7dcb8158c558498fb846264dc5cff771</Guid>
+      <Margins>0.39,0.39,0.39,0.39</Margins>
+      <Name>Page1</Name>
+      <Orientation>Landscape</Orientation>
+      <PageHeight>8.27</PageHeight>
+      <PageWidth>11.69</PageWidth>
+      <PaperSize>A4</PaperSize>
+      <Report isRef="0" />
+      <RightToLeft>True</RightToLeft>
+    </Page1>
+  </Pages>
+  <ReferencedAssemblies isList="true" count="8">
+    <value>System.Dll</value>
+    <value>System.Drawing.Dll</value>
+    <value>System.Windows.Forms.Dll</value>
+    <value>System.Data.Dll</value>
+    <value>System.Xml.Dll</value>
+    <value>Stimulsoft.Controls.Dll</value>
+    <value>Stimulsoft.Base.Dll</value>
+    <value>Stimulsoft.Report.Dll</value>
+  </ReferencedAssemblies>
+  <ReportAlias>Report</ReportAlias>
+  <ReportChanged>5/31/2020 3:49:36 AM</ReportChanged>
+  <ReportCreated>2/24/2020 10:07:56 AM</ReportCreated>
+  <ReportFile>C:\Users\Yasin\Desktop\Projects\Omidiyeh Oil Company - 0147\Omidiyeh Oil Company - 0147\Content\reports\Report7.mrt</ReportFile>
+  <ReportGuid>7c3e4ee62d8b42a183b22108f7031313</ReportGuid>
+  <ReportName>Report</ReportName>
+  <ReportUnit>Inches</ReportUnit>
+  <ReportVersion>2020.2.1.0</ReportVersion>
+  <Script>using System;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Data;
+using Stimulsoft.Controls;
+using Stimulsoft.Base.Drawing;
+using Stimulsoft.Report;
+using Stimulsoft.Report.Dialogs;
+using Stimulsoft.Report.Components;
+
+namespace Reports
+{
+    public class Report : Stimulsoft.Report.StiReport
+    {
+        public Report()        {
+            this.InitializeComponent();
+        }
+
+        #region StiReport Designer generated code - do not modify
+		#endregion StiReport Designer generated code - do not modify
+    }
+}
+</Script>
+  <ScriptLanguage>CSharp</ScriptLanguage>
+  <Styles isList="true" count="0" />
+</StiSerializer>

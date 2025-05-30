@@ -1,0 +1,42 @@
+﻿@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.Tools;
+@{
+    string MasterDataKey = (string)ViewData["MasterDataKey"];
+    long MasterProcessID = long.Parse(ViewData["MasterProcessID"].ToString());
+    long TableID = Desktop.DataTable[MasterDataKey].CoreObjectID;
+    string ButtonName = MasterDataKey + "_" + (string)ViewData["ParentID"];
+    CoreObject DataKeyObject = CoreObject.Find(long.Parse(MasterDataKey));
+}
+
+@if (DataKeyObject.ParentID == 0)
+{
+    <span class="SelectedElement">@APM.Models.Tools.Tools.UnSafeTitle(DataKeyObject.FullName)</span>
+}
+
+@(Html.Kendo().ToolBar()
+.Name("OrgToolbar"+ @MasterDataKey)
+.HtmlAttributes(new { @class = "GridToolbar" })
+.Items(items =>
+{
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().HtmlAttributes(new { title = "بروزرسانی"}).Id("Refresh_" + ButtonName).Text(@"<span class=""k-icon k-i-reload""></span><span class=""RefreshButtonLabel""></span>").Click("ORGChartDataBinding");
+        buttons.Add().HtmlAttributes(new { title = "نمایش جدولی" }).Id("Grid_" + ButtonName).Text(@"<span class=""k-icon k-i-grid""></span><span class=""RefreshButtonLabel""></span>").Click("GridShowOfChart");
+    });
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().HtmlAttributes(new { title = "خروجی PDF"}).Id("ExportPDF_" + ButtonName).Text(@"<span class=""k-icon k-i-file-pdf""></span>").Click("ExportPDFOrgChart");
+    });
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().Text(@"<input id='OrgChartRenge_" + ButtonName + "' min='1' max='100' value='100' step='1' onchange='OrgChartRengeChange(this)' type='range'/>");
+    });
+
+})
+)

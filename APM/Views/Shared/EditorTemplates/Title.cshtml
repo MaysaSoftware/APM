@@ -1,0 +1,25 @@
+﻿@using APM.Models.Tools;
+@using APM.Models.Database;
+@using APM.Models;
+
+@{ 
+    string FieldComment = ViewData["FieldComment"] == null ? "" : (string)@ViewData["FieldComment"]; 
+    string RelatedLink = ViewData["RelatedLink"] == null ? "" : (string)@ViewData["RelatedLink"]; 
+}
+
+<div class="FormItemTitle">
+    @ViewData["FieldTitle"]
+    @if ((bool)ViewData["IsRequired"])
+    {
+        <span class="RequiredStar">*</span>
+    }
+    @if(!string.IsNullOrEmpty(RelatedLink))
+    { 
+        <a class="k-icon k-i-link-horizontal RelatedLink" target="_blank" href=@RelatedLink> </a>
+    }
+</div>
+
+<div class="CommentTitle"> 
+    @FieldComment
+</div>
+ 

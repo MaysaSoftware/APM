@@ -1,0 +1,37 @@
+﻿
+@model object
+
+@{
+    string FieldName = (string)ViewData["FieldName"];
+    string DivName = "DivNationalCode_" + FieldName;
+    string Value = ViewData["FieldValue"] == null || ViewData["FieldValue"].ToString() == "null" ? "" : (ViewData["FieldValue"].ToString());
+    string FieldClass = ViewData["FieldClass"] == null || ViewData["FieldClass"].ToString() == "null" ? "" : (ViewData["FieldClass"].ToString());
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("style", "color:" + TextColor);
+    Attrs.Add("class", "LeftWrite NationalCode "+ FieldClass);
+    Attrs.Add("maxlength", "10"); 
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+}
+
+@(Html.Kendo().TextBoxFor(model => model)
+    .Name(@FieldName)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .HtmlAttributes(Attrs)
+    .Value(Value)
+     
+    .Events(events =>
+    {
+        if (ActiveOnKeyDown)
+            events.Change("OnKeyDownElement");
+    })
+)
+
+<div class="DivNationalCode" style="font-size: 12px; margin-top: 2px; color: #00bd04; " id=@DivName> </div>

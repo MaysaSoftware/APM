@@ -1,0 +1,392 @@
+﻿@using APM.Models;
+
+@(Html.Kendo().Notification()
+    .Name("popupNotification")
+    .Width(400)
+    .AutoHideAfter(100000)
+    .HideOnClick(true)
+    //.AllowHideAfter(1000000)
+    .HideOnClick(true)
+    .Button(true)
+    .Animation(config => config
+        .Open(Effect => Effect.Duration(10000).SlideIn(SlideDirection.Down))
+        .Close(Effect => Effect.Duration(10000).SlideIn(SlideDirection.Down).Reverse(true))
+    )
+    .Events(events => events.Show("ShowNotificationTopCenter"))
+    .Stacking(NotificationStackingSettings.Down)
+)
+
+
+
+@(Html.Kendo().Dialog()
+    .Name("UploadFileForOCRDialog")
+    .Title("بارگذاری")
+    .Content(Html.Kendo().Upload()
+                         .Name("UploadFileForOCR")
+                         .Multiple(true) 
+                         .Async(a => a.Save("UploadOCRFile", "Attachment", new { FileName = "OCR" }).AutoUpload(true))
+                         .Events(e => e.Upload("loadOCRFile")).ToHtmlString())
+    .Width(400)
+    .Modal(false)
+    .Actions(actions =>
+    {
+        actions.Add().Text("انصراف");
+    })
+    .Visible(false)
+)
+
+
+@if (Referral.AdminSetting.ShowUserCalendar)
+{
+    @(Html.Kendo().Window()
+            .Name("UserCalendarWin")
+            .Title("تقویم من")
+            .Content(@<text> @Html.Partial("/Views/Home/UserCalendar.cshtml") </text>)
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Resizable()
+            .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+        )
+
+    @(Html.Kendo().Window()
+        .Name("UserCalendarEditWin")
+        .Content(@<text> @Html.Partial("/Views/Home/UserCalendarEdit.cshtml") </text>)
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Resizable()
+        .Title("ویرایش")
+        .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+    )
+
+
+    @(Html.Kendo().Dialog()
+        .Name("DeleteCalendarDialog")
+        .Content("<p>آیا جهت حذف مطمئن هستید؟</p>")
+        .Width(400)
+        .Modal(false)
+        .Actions(actions =>
+        {
+            actions.Add().Text("بله").Action("DeleteCalendar");
+            actions.Add().Text("خیر").Action("CancelDeleteCalendar").Primary(true);
+        })
+        .Visible(false)
+    )
+
+
+    @(Html.Kendo().Dialog()
+        .Name("UserCalendarDialog")
+        .Title("علت یا نتیجه")
+        .Content(Html.Kendo().TextBox().Name("U-C-D-Title").Label(l=>l.Content("علت یا نتیجه")).ToHtmlString())
+        .Width(400)
+        .Modal(false)
+        .Actions(actions =>
+        {
+            actions.Add().Text("ذخیره").Primary(true).Action("SaveUserCalendarDialog");
+            actions.Add().Text("انصراف").Action("CancelUserCalendarDialog");
+        })
+        .Visible(false)
+    )
+    @Scripts.Render("~/CalendarGridJS")
+}
+
+
+
+@(Html.Kendo().Window()
+    .Name("GridCellColumnPicTempWin")
+    .Content(@<text> @Html.Partial("/Views/Desktop/GridCellColumnPicTemp.cshtml") </text>)
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Title("ویرایش عکس")
+    .Width(400)
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+    .Events(e=>e.Close("CloseGridCellColumnPicTempWin"))
+)
+@(Html.Kendo().Window()
+    .Name("APMCoreSettingWin")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Title("تنظیمات هسته نرم افزار")
+    .Width(400)
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+@(Html.Kendo().Window()
+    .Name("RoleTypePermission")
+    .Title("تنظیم سطح دسترسی")
+    .Content("")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+@(Html.Kendo().Window()
+    .Name("MasterAttachmentForm")
+    .Title("ضمیمه ")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+    .Events(e=>e.Close("CloseAttachmentForm"))
+)
+@(Html.Kendo().Dialog()
+    .Name("UploadPublickKeyDialog")
+    .Title("بارگذاری کلید عمومی")
+    .Content(Html.Kendo().Upload()
+                         .Name("UploadPublickKeyfiles")
+                         .Multiple(false)
+
+                         .Async(a => a.Save("UploadPublickKey", "Attachment", new { FileName = "CRT" }).AutoUpload(true))
+                         .Events(e => e.Upload("loadFilePublickKey")).ToHtmlString())
+    .Width(400)
+    .Modal(false)
+    .Actions(actions =>
+    {
+        actions.Add().Text("صدور").Primary(true).Action("CreatePublickKey");
+        actions.Add().Text("انصراف").Action("CancelCreatePublickKey");
+    })
+    .Visible(false)
+)
+@(Html.Kendo().Dialog()
+    .Name("ProductUpdateFromTaxOrganizationDialog")
+    .Title("بارگذاری فایل csv کالا و خدمت")
+    .Content(Html.Kendo().Upload()
+                         .Name("ProductUpdateFromTaxOrganizationDialogfiles")
+                         .Multiple(false)
+                         .Validation(v=>v.MaxFileSize(600000000))
+                         .Async(a => a.Save("UploadProductUpdateFromTaxOrganization", "Management").AutoUpload(true))
+                         .Events(e => e.Upload("loadFileProductUpdateFromTaxOrganization")).ToHtmlString())
+    .Width(400)
+    .Modal(false)
+    .Actions(actions =>
+    {
+        actions.Add().Text("بروز رسانی").Primary(true).Action("ProductUpdateFromTaxOrganization");
+        actions.Add().Text("انصراف").Action("CancelUploadProductUpdateFromTaxOrganization");
+    })
+    .Visible(false)
+)
+@(Html.Kendo().Window()
+    .Name("ProcessReferralWin")
+    .Content("")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Minimize().Maximize().Close())
+)
+@(Html.Kendo().Window()
+    .Name("ReportViewerWin")
+    .Content("<div id='ReportViewerDiv'></div>")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Minimize().Maximize().Close())
+)
+
+@if (Referral.UserAccount.IsAdmin)
+{
+
+    @(Html.Kendo().Window()
+        .Name("SysSettingWin")
+        .Title("تنظیمات سیستم")
+        .Content("")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Resizable()
+        .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+    )
+
+    @(Html.Kendo().Window()
+        .Name("SysSettingDetail")
+        .Content("")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Resizable()
+        .Actions(actions => actions.Minimize().Maximize().Close())
+    )
+
+    @(Html.Kendo().Dialog()
+        .Name("SysSettingDialog")
+        .Content(Html.Kendo().TextBox().Name("SysSettingTitle").Label(l=>l.Content("عنوان")).ToHtmlString())
+        .Width(400)
+        .Modal(false)
+        .Actions(actions =>
+        {
+            actions.Add().Text("ذخیره").Primary(true).Action("SaveDialog");
+            actions.Add().Text("انصراف");
+        })
+        .Visible(false)
+    )
+
+    @(Html.Kendo().Dialog()
+            .Name("AlarmSysSettingDialog")
+            .Content("<p>آیا جهت حذف مطمئن هستید؟</p>")
+            .Width(400)
+            .Modal(false)
+            .Actions(actions =>
+            {
+                actions.Add().Text("بله").Action("DeleteCore");
+                actions.Add().Text("خیر").Primary(true);
+            })
+            .Visible(false)
+        )
+
+    
+@(Html.Kendo().Window()
+    .Name("UploadTableAttachmentWin")
+    .Content("")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+) 
+
+ 
+
+
+@(Html.Kendo().Dialog()
+    .Name("UploadTableAttachmentDialog")
+    .Title("بارگذاری")
+    .Content(Html.Kendo().Upload()
+                         .Name("UploadTableAttachmentFiles")
+                         .Multiple(true) 
+                         .Async(a => a.Save("UploadTableAttachment", "Attachment", new { FileName = "" }).AutoUpload(true))
+                         .Events(e => e.Upload("loadTableAttachmentFiles")).ToHtmlString())
+    .Width(400)
+    .Modal(false)
+    .Actions(actions =>
+    {
+        actions.Add().Text("انصراف");
+    })
+    .Visible(false)
+)
+
+    @Scripts.Render("~/SysSettingJS")
+    @Styles.Render("~/SysSettingCSS")
+}
+
+@(Html.Kendo().Window()
+    .Name("DetailsGridWin")
+    .Title("جزئیات")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Width(300)
+ )
+@(Html.Kendo().Window()
+    .Name("DataTableWin")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+ )
+@(Html.Kendo().Window()
+    .Name("SearchFormWin")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Events(e=>e.Close("CloseSearchFormWin"))
+ )
+@(Html.Kendo().Window()
+    .Name("GridPrintWin")
+    .Visible(false)
+    .Modal(true)
+    .Content(@<text>
+                <div id="GridPrintDiv">
+
+                </div>
+</text>)
+    .Draggable(true)
+    .Resizable()
+    .Events(e=>e.Close("GridPrintWinClose"))
+ )
+@(Html.Kendo().Window()
+    .Name("ImageEditorWindow")
+    .Visible(false)
+    .Content(@Html.Kendo().ImageEditor()
+        .Name("ImageEditor")
+        .HtmlAttributes(new {style="height:100%;width:94%;"})
+        .SaveAs(s => s.FileName("image_edited.png"))
+        .ImageUrl("#")
+        .Toolbar(toolbar => toolbar.Items(i =>
+        {
+            i.Add().Name("saveRegistry").Type("button").Icon("save").HtmlAttributes(new {title="ذخیره"} ).Click("SaveImageEditor");
+            i.Add().Type("separator");
+            i.Add().Name("resize");
+            i.Add().Name("crop");
+            i.Add().Name("undo");
+            i.Add().Name("redo");
+            i.Add().Name("zoomIn");
+            i.Add().Name("zoomOut");
+            i.Add().Name("zoomDropdown");
+            i.Add().Type("separator");
+        }))
+        .ToHtmlString()
+    )
+    .Draggable(false)
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+@(Html.Kendo().Window()
+    .Name("ImagePreviewWindow")
+    .Visible(false)
+    .Content(@Html.Kendo().ImageEditor()
+        .Name("ImagePreview")
+        .HtmlAttributes(new { style = "height:100%;width:94%;" })
+        .SaveAs(s => s.FileName("image_edited.png"))
+        .ImageUrl("#")
+        .Toolbar(toolbar => toolbar.Items(i =>
+        {
+            i.Add().Name("resize");
+            i.Add().Name("zoomIn");
+            i.Add().Name("zoomOut");
+            i.Add().Type("separator");
+        }))
+        .ToHtmlString()
+    )
+    .Draggable()
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+
+@{
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("style", "width: 100%;border-color: #c9c8c8; border-radius: 3px; height: 85vh;");
+}
+
+@(Html.Kendo().Window()
+    .Name("TextPreviewWindow")
+    .Visible(false)
+    .Content(@Html.Kendo().TextArea()
+            .Name("TextPreview")
+            .Resize(TextAreaResize.Vertical)
+            .Readonly(true)
+            .HtmlAttributes(Attrs)
+        .ToHtmlString()
+    )
+    .Draggable()
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+) 
+
+@(Html.Kendo().Window()
+    .Name("NewEditorForm")
+    .Modal(true)
+    .Visible(false) 
+    .Animation(true) 
+    .Draggable()
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+) 

@@ -1,0 +1,61 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.32014.148
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APM", "APM\APM.csproj", "{6144A3F9-F576-43AF-9A6A-9AA8CD37DA3C}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxCollectData.Library", "..\TaxSDK\tax-collect-data-sdk-dotnet-release-0.0\tax-collect-data-sdk-dotnet-release-0.0\TaxCollectData.Library\TaxCollectData.Library.csproj", "{FE1E3D6B-3942-4706-8500-DD0767280FD6}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxCollectData.Sample", "..\TaxSDK\tax-collect-data-sdk-dotnet-release-0.0\tax-collect-data-sdk-dotnet-release-0.0\TaxCollectData.Sample\TaxCollectData.Sample.csproj", "{930CEC51-E3B6-4335-A9C4-344DD2914F5B}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxCollectData.Test", "..\TaxSDK\tax-collect-data-sdk-dotnet-release-0.0\tax-collect-data-sdk-dotnet-release-0.0\TaxCollectData.Test\TaxCollectData.Test.csproj", "{307D7E11-816B-45D4-8CF2-A0F556A76A4E}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TaxApi", "TaxApi\TaxApi.csproj", "{B027BB67-BB91-4894-8B47-11BF5E30B2C7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APMScanner", "..\APMScanner\APMScanner.csproj", "{10A4AF7D-B37C-4244-A4E8-4DE7495E51EE}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "APMCore", "APMCore\APMCore.csproj", "{A9A25177-D5D4-46CE-8846-E360E7DCB190}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6144A3F9-F576-43AF-9A6A-9AA8CD37DA3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6144A3F9-F576-43AF-9A6A-9AA8CD37DA3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6144A3F9-F576-43AF-9A6A-9AA8CD37DA3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6144A3F9-F576-43AF-9A6A-9AA8CD37DA3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FE1E3D6B-3942-4706-8500-DD0767280FD6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FE1E3D6B-3942-4706-8500-DD0767280FD6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FE1E3D6B-3942-4706-8500-DD0767280FD6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FE1E3D6B-3942-4706-8500-DD0767280FD6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{930CEC51-E3B6-4335-A9C4-344DD2914F5B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{930CEC51-E3B6-4335-A9C4-344DD2914F5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{930CEC51-E3B6-4335-A9C4-344DD2914F5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{930CEC51-E3B6-4335-A9C4-344DD2914F5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{307D7E11-816B-45D4-8CF2-A0F556A76A4E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{307D7E11-816B-45D4-8CF2-A0F556A76A4E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{307D7E11-816B-45D4-8CF2-A0F556A76A4E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{307D7E11-816B-45D4-8CF2-A0F556A76A4E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B027BB67-BB91-4894-8B47-11BF5E30B2C7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B027BB67-BB91-4894-8B47-11BF5E30B2C7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B027BB67-BB91-4894-8B47-11BF5E30B2C7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B027BB67-BB91-4894-8B47-11BF5E30B2C7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{10A4AF7D-B37C-4244-A4E8-4DE7495E51EE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{10A4AF7D-B37C-4244-A4E8-4DE7495E51EE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{10A4AF7D-B37C-4244-A4E8-4DE7495E51EE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{10A4AF7D-B37C-4244-A4E8-4DE7495E51EE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9A25177-D5D4-46CE-8846-E360E7DCB190}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9A25177-D5D4-46CE-8846-E360E7DCB190}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9A25177-D5D4-46CE-8846-E360E7DCB190}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9A25177-D5D4-46CE-8846-E360E7DCB190}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {05A80302-67A0-4913-B01D-CE49675ED4E9}
+	EndGlobalSection
+EndGlobal

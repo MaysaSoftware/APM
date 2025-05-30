@@ -1,0 +1,19 @@
+﻿@using APM.Models;
+@using APM.Models.Database;
+
+@{
+    string LogoPhoto = Field.FormatImage(Referral.PublicSetting.AppLogo);
+}
+
+<div class="Lodar">
+    <div class='lds-spinner'><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+    @*<img class="lds-spinner" src=@LogoPhoto />*@
+    <p class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <h3 class="animate-charcter"> در حال پردازش عملیات ...</h3>
+                <div><span id='LoderTimerCounter' class='TimerCounter'></span></div>
+            </div>
+        </div>
+    </p>
+</div>

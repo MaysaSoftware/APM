@@ -1,0 +1,18 @@
+﻿@using APM.Models;
+
+@{
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+    ViewBag.Title = Referral.PublicSetting.AppPersianName;
+    string MasterDataKey = (string)ViewData["MasterDataKey"];
+    long MasterProcessID = (long)ViewData["MasterProcessID"];
+    long ProcessStepID = ViewData["ProcessStepID"] == null ? 0 : long.Parse(ViewData["ProcessStepID"].ToString());
+    bool IsDetailGrid = (bool)ViewData["IsDetailGrid"];
+    string ParentID = string.IsNullOrEmpty(Request["ParentID"]) ? "0" : Request["ParentID"];
+    string RecordID = string.IsNullOrEmpty((string)ViewData["RecordID"]) ? "0" : (string)ViewData["RecordID"];
+} 
+
+@Html.Partial("/Views/Shared/PublicLinkScript.cshtml")  
+ 
+ @Html.Partial("/Views/Shared/InputForm/TGrid.cshtml", new ViewDataDictionary { { "DataKey", MasterDataKey }, { "ProcessID", MasterProcessID }, { "ParentID", ParentID }, { "RecordID", RecordID }, { "ProcessStepID", ProcessStepID }, { "IsDetailGrid", IsDetailGrid } })
+ 
+

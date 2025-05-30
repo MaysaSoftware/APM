@@ -1,0 +1,86 @@
+﻿@using APM.Models;
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    string FieldName = (string)ViewData["FieldName"];
+    string[] Value = ViewData["FieldValue"] == null ? new string[] { } : ViewData["FieldValue"].ToString().Split(',');
+    bool DataKey_ShowWithOutPermissionConfig = Desktop.DataKey_ShowWithOutPermissionConfig[DataKey];
+    string InputHiddenValue = "DropDownList" + (string)ViewData["FieldName"];
+    string ShowHideElement = "ShowHideElement_" + (string)ViewData["FieldName"];
+    string FieldValue = ViewData["FieldValue"] == null ? "0" : (ViewData["FieldValue"].ToString());
+    string ShowHideElementValue = ViewData["ShowHideElement"] == null ? "" : (ViewData["ShowHideElement"].ToString());
+    bool IsLeftWrite = ViewData["IsLeftWrite"] == null ? false : (bool)ViewData["IsLeftWrite"];
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    string FieldClass = ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString();
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    string RelatedField = ViewData["RelatedField"] == null ? "" : ViewData["RelatedField"].ToString();
+    string RelatedFieldID = "RelatedField" + FieldName;
+    string ActionData = "function() {return {_FieldName: '" + FieldName.Replace("Filtered_", "") + "', _DataKey: '" + ((string)ViewData["DataKey"]) + "'} }";
+
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("style", "color:" + TextColor);
+    Attrs.Add("data-Item", DataKey + "_" + (ViewData["ParentID"] == null ? "" : ViewData["ParentID"].ToString()));
+    Attrs.Add("class", "MultiSelect IElement IForeignKey w-100 " + FieldClass + " " + (IsLeftWrite ? " LTRColumn" : "") + " " + (ShowHideElementValue != "" ? "ActiveLoadElement" : "") + " " + (ActiveOnKeyDown ? "ActiveOnKeyDown" : "") + " " + (RelatedField != "" ? "ActiveRelatedField" : ""));
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+}
+
+<div hidden>
+    <input type="hidden" id=@InputHiddenValue value=@ViewData["RelatedTable"] />
+    <input type="hidden" id=@RelatedFieldID value=@RelatedField />
+</div>
+
+@if ((string)ViewData["_TableID"] != "0")
+{
+    string TableIDValue = "TableID" + (string)ViewData["FieldName"];
+    ActionData = "function() {return {_FieldName: '" + FieldName.Replace("Filtered_", "") + "', _TableID: '" + ((string)ViewData["_TableID"]) + "'} }";
+    <div hidden>
+        <input type="hidden" id=@TableIDValue value=@ViewData["_TableID"] />
+    </div>      
+    
+    @(Html.Kendo().MultiSelect()
+        .Name(FieldName)
+        .DownArrow(true)
+        .HtmlAttributes(Attrs)
+        .NoDataTemplateId("noDataTemplate")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter(FilterType.Contains)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .Value(Value)
+        .DataSource(source =>
+        {
+            source.Read(read =>
+            {
+                read.Action("ReadExternalIDValuesForTable", "Desktop").Data(ActionData);
+            });
+        })
+    )
+}
+else
+{ 
+    @(Html.Kendo().MultiSelect()
+        .Name(FieldName)
+        .DownArrow(true)
+        .HtmlAttributes(Attrs)
+        .NoDataTemplateId("noDataTemplate")
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .Filter(FilterType.Contains)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .Value(Value)
+        .DataSource(source =>
+        {
+            source.Read(read =>
+            {
+                read.Action("ReadExternalIDValues", "Desktop").Data(ActionData);
+            });
+        })
+    )
+}

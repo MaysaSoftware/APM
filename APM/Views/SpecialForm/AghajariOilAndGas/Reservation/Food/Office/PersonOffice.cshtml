@@ -1,0 +1,273 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using APM.Models.Database;
+@using System.Data;
+
+@{  
+    long RecordID = ViewData["RecordID"] == null ? 0 : (long)ViewData["RecordID"];
+
+    string FromDate = (string)ViewData["FromDate"];
+    string ToDate = (string)ViewData["ToDate"];
+    long Restaurant = long.Parse(ViewData["Restaurant"].ToString());
+    bool IsReserveBed = (bool)ViewData["IsReserveBed"];
+    string[] SelectedMeal = (string[])ViewData["SelectedMeal"];
+    string[] SelectedMealTitle = (string[])ViewData["SelectedMealTitle"];
+    string[] SelectedDey = (string[])ViewData["SelectedDey"];
+    string[] MealDefualtFoodArr = new string[0];
+    string[] MealDefualtFoodIDArr = new string[0]; 
+    bool IsFinish = false;
+
+    if (SelectedMeal[0]!="" )
+    {
+        string MealDefualtFoodQuery = "Declare @از_تاریخ as Nvarchar(255) = N'" + FromDate + "' \n";
+        MealDefualtFoodQuery += "Declare @تا_تاریخ as Nvarchar(255) = N'" + ToDate + "' \n";
+        MealDefualtFoodQuery += "declare @مکان  as bigint = " + Restaurant + " \n";
+        MealDefualtFoodQuery += "SELECT [برنامه_غذایی_مکان].تاریخ,برنامه_غذایی_مکان.وعده_غذایی,  غذا.[شناسه] " +
+                    "  FROM غذا inner join[برنامه_غذایی_مکان] on غذا.شناسه = برنامه_غذایی_مکان.غذا inner join[کاربر_وعده_غذایی] on[برنامه_غذایی_مکان].وعده_غذایی = [کاربر_وعده_غذایی].وعده_غذایی" +
+                    "  WHERE[کاربر_وعده_غذایی].کاربر = @شناسه_کاربر" +
+                    "  and( [برنامه_غذایی_مکان].تاریخ >= @از_تاریخ   and[برنامه_غذایی_مکان].تاریخ <= @تا_تاریخ )" +
+                    "  and برنامه_غذایی_مکان.وعده_غذایی in(" + string.Join(",", SelectedMeal) + ")" +
+                    "  and[برنامه_غذایی_مکان].مکان = @مکان" +
+                    "  and[برنامه_غذایی_مکان].وضعیت_پیشفرض = 1" +
+                    "  order by[برنامه_غذایی_مکان].تاریخ";
+
+        DataTable DefualtFoodData = Referral.DBData.SelectDataTable(Tools.CheckQuery(MealDefualtFoodQuery));
+        while (!IsFinish)
+        {
+            string NumberDayOfWeek = CDateTime.GetNumberDayOfWeek(FromDate).ToString();
+            if (Array.IndexOf(SelectedDey, NumberDayOfWeek) > -1)
+            {
+                for (int MealIndex = 0; MealIndex < SelectedMeal.Length; MealIndex++)
+                {
+                    if (DefualtFoodData.Select("تاریخ = '" + FromDate + "' AND  وعده_غذایی = " + SelectedMeal[MealIndex]).Length > 0)
+                    {
+                        Array.Resize(ref MealDefualtFoodArr, MealDefualtFoodArr.Length + 1);
+                        Array.Resize(ref MealDefualtFoodIDArr, MealDefualtFoodIDArr.Length + 1);
+                        MealDefualtFoodIDArr[MealDefualtFoodIDArr.Length - 1] = FromDate.Replace("/", "") + "MealDefualtFood_" + SelectedMeal[MealIndex];
+
+                        if (Session["MealDefualtFood" + FromDate.Replace("/", "") + Restaurant.ToString() + SelectedMeal[MealIndex]] == null)
+                        {
+                            MealDefualtFoodArr[MealDefualtFoodArr.Length - 1] = DefualtFoodData.Select("تاریخ = '" + FromDate + "' AND  وعده_غذایی = " + SelectedMeal[MealIndex])[0][2].ToString();
+                            Session["MealDefualtFood" + FromDate.Replace("/", "") + Restaurant.ToString() + SelectedMeal[MealIndex]] = MealDefualtFoodArr[MealDefualtFoodArr.Length - 1];
+                        }
+                        else
+                        {
+                            MealDefualtFoodArr[MealDefualtFoodArr.Length - 1] = Session["MealDefualtFood" + FromDate.Replace("/", "") + Restaurant.ToString() + SelectedMeal[MealIndex]].ToString();
+                        }
+                    }
+
+                }
+
+            }
+            if (FromDate == ToDate)
+            {
+                IsFinish = true;
+            }
+            else
+            {
+                FromDate = CDateTime.AddDay(FromDate, 1);
+            }
+        }
+    }
+
+    FromDate = (string)ViewData["FromDate"];
+}
+
+@for (int MealIndex = 0; MealIndex < MealDefualtFoodIDArr.Length; MealIndex++)
+{
+    <input type="text" hidden id=@(MealDefualtFoodIDArr[MealIndex]) value=@MealDefualtFoodArr[MealIndex] />
+} 
+
+<div class="row " style="width: 100%; padding-right: 20px; margin-bottom: 10px;">
+    <div style="min-height:0px;">
+        <label class="m-active">پرسنل</label>
+        @(Html.Kendo().TextBox()
+            .Name("PersonOfficeDepartmentAccountNumber")
+            .Placeholder("جستجو نام،کد ملی، شماره پرسنلی ...")
+            .HtmlAttributes(new { style = "width:200px" })
+            .Events(events =>
+            {
+                events.Change("PersonOfficeOnKeyDown");
+            })
+            )
+    </div>
+    <div class="col-md-3">
+        <button class="waves-effect  btn btn-link  mr-auto text-primary p-0"
+                style="vertical-align:text-top" type="button" onclick="OpenPersonOfGrid()">
+            <i class="fas fa-plus-square ml-2 fa-2x "></i>
+            <span class="align-top lh24 border-bottom"> افزودن از لیست</span>
+        </button>
+     </div>
+</div>
+@(Html.Kendo().Window()
+.Name("SearchPersonWin")
+.Title("جستجوی پرسنل")
+.Content(@<text> @Html.Partial("/Views/SpecialForm/AghajariOilAndGas/Reservation/Food/Office/PersonOfGrid.cshtml") </text>)
+.Visible(false)
+.Modal(true)
+.Draggable(true)
+.Resizable()
+.Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+@(Html.Kendo().TabStrip()
+.Name("OfficePersonTab")
+.Items(tabstrip =>
+{
+    IsFinish = false;
+    while(!IsFinish)
+    {
+        string  NumberDayOfWeek = CDateTime.GetNumberDayOfWeek(FromDate).ToString();
+        if(Array.IndexOf(SelectedDey,NumberDayOfWeek) > -1 )
+        {
+            switch (NumberDayOfWeek)
+            {
+                case "1": { NumberDayOfWeek = "شنبه";break; }
+                case "2": { NumberDayOfWeek = "یک";break; }
+                case "3": { NumberDayOfWeek = "دو";break; }
+                case "4": { NumberDayOfWeek = "سه";break; }
+                case "5": { NumberDayOfWeek = "چهار";break; }
+                case "6": { NumberDayOfWeek = "پنج";break; }
+                case "7": { NumberDayOfWeek = "جمعه";break; }
+            }
+            string SearchInputID="PersonOfficeDepartmentAccountNumber"+ FromDate.Replace("/", "");
+
+            string GridName="OfficePersonGrid" + FromDate.Replace("/", "");
+            
+            string Query = "Declare @از_تاریخ as Nvarchar(255) = N'" + FromDate + "' \n";
+            Query += "Declare @تا_تاریخ as Nvarchar(255) = N'" + FromDate + "' \n"; 
+            string Date= FromDate;
+
+            tabstrip.Add().Text(NumberDayOfWeek+"-"+FromDate+" <span style='color: red;margin-right: 4px;' class='k-icon k-font-icon k-i-close'></span>")
+            .Encoded(false)
+            .HtmlAttributes(new {@class= "OfficePersonTab", @id ="Tab"+FromDate.Replace("/","") })
+            .Content(@<text> 
+                    <div class="row "  style="width: 100%; padding-right: 20px;margin-bottom: 10px;">
+                        <div style="min-height:0px;">
+                            <label class="m-active">پرسنل</label>
+                                @(Html.Kendo().TextBox()
+                                .Name(SearchInputID)
+                                .Placeholder("جستجو نام،کد ملی، شماره پرسنلی ...")
+                                .HtmlAttributes(new { style = "width:200px" })
+                                .Events(events =>
+                                {
+                                    events.Change("PersonOfficeOnKeyDown");
+                                })
+                                )
+                        </div>
+                        @*<div class="col-md-3">
+                            <button class="waves-effect  btn btn-link  mr-auto text-primary p-0"
+                                    style="vertical-align:text-top" type="button" onclick="AddPersonToGrid()">
+                                <i class="fas fa-plus-square ml-2 fa-2x "></i>
+                                <span class="align-top lh24 border-bottom"> افزودن به لیست</span>
+                            </button>
+                        </div>*@
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 ">
+                            @{ string ActionData = "function() {return {RecordID:" + RecordID + ",Date:'"+ Date + "',SelectedMeal:'"+string.Join(",",SelectedMeal) + "',Restaurant:" + Restaurant + "} }"; }
+                            @(Html.Kendo().Grid<dynamic>()
+                            .Name(GridName)
+                            .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+                            .Columns(columns =>
+                            {
+                                columns.Bound(typeof(long), "شناسه_درخواست_غذا").Title("شناسه_درخواست_غذا").Width(70).EditorTemplateName("InlineString").Visible(false);
+                                columns.Bound(typeof(long), "شناسه").Title("شناسه").Width(70).EditorTemplateName("InlineString").Visible(false);
+                                columns.Bound(typeof(int), "ردیف").Title("ردیف").Width(70).EditorTemplateName("InlineString");
+                                columns.Bound(typeof(int), "تاریخ").Title("تاریخ").Width(70).EditorTemplateName("InlineString");
+                                columns.Bound(typeof(string), "نام_پرسنل").Title("نام پرسنل").Width(150).EditorTemplateName("InlineString");
+                                columns.Bound(typeof(string), "شماره_پرسنلی").Title("شماره پرسنلی").Width(100).EditorTemplateName("InlineString");
+                                columns.Bound(typeof(string), "شماره_ملی").Title("شماره ملی").Width(100).EditorTemplateName("InlineString");
+
+                                for (int MealIndex = 0; MealIndex < SelectedMeal.Length; MealIndex++)
+                                {
+                                    if (SelectedMeal[MealIndex] != "")
+                                    {
+                                        string Query2= "declare @وعده_غذایی  as bigint = " + SelectedMeal[MealIndex] + " \n";
+                                        Query2 += "declare @مکان  as bigint = " + Restaurant + " \n";
+                                        Query2 += "declare @غذا  as bigint =0 \n";
+                                        columns.ForeignKey("GridMealReservationFood_" + SelectedMeal[MealIndex], DataConvertor.FillSelectListWithQuery("غذای_کاربر", Query+Query2)).Title(SelectedMealTitle[MealIndex]).Width(100).EditorTemplateName("InlineGridForeignKey").EditorViewData(new { IsForeignKey = true, _SpecialWordFullName = "غذای_کاربر", DeclareQuery = Query + Query2 });
+                                    }
+                                }
+                                if(IsReserveBed)
+                                    columns.Bound(typeof(bool), "تخت").Title("تخت").Width(50).EditorTemplateName("InlineCheckBox");
+
+                                columns.Command(command => command.Destroy().Text("حذف")).Width(80);
+                            })
+                            .HtmlAttributes(new { style = "height: 500px; width:100%" })
+                            .Scrollable()
+                            .Navigatable()
+                            .Pageable(pageable => pageable.AlwaysVisible(false).PageSizes(true).Enabled(false).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+                            .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+                            .PersistSelection()
+                            .Sortable(s => s.Enabled(false))
+                            .LoaderType(GridLoaderType.Skeleton)
+                            .AllowCopy(false)
+                            .DataSource(dataSource =>dataSource
+                                    .Ajax()
+                                    .Model(model =>
+                                    {
+                                        model.Id("شناسه");
+                                        model.Field("شناسه_درخواست_غذا", typeof(long)).Editable(false);
+                                        model.Field("ردیف", typeof(int)).Editable(false);
+                                        model.Field("تاریخ", typeof(string)).Editable(false);
+                                        model.Field("نام_پرسنل", typeof(string)).Editable(false);
+                                        model.Field("شماره_پرسنلی", typeof(string)).Editable(false);
+                                        model.Field("شماره_ملی", typeof(string)).Editable(false);
+                                        for (int MealIndex = 0; MealIndex < SelectedMeal.Length; MealIndex++)
+                                        {
+                                            if (SelectedMeal[MealIndex] != "")
+                                                model.Field("GridMealReservationFood_" + SelectedMeal[MealIndex], typeof(long)).Editable(true);
+                                        }
+                                        model.Field("تخت", typeof(bool)).Editable(true);
+                                    })
+                                    .Read(read => read.Action("ReadReservationFood", "Food").Data(ActionData))
+                                    .PageSize(1000) 
+                                    )
+                            .Events(e=>e.CellClose("OfficePersonGridChange").Remove("RemoveRowOfficePersonGrid"))
+                        )
+                        </div>
+                    </div>
+                     </text>);
+
+        }
+
+
+        if (FromDate == ToDate)
+            IsFinish = true;
+        else
+            FromDate = CDateTime.AddDay(FromDate, 1);
+    }
+})
+.SelectedIndex(0)
+//.TabPosition(TabStripTabPosition.Right)
+//.HtmlAttributes(new {style= "height: 500px;" })
+)
+
+<div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style=" border-radius: 60px;  bottom: 0px; background-color: #0bb9a7e3; right: 15px;">
+
+    @(Html.Kendo().Button()
+        .Name("CancelButton21354_0_0")
+        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">بستن</span>")
+        .Events(e=>e.Click("CancelFormEditor"))
+    )
+    @(Html.Kendo().Button()
+        .Name("SaveReservationFood")
+        .HtmlAttributes(new {@class= "k-button-solid-primary SaveButton" })
+        .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">ثبت درخواست</span>")
+        .Events(e=>e.Click("SaveOfficeReservationFood"))
+    )
+    @(Html.Kendo().Button()
+        .Name("NewReservationFood")
+        .HtmlAttributes(new { @class = "k-button-solid-cancel NewButton", style = "background-color:#ffee00" })
+        .Content(@"<span class=""fas fa-plus fa-lg""></span><span class=""k-button-text"">جدید</span>")
+        .Events(e=>e.Click("NewOfficeReservationFood"))
+    )
+
+</div>
+
+<script>
+    $("#EditorForm21354").on("click", ".k-link .k-icon", function (e) {
+        OfficeRemoveTab(e);
+    })
+</script>

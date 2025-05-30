@@ -1,0 +1,110 @@
+﻿
+body {
+    width: 210mm;
+    height: 297mm;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: gray;
+}
+
+@page {
+    size: A4 portrait;
+    margin: auto;
+}
+
+@media print {
+    html, body {
+        width: 210mm;
+        height: 297mm;
+    }
+}
+
+.PrintToolbarItem {
+    z-index: 2147483647;
+    position: fixed;
+    left: 20px;
+    color: #444444;
+    font-size: 32px;
+    cursor: pointer;
+}
+
+    .PrintToolbarItem:hover {
+        color: lightgray;
+    }
+
+@media print {
+    .PrintToolbarItem {
+        visibility: hidden;
+    }
+}
+
+.PrintToolbarItemTag {
+    font-size: 14px;
+    position: absolute;
+    left: 7px;
+    top: 12px;
+}
+
+#PrintButton {
+    top: 20px;
+}
+
+
+
+#A4_PortraitButton {
+    top: 60px;
+}
+
+#A4_LandscapeButton {
+    top: 100px;
+}
+
+#A5_PortraitButton {
+    top: 140px;
+}
+
+#A5_LandscapeButton {
+    top: 180px;
+}
+
+
+
+
+.HeaderBound {
+    width: 100%;
+    height: 100px;
+    background-color: white;
+}
+
+.HeaderInfo {
+    width: 20%;
+    height: 100%;
+    float: left;
+    text-align: center;
+    padding-top: 15px;
+    color: gray;
+    font-family: IRANSans;
+    line-height: 30px;
+    font-size: 14px;
+}
+
+.HeaderTitle {
+    width: 60%;
+    height: 100%;
+    float: left;
+    text-align: center;
+    padding-top: 10px;
+    font-family: IRANSans_Black;
+    line-height: 45px;
+}
+
+.HeaderLogo {
+    width: 20%;
+    height: 100%;
+}
+
+.LogoImage {
+    height: 100%;
+    padding-right: 25px;
+    padding-top: 10px;
+}

@@ -1,0 +1,178 @@
+﻿
+@if((int)ViewData["ActionNum"] == 0)
+{ 
+    <div class="row g-5 align-items-center" style="margin-bottom:15px;">
+
+      <div class="col-auto">
+        <label class="m-active">از شناسه</label>
+        @(Html.Kendo().NumericTextBox()
+        .Name("FromCoreObjectID") 
+        .Min(0)
+        .Value(0)
+        .Decimals(0)
+        .Format("n0")
+        .HtmlAttributes(new { style = "width:100%" }) 
+        )
+      </div> 
+      <div class="col-auto">
+            <label class="m-active">تا شناسه</label>
+        @(Html.Kendo().NumericTextBox()
+        .Name("ToCoreObjectID")
+        .Min(0)
+        .Value(0)
+        .Decimals(0)
+        .Format("n0")
+        .HtmlAttributes(new { style = "width:100%" })
+        )
+      </div> 
+
+      <div class="col-auto">
+
+          <label class="m-active">نوع خروجی</label>
+          @(Html.Kendo().Switch()
+                .Name("CoreObjectScriptType")
+                .Checked(true)
+                .HtmlAttributes(new {@style="width:100px"})
+                .Messages(c => c.Checked("درج").Unchecked("ویرایش"))
+            )
+
+      </div> 
+
+      <div class="col-auto">
+          <label class="m-active">وضعیت پاک کردن اسکریپت</label> 
+          @(Html.Kendo().Switch()
+            .Name("CoreObjectClearScript")
+            .Checked(true)
+            .HtmlAttributes(new {@style="width:100px"})
+            .Messages(c => c.Checked("بله").Unchecked("خیر"))
+        )
+
+      </div> 
+
+
+      <div class="col-auto">
+          <br />
+        @(Html.Kendo().Button()
+        .Name("RunAPMCoreScriptButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">اجرای کوئری</span>")
+        .Events(e=>e.Click("CreateAPMCoreScript"))
+        )
+      </div> 
+    </div>
+
+    @(Html.Kendo().TabStrip()
+    .Name("APMCoreSettingTab")
+    .HtmlAttributes(new { style = "height: 100%; width:100%" })
+    .Items(tabstrip =>
+    {
+        tabstrip.Add().Text("داده")
+        .Encoded(false) 
+        .Content(@<text> 
+                @(Html.Kendo().Grid<dynamic>()
+                .Name("APMCoreSettingGrid")
+                .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+                .Columns(columns =>
+                {
+                    columns.Bound(typeof(long), "CoreObjectID").Title("شناسه").Width(70).EditorTemplateName("InlineString");
+                    columns.Bound(typeof(long), "ParentID").Title("شناسه والد").Width(70).EditorTemplateName("InlineString");
+                    columns.Bound(typeof(string), "Entity").Title("شی").Width(70).EditorTemplateName("InlineString");
+                    columns.Bound(typeof(string), "FullName").Title("نام").Width(150).EditorTemplateName("InlineString");
+                    columns.Bound(typeof(string), "Folder").Title("پوشه").Width(200).EditorTemplateName("InlineString");
+
+                })
+                .HtmlAttributes(new {@class= "APMCoreSettingInnerTab",style= " height:100%;width: 100%;" })
+                .Scrollable()
+                .Navigatable()
+                .Pageable(pageable => pageable.AlwaysVisible(true).PageSizes(true).Enabled(true).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+                .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+                .PersistSelection()
+                .Sortable(s => s.Enabled(false))
+                .LoaderType(GridLoaderType.Skeleton)
+                .AllowCopy(false)
+                .Filterable(x=>x.Mode(GridFilterMode.Row))
+                .Sortable(x=>x.Enabled(true))
+                //.ToolBar(toolBar => toolBar.Template(
+                //"<div class='FormSearchInput'>" +
+                //"<input class='k-input k-textbox k-input-solid k-input-md k-rounded-md' style='width:230px;background-color:white;left:-27px;' placeholder='جستجو' id='SearchAPMCoreSettingGridInput' onkeydown = 'return PersonGridSearchInputKeyDown(event)' />" +
+                //"<span id='SearchPersonButton' onclick = 'SearchButton(this)' class='k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton' style='left: 1px; top: 1px; height: 30px;'>" +
+                //"<span class='k-icon k-i-search k-button-icon'></span></span></div>"+
+                //Html.Kendo().ToolBar().Name("SearchAPMCoreSettingGridToolBar").HtmlAttributes(new { @class = " GridToolbar" })
+                //.Items(items => {
+                //    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                //            .Buttons(buttons =>
+                //            {
+                //                buttons.Add().HtmlAttributes(new { @class = "SearchButton" }).Text(@"<span class=""k-icon k-i-reload""></span>بروز رسانی").Click("ReloadAPMCoreSettingGrid"); 
+                //            });
+                //}).ToHtmlString()
+                //))
+                .DataSource(dataSource =>dataSource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id("CoreObjectID");
+                            model.Field("CoreObjectID", typeof(long)).Editable(false);
+                            model.Field("ParentID", typeof(long)).Editable(false);
+                            model.Field("Entity", typeof(string)).Editable(false);
+                            model.Field("FullName", typeof(string)).Editable(false);
+                            model.Field("Folder", typeof(string)).Editable(false);
+                        })
+                        .Read(A=>A.Action("ReadAPMCoreSetting", "SysSetting"))
+                        .PageSize(1000)
+                        )
+                )
+                    </text>);
+
+                tabstrip.Add().Text("اسکریپت")
+                .Content(@<text>
+
+                            @(Html.Kendo().Button()
+                            .Name("DownloadAPMCoreQyeryButton")
+                            .HtmlAttributes(new {@class= "k-button-solid-primary",stule= "margin-bottom: 10px;" })
+                            .Content(@"<span class=""fas fa-download fa-lg""></span><span class=""k-button-text"">بارگیری کوئری</span>")
+                            .Events(e=>e.Click("DownloadAPMCoreQyeryButton"))
+                            )
+                             
+                            @(Html.Kendo().TextArea()
+                            .Name("ResultScriptAPMCoreSetting")
+                            .HtmlAttributes(new { @class = "LeftWrite APMCoreSettingInnerTab" })
+                            )
+
+                        </text>);
+         
+             
+    })
+    .SelectedIndex(0) 
+    )
+
+}
+else
+{
+    
+    <div class="row g-5 align-items-center" style="margin-bottom:15px;"> 
+      <div class="col-auto">
+          <br />
+        @(Html.Kendo().Button()
+        .Name("RunAPMCoreQyeryButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">اجرای کوئری</span>")
+        .Events(e=>e.Click("RunAPMCoreQyeryButton"))
+        )
+        @(Html.Kendo().Button()
+        .Name("UploadFileScriptCoreButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""fas fa-upload fa-lg""></span><span class=""k-button-text"">بارگذاری فایل کوئری</span>")
+        .Events(e=>e.Click("UploadFileScriptCoreButton"))
+        )
+        @(Html.Kendo().Button()
+        .Name("ClearScriptCoreButton") 
+        .Content(@"<span class=""fas fa-trash fa-lg""></span><span class=""k-button-text"">پاک کردن</span>")
+        .Events(e=>e.Click("ClearScriptCoreButton"))
+        )
+      </div> 
+    </div>
+    @(Html.Kendo().TextArea()
+    .Name("QueryAPMCoreSetting")
+    .HtmlAttributes(new { @class = "LeftWrite APMCoreSettingInnerTab" })
+    )
+}

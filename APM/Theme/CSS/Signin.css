@@ -1,0 +1,225 @@
+﻿#social-wrapper {
+    display: flex;
+    justify-content: space-around;
+}
+
+#ValidationMessage {
+    color: red;
+    font-size: 13px;
+    font-weight: 600;
+    height: 0px;
+}
+
+.k-icon.k-i-preview {
+    position: absolute;
+    bottom: 4px;
+    left: 5px;
+    width: 24px;
+    height: 24px;
+    color: gray;
+    z-index: 10;
+}
+
+.ImageCenter {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.FormItemInput {
+    max-height: 40px
+}
+
+
+
+#banner {
+    font-weight: 800;
+    font-size: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 32px;
+}
+
+
+#logo {
+    height: 150px;
+    width: 150px;
+    border: 1px solid hsla(0, 0%, 65%, 0.158);
+    box-shadow: 0 0 36px 1px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    backdrop-filter: blur(20px);
+    z-index: 99;
+    padding: 2rem;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+a {
+    color: #8F8F8F;
+}
+
+#continue-with-wrapper {
+    display: inline-flex;
+    margin-bottom: 13px;
+}
+
+.fa {
+    font-size: 16px;
+}
+
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #000;
+}
+
+section {
+    position: absolute;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+    flex-wrap: wrap;
+    overflow: hidden;
+    background-repeat: no-repeat;
+    background-size: 100% 100%;
+}
+
+    section::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        /*animation: animate 5s linear infinite;*/
+    }
+
+@keyframes animate {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(100%);
+    }
+}
+
+section span {
+    position: relative;
+    display: block;
+    width: calc(6.25vw - 2px);
+    height: calc(6.25vw - 2px);
+    /*background: #181818;*/
+    z-index: 2;
+    transition: 1.5s;
+    /*border: 1px solid hsla(0, 0%, 65%, 0.158);*/
+    /*box-shadow: 0 0 36px 1px rgba(0, 0, 0, 0.2);*/
+    /*border-radius: 10px;*/
+    backdrop-filter: blur(2px);
+    z-index: 99;
+    padding: 2rem;
+    -webkit-border-radius: 10px;
+    -moz-border-radius: 10px;
+    -ms-border-radius: 10px;
+    -o-border-radius: 10px;
+}
+
+
+section .signin {
+    position: absolute;
+    width: 450px;
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 15px 35px rgba(0,0,0,9);
+}
+
+    section .signin .content {
+        position: relative;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+        gap: 40px;
+    }
+
+
+
+        section .signin .content .form {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+            section .signin .content .form .inputBox {
+                position: relative;
+                width: 100%;
+            }
+
+                section .signin .content .form .inputBox button {
+                    position: relative;
+                    width: 100%;
+                    border: 1px solid #e5e5e5;
+                    border-radius: 25px;
+                    font-weight: 500;
+                    direction: ltr;
+                }
+
+
+
+
+
+.signin .content .form .links {
+    position: relative;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+}
+
+    .signin .content .form .links a {
+        text-decoration: none;
+    }
+
+        .signin .content .form .links a:nth-child(1) {
+            font-weight: 600;
+        }
+
+.signin .content .form .inputBox button {
+    padding: 10px;
+    font-weight: 600;
+    font-size: 1.35em;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+}
+
+button:active {
+    opacity: 0.6;
+}
+
+@media (max-width: 900px) {
+    section span {
+        width: calc(10vw - 2px);
+        height: calc(10vw - 2px);
+    }
+}
+
+@media (max-width: 600px) {
+    section span {
+        width: calc(20vw - 2px);
+        height: calc(20vw - 2px);
+    }
+}
+
+ 

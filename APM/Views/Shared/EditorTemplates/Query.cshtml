@@ -1,0 +1,78 @@
+﻿@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@{
+    string[] Value = ViewData["FieldValue"] == null ? new string[] {"",""} :(string[])ViewData["FieldValue"];
+    string FieldName = (string)ViewData["FieldName"];
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("style", "width:100%; height:340px; border-color: #c9c8c8; border-radius: 3px; ");
+    Attrs.Add("class", "k-textbox");
+
+    Dictionary<string, object> E_Attrs = new Dictionary<string, object>();
+    E_Attrs.Add("style", "width:100%; height:340px; border-color: #c9c8c8; border-radius: 3px; ");
+    E_Attrs.Add("class", "k-textbox LeftWrite");
+}
+
+    <div>
+    @(Html.Kendo().Button()
+        .Name("ConvertToSqlQueryButton_"+ FieldName)
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">ترجمه</span>")
+        .Events(e=>e.Click("ConvertToSqlQuery"))
+    )
+    </div>
+
+<div class="k-input k-textbox k-input-solid k-input-md k-rounded-md QueryObjectTree" >
+    @(Html.Kendo().TreeView()
+        .Name("QueryObjectTree_" + FieldName)
+        .DataSpriteCssClassField("sprite")
+        .Items(items =>items.QueryObjectSettingTreeFiller())
+        .LoadOnDemand(true)
+        .Events(e=>e.Select("OnSelectQueryObjectTree"))
+    )
+</div>
+<span ></span>
+<div class="k-input k-textbox k-input-solid k-input-md k-rounded-md QueryObjectTabstrip" >
+    @(Html.Kendo().TabStrip()
+            .Name("QueryObjectTabstrip_" + FieldName)
+            .Animation(animation =>animation.Open(effect =>effect.Fade(FadeDirection.In)))
+            .Items(tabstrip =>
+            {
+                tabstrip.Add().Text("کوئری فارسی")
+                    .Selected(true)
+                    .Content(
+                            " <span id = 'CopyTextTabPersianQuery_" + FieldName+ "' onclick='CopyText(this)' style='color: green;margin-right: 4px;' class='k-icon k-font-icon k-i-copy'></span>" +
+                            " <span id = 'PastTextTabPersianQuery_" + FieldName+ "' onclick='PastText(this)' style='color: green;margin-right: 4px;' class='k-icon fa fa-paste'></span>" +
+                            @Html.Kendo().TextArea()
+                            .Name("PersianQuery_" + FieldName)
+                            .Resize(TextAreaResize.Vertical)
+                            .Value(Value[0])
+                            .HtmlAttributes(Attrs)
+                            .ToHtmlString());
+
+                tabstrip.Add().Text("کوئری انگلیسی")
+                        .Content(
+                                " <span id = 'CopyTextTabEnglishQuery_" + FieldName + "' onclick='CopyText(this)' style='color: green;margin-right: 4px;' class='k-icon k-font-icon k-i-copy'></span>" +
+                                " <span id = 'PastTextTabEnglishQuery_" + FieldName + "' onclick='PastText(this)' style='color: green;margin-right: 4px;' class='k-icon fa fa-paste'></span>" +
+                                @Html.Kendo().TextArea()
+                                .Name("EnglishQuery_" + FieldName)
+                                .Resize(TextAreaResize.Vertical)
+                                .Value(Value[1])
+                                .Readonly(true)
+                                .HtmlAttributes(E_Attrs)
+                                .ToHtmlString());
+
+                tabstrip.Add().Text("مقادیر اولیه")
+                        .Content(
+                                " <span id = 'CopyTextTabFirstQuery_" + FieldName + "' onclick='CopyText(this)' style='color: green;margin-right: 4px;' class='k-icon k-font-icon k-i-copy'></span>" +
+                                " <span id = 'PastTextTabFirstQuery_" + FieldName + "' onclick='PastText(this)' style='color: green;margin-right: 4px;' class='k-icon fa fa-paste'></span>" +
+                                @Html.Kendo().TextArea()
+                                .Name("FirstQuery_" + FieldName)
+                                .Resize(TextAreaResize.Vertical)
+                                .Value(Tools.CheckQuery(""))
+                                .Readonly(true)
+                                .HtmlAttributes(E_Attrs)
+                                .ToHtmlString());
+            })
+    )
+</div> 

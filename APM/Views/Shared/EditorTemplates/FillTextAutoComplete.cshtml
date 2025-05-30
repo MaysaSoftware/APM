@@ -1,0 +1,46 @@
+﻿@{
+    string DataKey = (string)ViewData["DataKey"];
+    string FieldName = (string)ViewData["FieldName"];
+    string FieldValue = ViewData["FieldValue"] == null ? "" : (ViewData["FieldValue"].ToString());
+    bool IsLeftWrite = (bool)ViewData["IsLeftWrite"];
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    int SearchAutoCompleteCount = ViewData["SearchAutoCompleteCount"] == null ? 4 : (int)ViewData["SearchAutoCompleteCount"];
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("type", "pattern");
+    Attrs.Add("class", "IElement IForeignKey w-100" + (IsLeftWrite ? " LTRColumn" : ""));
+    Attrs.Add("style", "color:" + TextColor);
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+
+    string ActionData = "function() {return {_FieldName: '" + ViewData.TemplateInfo.GetFullHtmlFieldName("") + "', _DataKey: '" + ((string)ViewData["DataKey"]) + "'} }";
+}
+
+
+@(Html.Kendo().AutoComplete()
+    .Name(FieldName)
+    .Value(FieldValue) 
+    .DataTextField("Text")
+    .Filter("contains")
+    .MinLength(SearchAutoCompleteCount)
+    .HtmlAttributes(Attrs)
+    .DataSource(source =>
+    {
+        source.Read(read =>
+        {
+            read.Action("ReadAutoCompleteValues", "Desktop")
+                .Data(ActionData);
+        })
+        .ServerFiltering(false);
+
+    })
+    .Events(events =>
+    {
+        if (ActiveOnKeyDown)
+            events.Change("OnKeyDownElement");
+    })
+)

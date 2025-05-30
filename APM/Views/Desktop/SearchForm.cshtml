@@ -1,0 +1,112 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@Styles.Render("~/DesktopCSS")
+@Styles.Render("~/EditorCSS")
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    string ActionData = "function() {return {_DataKey: '" + DataKey + "', _ParentID:0,_MasterProcessID:0,_ProcessStep:0,RecordID:0,SubDashboardID:'0',Category:'0'} }";
+    int MasterPopupEditor_Width = Referral.MasterPopupEditor_Width;
+    int MasterPopupEditor_Height = Referral.MasterPopupEditor_Height;
+    string GridName = "MainGrid_" + DataKey;
+    string SaveButtonID = "SaveButtonID_" + DataKey;
+    string DivFilterName = "DivFilter_" + DataKey + "_0";
+    string FilterName = "Filter_" + DataKey + "_0";
+    string DataSourceName = "DataSource_" + DataKey + "_0";
+    string SaveFilterButton = "SaveFilterButton_" + DataKey + "_0";
+    string SearchButton = "SearchButton_" + DataKey + "_0";
+    string SearchInput = "SearchInput_" + DataKey + "_0";
+}
+
+@(Html.Kendo().DataSource<dynamic>()
+            .Name(DataSourceName)
+            .Ajax(t => t
+                    .Model(model => model.Setting(@DataKey))
+                    .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                 )
+     )
+
+<div class="GridFilter" id=@DivFilterName>
+    @(Html.Kendo().Filter<dynamic>()
+            .Name(FilterName)
+            .ApplyButton(false)
+            .ExpressionPreview()
+            .MainLogic(Kendo.Mvc.FilterCompositionLogicalOperator.And)
+            //.Fields(columns => columns.Setting(@DataKey))
+            .DataSource(DataSourceName)
+            .Events(e=>e.Change("FilterChange"))
+    )
+    <div>
+        @(Html.Kendo().Button()
+            .Name(SaveFilterButton)
+            .HtmlAttributes(new {@class= "k-button-solid-primary" })
+            .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">جستجو</span>")
+            .Events(e=>e.Click("SaveGridFilterButton"))
+        )
+    </div>
+</div>
+
+
+@(Html.Kendo().Grid<dynamic>()
+.Name(GridName)
+.Editable(e => e.Mode(GridEditMode.PopUp))
+.Columns(columns =>columns.Setting(@DataKey,false,-1,-1,true))
+.HtmlAttributes(new {@class="SearchGrid", style = "height: 100%; width:100%" })
+.Scrollable()
+.Resizable(r => r.Columns(true))
+.Navigatable()
+.Pageable(pageable => pageable
+    .PageSizes(true).Messages(m=>m.ItemsPerPage("تعداد رکورد هر صفحه"))
+) 
+.PersistSelection()
+.Sortable()
+.LoaderType(GridLoaderType.Skeleton)
+.Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode( GridSelectionMode.Multiple))
+.Groupable(g=>g.Enabled(false))
+.AllowCopy(false)
+.Filterable(x => x.Mode(GridFilterMode.Row))
+.ToolBar(toolBar => toolBar.Template( 
+"<div class='FormSearchInput'>" +
+"<input class='k-input k-textbox k-input-solid k-input-md k-rounded-md' style='width:230px;background-color:white;left:-27px;' placeholder='جستجو' id='"+@SearchInput+"' onkeydown = 'return SearchInputKeyDown(event)' />" +
+"<span id='"+@SearchButton+"' onclick = 'SearchButton(this)' class='k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton' style='left: 1px; top: 1px; height: 30px;'>" +
+"<span class='k-icon k-i-search k-button-icon'></span></span></div>"+
+    Html.Kendo().ToolBar().Name("SearchGridToolBar").HtmlAttributes(new { @class = " GridToolbar" })
+    .Items(items => {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                          .Buttons(buttons =>
+                          {
+                              buttons.Add().HtmlAttributes(new { title = "تایید", @class = "SearchButton" }).Id(SaveButtonID).Text(@"<span class="" k-icon k-i-track-changes-accept-all""></span><span class="" AcceptButtonLabel""></span>").Click("SaveSelectedRow");
+                              buttons.Add().HtmlAttributes(new { @class = "SearchButton" }).Text(@"<span id=""ResultRunExtanded"">0</span>");
+                          });
+        items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+        .Buttons(buttons =>
+        {
+            buttons.Add().HtmlAttributes(new { title = "تنظیم ستون ها", @class = "AutoFitButton" }).Id("AutoFit" + GridName).Text(@"<span class=""k-icon k-i-columns""></span><span class=""AutoFitButtonLabel""></span>").Click("SearchMainGridAutoFitForce");
+        });
+        items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+        .Buttons(buttons =>{
+            buttons.Add().Icon("search").HtmlAttributes(new { title = "جستجو پیشرفته" }).Id("AdvancedSearch_" +DataKey + "_0").Click("AdvancedSearchButtonClick");
+            //buttons.Add().HtmlAttributes(new { title = "جستجو", @class = "SearchGridButton" }).Text("<div class='SearchInput'><input class='k-input k-textbox k-input-solid k-input-md k-rounded-md' style='width:230px;background-color:white;left:-27px;' placeholder='جستجو' id="+@SearchInput+" onkeydown='return SearchInputKeyDown(event)' /><span id="+@SearchButton+" onclick='SearchButton(this)' class='k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton' style='left: 3px; top: 1px; height: 36px;'><span class='k-icon k-i-search k-button-icon'></span></span></div>");
+        });
+    }).ToHtmlString()
+    ))
+.DataSource(dataSource =>
+                dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .PageSize(1000)
+                .Model(model => model.Setting(@DataKey))
+                .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                .Events(e => e.RequestEnd("MainGridRequestEnd")
+                              .Change("MainGridChange"))
+            )
+
+.Events(events =>
+{
+    events.DataBound("MainGridPreviewSetting");
+    events.Edit("MainGridEdit");
+}
+)
+)

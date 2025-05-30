@@ -1,0 +1,11 @@
+﻿
+@(Html.Kendo().Window()
+    .Name("EditorForm" + (string)ViewData["DataKey"])
+    .Content("")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Minimize().Maximize().Close())
+    .Events(e=>e.Close("CloseEditorForm"))
+)

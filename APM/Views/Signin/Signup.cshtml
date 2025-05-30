@@ -1,0 +1,48 @@
+﻿ 
+
+<form id="SignupForm" class="form" style="display:none">
+
+
+    <i class="TitleColor">نام و نام خانوادگی</i>
+    @(Html.Kendo().TextBox()
+    .Name("Signup_Fullname")
+    .Label(label=>label.Content(""))
+    .HtmlAttributes(new { @class = "FormItemInput", autocomplete = "off",validationMessage= "نام و نام خانوادگی را وارد نمایید",required= true})
+    )
+    <i class="TitleColor">کد ملی</i>
+    @(Html.Kendo().TextBox()
+    .Name("Signup_NationalCode")
+    .HtmlAttributes(new { @class = "FormItemInput", autocomplete = "off",validationMessage= "کد ملی را وارد نمایید", required= true})
+    )
+    <i class="TitleColor">ایمیل</i>
+    @(Html.Kendo().TextBox()
+    .Name("Signup_Email")
+    .HtmlAttributes(new { @class = "FormItemInput", autocomplete = "off",validationMessage= "ایمیل را وارد نمایید", required= true})
+    )
+    <i class="TitleColor">شماره موبایل</i>
+    @(Html.Kendo().TextBox()
+    .Name("Signup_Phone")
+    .HtmlAttributes(new { @class = "FormItemInput", autocomplete = "off",validationMessage= "شماره موبایل را وارد نمایید", required= true})
+    )
+    <i class="TitleColor">کلمه عبور</i>
+    @(Html.Kendo().TextBox()
+    .Name("Signup_Password")
+    .HtmlAttributes(new { @class = "FormItemInput", autocomplete = "off",validationMessage= "کلمه عبور را وارد نمایید", required= true})
+    )
+
+
+<div class="links" style="display:block">
+    @(Html.Kendo().CheckBox().Name("Signup_Agree").Checked(true).Encoded(false).Label("با <a href='#'' id='ManagementLaws'> قوانین </a> موافق هستم"))
+     
+    <a href="#" id="signInPage" style="float:left">ورود به حساب کاربری</a> 
+</div>
+
+
+
+    <div class="inputBox">
+        <button onclick="Loginclick()">ذخیره اطلاعات</button>
+    </div>
+
+</form>
+
+

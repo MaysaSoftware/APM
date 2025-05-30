@@ -1,0 +1,36 @@
+﻿@{
+    string FieldValue = ViewData["FieldValue"] == null ? "0" : ((string)ViewData["FieldValue"].ToString());
+    string FieldName = (string)ViewData["FieldName"]; 
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("class", "PlaqueInput");
+    Attrs.Add("autocomplete", "off");
+
+    if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+
+    if ((bool)ViewData["IsExclusive"])
+    {
+        Attrs.Add("data-exclusive", "true");
+    }
+}
+
+<div class="PlaqueDiv">
+
+    @(Html.Kendo().TextBox()
+        .Name(FieldName)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .HtmlAttributes(Attrs)
+        .Value(FieldValue)
+        .Events(events => {
+            if (ActiveOnKeyDown)
+                events.Change("OnKeyDownElement"); })
+    )
+
+    <span tabindex="-1" class="k-input-button k-icon-button k-button-md   AppendButton">
+        <span class="k-icon k-button-icon PlaqueIcon"></span>
+    </span>
+</div>

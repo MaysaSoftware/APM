@@ -1,0 +1,160 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Referral.PublicSetting.AppPersianName</title>
+    <link rel="icon" type="image/png" href="~/Theme/Image/@Referral.CustomerName.ToString()/favicon.ico" />
+
+    @Styles.Render("~/FontCSS")
+    @Styles.Render("~/ContentBPMNCSS")
+    @Styles.Render("~/DiagramCSS")
+    @Styles.Render("~/HomeCSS")
+    @Styles.Render("~/BPMNCSS")
+    @Scripts.Render("~/LodarJS")
+    @Scripts.Render("~/bundles/jquery")
+    @Scripts.Render("~/SessionTimerJS")
+    @Scripts.Render("~/BPMNModelerJS")
+    @Scripts.Render("~/PopupWindowJS")
+
+    @*<script src="~/Theme/Script/BPMN/Panel/cmd/MultiCommandHandler.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/cmd/index.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/properties-panel/DebounceInputModule.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/properties-panel/FeelPopupModule.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/KeyboardUtil.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/render/BpmnPropertiesPanelRenderer.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/MagicPropertiesProvider.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/provider/bpmn/index.js"></script>
+    <script src="~/Theme/Script/BPMN/Panel/render/index.js"></script>*@
+<style>
+        html, body, #canvas {
+            height: 100%;
+            padding: 0;
+            margin: 0;
+        }
+
+        .diagram-note {
+            background-color: rgba(66, 180, 21, 0.7);
+            color: White;
+            border-radius: 5px;
+            font-family: Arial;
+            font-size: 12px;
+            padding: 5px;
+            min-height: 16px;
+            width: 50px;
+            text-align: center;
+        }
+
+        .needs-discussion:not(.djs-connection) .djs-visual > :nth-child(1) {
+            stroke: rgba(66, 180, 21, 0.7) !important; /* color elements as red */
+        }
+
+        #save-button {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+        }
+        .IconTools{
+            color:@Referral.PublicSetting.IconColor;
+        }
+
+        .btn-group a {
+            margin-inline: 0px;
+            color:@Referral.PublicSetting.IconColor;
+        }
+        .Start-Btn-Group{
+                border-radius: 0px 8px 8px 0px;
+        }
+        .End-Btn-Group{
+                border-radius: 8px 0px 0px 8px;
+        }
+        .Middle-Btn-Group{
+                border-radius: 0px;
+        }
+</style>
+</head>
+<body style="height:100vh; overflow:hidden;padding:10px;">
+
+    @{
+        string ProcessModelXml = (string)ViewData["ProcessModelXml"];
+        ProcessType ProcessModel = (ProcessType)ViewData["ProcessType"];
+        string LogoPhoto = Field.FormatImage(Referral.PublicSetting.AppLogo);
+    }
+
+    @Html.Partial("/Views/Shared/Lodar.cshtml")
+
+    <div class="k-pane D-Side k-scrollable">
+        <div class="navbar" id="DRightLayout" style="direction: rtl">
+
+            <a class="k-button k-button-md">
+                <img src=@LogoPhoto width="34" height="34" />
+                <div style="display: inline;text-align: center;">
+                    <span style="font-size: 14px;">فرآیند </span> <span style="font-size: 14px;">@Tools.UnSafeTitle(ProcessModel.ProcessName) </span>
+                    <hr style="margin: 0;">
+                    <span style="text-align: center;font-size: 12px;font-weight: 500;">نسخه : </span> <span style="text-align: center;font-size: 12px;font-weight: 500;  color:@Referral.PublicSetting.IconColor;" id="BPMNVersion">@ProcessModel.Version</span>
+                </div>
+            </a>
+            <a><div><span class='fa fa-hourglass-start IconTools'></span><span id='TimerCounter' class='TimerCounter'></span></div></a>
+            <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools" onclick="SaveBpmn(@ProcessModel.ProcessID)"><i class="fa fa-save IconTools"></i> ذخیره</a>
+            <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools" onclick="window.close();"><i class="fa fa-cancel IconTools"></i> انصراف</a>
+
+            <div class="btn-group">
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools Start-Btn-Group" title="کپی"><i class="fa fa-copy IconTools"></i></a>
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools Middle-Btn-Group" title="جایگذاری"><i class="fa fa-paste IconTools"></i></a>
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools End-Btn-Group" title="چاپ" onclick="PrintBPMNModel()"><i class=" fa fa-print IconTools "></i></a>
+            </div>
+            <div class="btn-group">
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools Start-Btn-Group" title="افزایش وضوح"><i class="fa fa-search-plus IconTools"></i></a>
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools End-Btn-Group" title="کاهش وضوح"><i class="fa fa-search-minus IconTools"></i></a>
+            </div>
+            <div class="btn-group">
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools Start-Btn-Group" title="حرکت به جلو"><i class="fa fa-redo IconTools"></i></a>
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools End-Btn-Group" title="حرکت به عقب"><i class="fa fa-undo IconTools"></i></a>
+            </div>
+            <div class="btn-group">
+                <a id="js-download-diagram" class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools Start-Btn-Group" title="بارگیری" onclick="DownloadBPMNModel()"><i class="fa fa-download IconTools"></i></a>
+                <a class="BpmnToolbar k-button k-button-md C-G-k-button D-B-Tools  End-Btn-Group" title="بارگذاری"><i class="fa fa-upload IconTools"></i><input type="file" accept=".bpmn" onchange="loadBpmnFile(event)"></a>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="SaveDiagramDialog" class="modal fade MessageDalert" role="dialog" style="z-index:10000000">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header"></div>
+                <div class="modal-body">آیا اطلاعات ذخیره شود؟</div>
+                <button>ذخیره و ادامه</button>
+                <button>ادامه</button>
+                <button>انصراف</button>
+            </div>
+        </div>
+    </div>
+
+    @*<dialog id="SaveDiagramDialog">
+        <p>آیا اطلاعات ذخیره شود؟</p>
+        <form method="dialog">
+            <button>ذخیره و ادامه</button>
+            <button>ادامه</button>
+            <button>انصراف</button>
+        </form>
+    </dialog>*@
+
+    <div id="BPMNModelXmlID" hidden>
+        @ProcessModel.ProcessID
+    </div>
+    <div id="BPMNModelXml" hidden>
+        @ProcessModelXml
+    </div>
+
+    <div class="D-Side" id="canvas" style="height: 90%;margin-top:8px;"></div>
+    <div id="js-properties-panel"></div>
+    <script>
+        OpenDiagram("BPMNViewer_Canvas");
+    </script>
+</body>
+</html>
+

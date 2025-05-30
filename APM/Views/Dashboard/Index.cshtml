@@ -1,0 +1,14 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+
+@{
+    Layout = "~/Views/Shared/_PublicLayout.cshtml";
+    ViewBag.Title = Referral.PublicSetting.AppPersianName;
+    string FromDate = ViewData["FromDate"] == null ? CDateTime.GetNowshamsiDate() : ViewData["FromDate"].ToString();
+    string ToDate = ViewData["ToDate"] == null ? CDateTime.GetNowshamsiDate() : ViewData["ToDate"].ToString();
+}
+
+@Html.Partial("/Views/Shared/PublicLinkScript.cshtml")
+
+@Scripts.Render("~/InputValidtionJS")
+@Html.Partial("/Views/Dashboard/Viewer.cshtml", new ViewDataDictionary { { "DashboardID", ViewData["DashboardID"] }, { "FromDate", FromDate }, { "ToDate", ToDate } })

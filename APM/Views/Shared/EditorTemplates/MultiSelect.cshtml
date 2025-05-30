@@ -1,0 +1,24 @@
+﻿  
+@{
+    string FieldName = (string)ViewData["FieldName"];
+    string[] Value = ViewData["FieldValue"] == null ? new string[]{} : (string[])ViewData["FieldValue"];
+    List<string> DataList = ViewData["DataList"] == null ? new List<string>() :(List<string>)ViewData["DataList"];
+
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("class", "MultiSelect"); 
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+}
+
+ @(Html.Kendo().MultiSelect()
+    .Name(FieldName)
+    .BindTo(DataList)
+    .HtmlAttributes(Attrs)
+    .Value(Value)
+ )

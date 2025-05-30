@@ -1,0 +1,82 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+<!DOCTYPE html> 
+<html>
+<head>
+
+    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/ace-xcode.css" />
+    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/Index.css" />
+    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/ace-tm.css" />
+    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/ace.css" /> 
+    <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag() { dataLayer.push(arguments); }
+        gtag('js', new Date());
+        gtag('config', 'UA-58453303-6');
+    </script>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@Referral.PublicSetting.AppPersianName</title>
+    <link rel="icon" type="image/png" href="~/Theme/Image/@Referral.CustomerName.ToString()/favicon.ico" />
+
+    <link href="~/Theme/CSS/EditorForm/syntax.css" rel="stylesheet" />
+    <link href="~/Theme/CSS/EditorForm/main.css" rel="stylesheet" />
+    <link href="~/Fonts/bootstrap-icons.css" rel="stylesheet" />
+    <link href="~/Fonts/bootstrap-icons.min.css" rel="stylesheet" />
+
+    <script src="~/Theme/Script/EditorForm/ace.js"></script>
+    <script src="~/Theme/Script/EditorForm/bootstrap.min.js.download.js"></script>
+    <script src="~/Theme/Script/EditorForm/formio.embed.js.download.js"></script> 
+    <script src="~/Theme/Script/EditorForm/theme-xcode.js"></script>
+    <script src="~/Theme/Script/EditorForm/mode-html.js"></script>
+    <script src="~/Theme/Script/EditorForm/mode-json.js"></script>
+</head>
+<body class="">
+
+
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-sm-12">
+                <h3 class="text-center text-muted">طراحی  <select class="form-control" id="form-select" style="display: inline-block; width: 150px;"><option value="form">فرم</option><option value="wizard">Wizard</option><option value="pdf">PDF</option></select></h3>
+                <div id="&quot;formio-nqje6i-wrapper&quot;">
+                    <div id="builder"></div>
+                    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/formio.embed.css" />
+                    <script src="~/Theme/Script/EditorForm/formio.full.min.js.download.js"></script>
+                    <link rel="stylesheet" href="~/Theme/CSS/EditorForm/formio.full.min.css" />  
+                </div>
+            </div>
+            <div class="col-sm-4" hidden>
+                <h3 class="text-center text-muted">فایل جیسون</h3>
+                <div class="card card-body bg-light jsonviewer">
+                    <pre id="json"></pre>
+                </div>
+            </div>
+        </div>
+        <div class="row mt-4">
+            <div class="col-sm-8 offset-sm-2">
+                <h3 class="text-center text-muted">خروجی نهایی</h3>
+                <div id="formio" class="card card-body bg-light">
+                    <div ref="component" class="formio-component formio-component-form  formio-component-label-hidden" id="elc1r7f">
+                        <div novalidate="" ref="webform" class="formio-form">
+                            <div ref="component" class="mb-2 formio-form-group has-feedback formio-component formio-component-button formio-component-submit  mb-2 formio-form-group" id="eaa252">
+                                <button lang="en" class="btn btn-primary btn-md" type="submit" name="data[submit]" ref="button">
+                                    ذخیره
+                                </button>
+                                <div ref="buttonMessageContainer">
+                                    <span ref="buttonMessage" class="help-block"></span>
+                                </div>
+                                <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+                            </div>
+                        </div>
+                        <div class="formio-errors invalid-feedback" ref="messageContainer"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div> 
+        <script src="~/Theme/Script/EditorForm/Index.js"></script> 
+    </div>
+</body>
+</html>

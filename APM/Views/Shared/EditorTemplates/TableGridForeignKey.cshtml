@@ -1,0 +1,51 @@
+﻿@model object
+
+@{
+    string ActionData = "function() {return {_FieldName: '" + ViewData.TemplateInfo.GetFullHtmlFieldName("") + "', _TableID: '" + ((string)ViewData["_TableID"]) + "'} }";
+    string InputHiddenValue = "DropDownList" + (string)ViewData["FieldName"];
+    string TableIDValue = "TableID" + (string)ViewData["FieldName"];
+    string Value = ViewData["FieldValue"] == null ? "0" : ((string)ViewData["FieldValue"]);
+}
+
+<div hidden>
+    <input type="hidden" id=@InputHiddenValue value=@ViewData["RelatedTable"] />
+    <input type="hidden" id=@TableIDValue value=@ViewData["_TableID"] />
+</div>
+
+@if (ViewData["IsReadonly"] == null && ViewData["IsRequired"] == null && ViewData.TemplateInfo.GetFullHtmlFieldName("") != "")
+{
+    @(Html.Kendo().DropDownListFor(m => m)
+    .Filter(FilterType.Contains)
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .DataSource(source => source.Read(read => read.Action("ReadValuesWithSpecialWord", "Desktop", new { _SpecialWordFullName = ViewData["_SpecialWordFullName"] })))
+    .HtmlAttributes(new { type = "pattern" })
+    .Value(Value)
+    )
+}
+else if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    @(Html.Kendo().DropDownListFor(m => m)
+    .Name((string)ViewData["FieldName"])
+    .Filter(FilterType.Contains)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .DataSource(source => source.Read(read => read.Action("ReadExternalIDValuesForTable", "Desktop").Data(ActionData)).ServerFiltering(false))
+    .HtmlAttributes(new { required = "required", validationMessage = "ورود داده الزامی است" })
+    .Value(Value)
+    )
+}
+else
+{
+    @(Html.Kendo().DropDownListFor(m => m)
+    .Name((string)ViewData["FieldName"])
+    .Filter(FilterType.Contains)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .DataSource(source => source.Read(read => read.Action("ReadExternalIDValuesForTable", "Desktop").Data(ActionData)).ServerFiltering(false))
+    .HtmlAttributes(new { type = "pattern" })
+    .Value(Value)
+    )
+}

@@ -1,0 +1,58 @@
+﻿@using Stimulsoft.Report.Mvc;
+ <style>
+     .stiJsViewerPage{
+         direction:ltr;
+     }
+/*     #MvcViewerNavigatePanel {
+         position: fixed;
+         bottom: 0px;
+     }
+
+     #MvcViewerReportPanel {
+         height: 75vh;
+         background-color: #e9e9e9;
+     }*/
+ </style>
+
+@Html.Stimulsoft().StiMvcViewer("MvcViewer",
+    new StiMvcViewerOptions()
+    {
+        Actions =
+        {
+            GetReport = "GetStiViewerReport",
+            PrintReport = "PrintReport",
+            ExportReport = "ExportReport",
+            ViewerEvent = "ViewerEvent"
+        },
+        Localization = "~/Views/Shared/Report/PersianReport.xml",
+        Appearance =
+        {
+            RightToLeft = true,
+            FullScreenMode = false,
+            BackgroundColor = System.Drawing.Color.LightGray,
+            ShowTooltipsHelp = false,
+            ParametersPanelPosition = Stimulsoft.Report.Web.StiParametersPanelPosition.Left,
+            ParametersPanelColumnsCount = 1,
+            ScrollbarsMode = true
+        },
+        Toolbar =
+        {
+             DisplayMode = Stimulsoft.Report.Web.StiToolbarDisplayMode.Separated,
+             ShowAboutButton = false,
+             FontFamily = "IRANSans",
+             PrintDestination = Stimulsoft.Report.Web.StiPrintDestination.Pdf,
+             ShowOpenButton = false,
+             ViewMode = Stimulsoft.Report.Web.StiWebViewMode.Continuous,
+             ShowFullScreenButton = true,
+             ShowResourcesButton=false
+        },
+        Server =
+        {
+            CacheMode = Stimulsoft.Report.Web.StiServerCacheMode.ObjectSession
+            ,RequestTimeout = 1110,
+        },
+        Exports =
+        {
+            ShowExportToDocument = false
+        }
+    })

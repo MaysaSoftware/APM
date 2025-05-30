@@ -1,0 +1,32 @@
+﻿
+@{
+    string FieldName = (string)ViewData["FieldName"]; 
+    string Value = ViewData["FieldValue"].ToString() == "" ? "{\"components\": [],\"type\":\"default\",\"id\": \"Form_0bitgc0\",\"exporter\":{\"name\": \"form-js (https://demo.bpmn.io)\",\"version\": \"1.6.4\"},\"schemaVersion\": 14 }" : ViewData["FieldValue"].ToString();
+}
+
+@(Html.Kendo().Button()
+        .Name("ٍEditorFormButton_"+ FieldName)
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">طراحی فرم</span>")
+        .Events(e=>e.Click("OpenWinEditorForm"))
+    )
+
+@*<div id="form"></div>
+<script type="application/form-schema">
+@Value
+</script>
+<script src="~/Theme/Script/EditorForm/form-viewer.umd.js"></script>
+
+<script>
+    const schema = JSON.parse(
+        document.querySelector('[type="application/form-schema"]').textContent
+    );
+
+    const container = document.querySelector('#form');
+
+    FormViewer.createForm({
+        container,
+        schema
+    });
+</script>*@
+

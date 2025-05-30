@@ -1,0 +1,21 @@
+﻿@using APM.Models.Database;
+@{
+    Report _Report = new Report(CoreObject.Find((long)Session["ReportParentID"]));
+    string Display = _Report.ShowParameterInload ? "block" : "none";
+    string width = _Report.ShowParameterInload ? "75%" : "100%";
+}
+
+@Scripts.Render("~/InputValidtionJS")
+
+@(Html.Kendo().ToolBar().Name("ReportToolbar").Items(items=> {items.Add().Type(CommandType.Button).Icon("menu").HtmlAttributes(new { @class="k-flat"}).Click("toggleDrawer");}))
+<div class="container" style="padding: 15px; border: double 5px #dee2e6;">
+    <div class="row">
+        <div class="col-sm-3" id="ReportRightLayout" style="display:@Display; padding: 15px; border-left: 5px double rgb(222, 226, 230);">
+            @Html.Partial("/Views/Report/RightSide.cshtml")
+        </div>
+        <div class="col-sm-9" id="ReportLeftLayout" style="flex:0 0 @width; max-width:@width">
+            @Html.Partial("/Views/Report/LeftSide.cshtml")
+        </div>
+    </div>
+</div>
+

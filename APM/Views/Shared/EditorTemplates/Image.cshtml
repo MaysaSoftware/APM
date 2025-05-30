@@ -1,0 +1,22 @@
+﻿@using APM.Models;
+
+@{
+    string ImageValue = ViewData["FieldValue"] == null ? Url.Content("~/Theme/Image/images/Picture.png") : ViewData["FieldValue"].ToString().IndexOf("data:image") > -1 ? ViewData["FieldValue"].ToString() : "data:image/jpeg;base64," + ViewData["FieldValue"].ToString();
+    string ImageName = "_Image" + ViewData["FieldName"].ToString();
+    string FieldName = ViewData["FieldName"].ToString();
+    string FileName = "_File" + @ViewData["FieldName"];
+    bool IsReadonly = ViewData["IsReadonly"] == null ? false : (bool)ViewData["IsReadonly"];
+}
+
+<div class="ImageDiv">
+    <label for=@FileName class="UploadImage"> <span class="k-icon k-i-upload"></span></label>
+    <img id=@ImageName src=@ImageValue class="ImageInput" />
+    <p>
+        @if (!IsReadonly)
+        {
+            <input type="file" accept="image/*" name="image" id=@FileName onchange="loadFile(event)" style="display: none;">
+        }
+        <input type="text" id=@FieldName name=@FieldName style="display: none;" value=@ViewData["FieldValue"]>
+    </p>
+</div>
+

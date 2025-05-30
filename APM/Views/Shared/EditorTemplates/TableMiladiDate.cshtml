@@ -1,0 +1,67 @@
+﻿@model DateTime?
+
+@{
+    string Value = ViewData["FieldValue"] == null ? "" : (Convert.IsDBNull(ViewData["FieldValue"]) ?"":(string)ViewData["FieldValue"]);
+    bool IsReadonly = ViewData["IsReadonly"] == null ? false : (bool)ViewData["IsReadonly"];
+}
+
+
+@if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    <input data-mdp
+           autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           required="required"
+           validationmessage="ورود داده الزامی است"
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers "
+           style="width: 100%;"
+           onfocusout="DatePickers_onfocusout(this)"
+           value=@Value>
+}
+else if ((bool)ViewData["IsReadonly"])
+{
+    <input data-mdp autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers "
+           style="width: 100%;"
+           disabled="disabled"
+           value=@Value>
+}
+else
+{
+    <input data-mdp autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers"
+           style="width: 100%;"
+           onfocusout="DatePickers_onfocusout(this)"
+           value=@Value>
+
+}
+
+
+@if (IsReadonly)
+{
+    <span tabindex="-1" class="k-input-button k-icon-button k-button-md   AppendButton">
+        <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+}
+else
+{
+    <span tabindex="-1" class="k-input-button k-icon-button k-button-md k-button-solid AppendButton" onclick="MiladiCalenderClick(@ViewData["FieldName"])">
+        <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+}
+
+
+<script>
+    AddListenerMiladiCalendar(@ViewData["FieldName"])
+</script>

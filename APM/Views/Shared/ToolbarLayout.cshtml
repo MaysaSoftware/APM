@@ -1,0 +1,303 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+@using System.Data;
+
+@{
+    CoreObject CalendarForm = new CoreObject();
+    string UserPoto = APM.Models.Attachment.GetFileByte(CoreObject.Find(Referral.MasterDatabaseID, CoreDefine.Entities.جدول, "کاربر").CoreObjectID.ToString(), Referral.UserAccount.UsersID.ToString(), "چهره");
+    string UserName = string.IsNullOrEmpty(Referral.UserAccount.FullName) ? Referral.PublicSetting.CompanyName : Referral.UserAccount.FullName;
+    string UserEmail = string.IsNullOrEmpty(Referral.UserAccount.RoleName) ? Referral.PublicSetting.CompanyName : Referral.UserAccount.RoleName;
+
+    long ChangePasswordForm = CoreObject.Find(0, CoreDefine.Entities.فرم_ورود_اطلاعات, "تغییر_کلمه_عبور").CoreObjectID;
+    DataTable CalendarInfo = Referral.DBData.SelectDataTable("Select سال, ماه, روز, تاریخ_شمسی, تاریخ_میلادی, تعطیل, روز_هفته, ماه_میلادی, ماه_قمری, تاریخ_قمری, مناسبت, ماه_شمسی , هفته From لیست_تاریخ Where تاریخ_شمسی=N'" + CDateTime.GetNowshamsiDate() + "'");
+}
+
+<div hidden>
+    <input id="PublicProjeName" value=@Referral.DBData.ConnectionData.DataBase hidden />
+</div>
+
+<script id="notification-body" type="text/x-kendo-template">
+    <div id="NotificationMainDiv"></div>
+</script>
+
+<script id="notification-header" type="text/x-kendo-template">
+        <div class="k-hstack" id="NotificationHeaderDiv"></div>
+</script>
+
+<script id="tooltip-template" type="text/x-kendo-template">
+    <div style="padding: 15px;" >
+        <span class="k-icon k-i-gear k-button-icon"></span>
+        <div class="image-wrapper">
+            <img src= @UserPoto style="border-radius: 100%;height: 200px;width: 200px;" />
+        </div>
+        <div style="margin-top: 15px;">
+            <h1 class="UserInfoUserInfo" style="text-align: center;"> @UserName </h1>
+            <div class="UserInfoRoleName" style="text-align: center;">@UserEmail</div>
+        </div>
+    @if(ChangePasswordForm>0)
+    {
+       <input hidden id="ChangePasswordInput" value=@ChangePasswordForm/>
+       <input hidden id="UserIDInput" value=@Referral.UserAccount.UsersID/>
+        <hr>
+        @(Html.Kendo().Button()
+            .Name("ChangePassword")
+            .HtmlAttributes(new { @class = "k-primary Button-100 Button-Them-Style" })
+            .Content("تغییر کلمه عبور")
+            .Events(ev => ev.Click("ChangePasswordButton"))
+            .ToClientTemplate()
+        )
+        <br>
+        @(Html.Kendo().Button()
+            .Name("SingnOutUser")
+            .HtmlAttributes(new { @class = "k-primary Button-100 Button-Them-Style" })
+            .Content("خروج")
+            .Events(ev => ev.Click("signOut"))
+            .ToClientTemplate()
+        )
+
+
+
+        @(Html.Kendo().Window()
+            .Name("EditorForm" + @ChangePasswordForm.ToString())
+            .Content("")
+            .Visible(false)
+            .Modal(true)
+            .Draggable(true)
+            .Resizable()
+            .Actions(actions => actions.Minimize().Maximize().Close())
+            .Events(e => e.Close("CloseEditorForm"))
+            .ToClientTemplate()
+        )
+
+    }
+
+    </div>
+
+</script>
+
+
+<script id="DateCalendar-template" type="text/x-kendo-template">
+    @if(CalendarInfo!=null)
+    {
+        <div class="DateCalendar-template-MainDiv">
+        <div style="display: flex;align-items: center;justify-content: space-between;">
+            <span class = "fa fa-chevron-circle-right" style="font-size: large;"></span>
+            <input autocomplete="off"
+                   id="UserDateCalendar"
+                   name="UserDateCalendar"
+                   data-role="textbox"
+                   aria-disabled="false"
+                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md"
+                   style="width: 120px;height: 25px;text-align: center;font-family='B Nazanin' "
+                   onfocusout="DatePickers_onfocusout(this)"
+                   value=@CalendarInfo.Rows[0]["تاریخ_شمسی"] >
+            <span class='k-icon k-i-search' style="font-size: large;"></span>
+            <span class = "fa fa-chevron-circle-left"  style="font-size: large;" ></span>
+        </div>
+            <div class="DayOfWeek"> 
+                @CalendarInfo.Rows[0]["روز_هفته"]
+                @if(@CalendarInfo.Rows[0]["تعطیل"].ToString() !="False")
+                        {
+                       <span style="color:red">( تعطیل )
+                       </span>
+                        }
+            </div>
+            <div class="DateOfYear">  @CalendarInfo.Rows[0]["تاریخ_شمسی"]  -  @CalendarInfo.Rows[0]["ماه_شمسی"]  </div>
+            <div class="DateOfYear">  @CalendarInfo.Rows[0]["تاریخ_میلادی"]  -  @CalendarInfo.Rows[0]["ماه_میلادی"]  </div>
+            <div class="DateOfYear">  @CalendarInfo.Rows[0]["تاریخ_قمری"]  -  @CalendarInfo.Rows[0]["ماه_قمری"]  </div>
+            <hr>
+            <span>  مناسبت ها :</span>
+            <div class="CalendarEvents">@CalendarInfo.Rows[0]["مناسبت"]</div>
+            <hr>    
+            <span> برنامه من :</span>
+            <br>
+            @*<button id='Done-calendar' onclick='DoneCalendarClick(this)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-check'></span></button>
+            <button id='Edit-calendar' onclick='EditCalendarClick(this)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-edit'></span></button>
+            <button id='Cancel-calendar'  onclick='CancelCalendarClick(this)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-cancel'></span></button>
+            <button id='Delete-calendar'  onclick='CalendarGridDestroyRow(this)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-close'></span></button>*@
+
+        </div>
+    }
+</script>
+
+<script id="SharedPublicFile-template" type="text/x-kendo-template">
+    @foreach(CoreObject File in CoreObject.FindChilds(CoreDefine.Entities.فایل_عمومی))
+    {
+        if(new PermissionBase(File.CoreObjectID,Referral.UserAccount.Permition).IsAllow)
+        {
+            <div class="SharedPublicFileDiv"  onclick="ShowAttachmentForm(@File.CoreObjectID, 0, 0)">
+                <span  class='k-icon k-i-file-data'></span>
+                <span class="FileTitle">@File.FullName.Replace("_"," ")</span>
+           </div>
+        }
+    }
+</script>
+
+<script id="PracticalTools-template" type="text/x-kendo-template">
+     <div class="SharedPublicFileDiv"  onclick="ReduceFileSize()">
+         <span  class='k-icon k-i-file-data'></span>
+         <span class="FileTitle">کاهش حجم فایل ها</span>
+     </div>
+     <div class="SharedPublicFileDiv" onClick="OCR_UploadFile()" >
+         <span  class='k-icon k-i-image'></span>
+         <span class="FileTitle">تبدیل عکس به متن</span>
+     </div> 
+     <div class="SharedPublicFileDiv"  onclick="ReduceFileSize()">
+         <span  class='k-icon k-i-file-pdf'></span>
+         <span class="FileTitle">تبدیل pdf به متن</span>
+     </div>
+</script>
+
+<script id="LawsInfo-template" type="text/x-kendo-template">
+    <div class="LawsInfo" >
+    <textarea class="k-textbox k-overflow-auto k-input-inner"  oninput="this.style.height = '';this.style.height = this.scrollHeight + 'px'"  style="width: 100%; border-color: rgb(201, 200, 200); border-radius: 3px; resize: none;height: inherit;"  >
+      @Referral.PublicSetting.Laws
+    </textarea>
+
+    </div>
+
+</script>
+
+
+@*@if (Referral.AdminSetting.ShowUserCalendar)
+{
+            CalendarForm = CoreObject.Find(APM.Models.Tools.CoreDefine.Entities.فرم_ورود_اطلاعات, "برنامه_ریزی_فردی");
+            string ActionData = "function() {return {_DataKey:'" + CalendarForm.CoreObjectID.ToString() + "', _ParentID:0,_MasterProcessID:0,_ProcessStep:0 ,RecordID:0} }";
+            if (CalendarForm.CoreObjectID > 0)
+            {
+            <div id="calendar-div" style="z-index: 1000; position: fixed; display: none; opacity: 1; width: 400px; height: 452px; overflow: visible; top: 32.4375px; z-index: 10002; left: 80px; margin-top: 14px; box-sizing: content-box; ">
+
+                @(Html.Kendo().Grid<dynamic>()
+                    .Name("calendar-grid")
+                    .HtmlAttributes(new { style = "height: 100%; width:100%" })
+                    .Columns(columns =>
+                    {
+                        columns.Bound("").Width(400).Title("برنامه کاری جاری");
+                    })
+                    .ClientRowTemplate(
+                        "<tr data-uid='#: uid #'>" +
+                            "<td class='calendar-details-row'>" +
+                            @"<span style='font-size: 12px; color: \#8F8F8F;'>از ساعت :  #: از_ساعت # تا ساعت : #:تا_ساعت#</span>" +
+                            //"# if (#:تعطیل# ==true){ <div class='Holiday'>تعطیل</div>}" +
+                            @"<p style='font-size: 13px; color: \#3e3e3e; font-weight: 900;'>عنوان :  #: عنوان #</p>" +
+                            @"<p style='font-size: 13px; color: \#3e3e3e'>توضیحات :  #: شرح_فعالیت #</p>" +
+                            "<button id='Done-calendar' onclick='DoneCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-check'></span></button>" +
+                            "<button id='Edit-calendar' onclick='EditCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-edit'></span></button>" +
+                            "<button id='Cancel-calendar'  onclick='CancelCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-cancel'></span></button>" +
+                            "<button id='Delete-calendar'  onclick='CalendarGridDestroyRow(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-close'></span></button>" +
+
+                            "</td>" +
+                         "</tr>"
+                    )
+                    .ClientAltRowTemplate(
+                        "<tr class='k-alt' data-uid='#: uid #'>" +
+                            "<td class='calendar-details-row'>" +
+                            @"<span style='font-size: 12px; color: \#8F8F8F;'>از ساعت :  #: از_ساعت # تا ساعت : #:تا_ساعت#</span>" +
+                            //"# if (#:تعطیل# ==true){ <div class='Holiday'>تعطیل</div>}" +
+                            @"<p style='font-size: 13px; color: \#3e3e3e; font-weight: 900;'>عنوان :  #: عنوان #</p>" +
+                            @"<p style='font-size: 13px; color: \#8F8F8F'>توضیحات :  #: شرح_فعالیت #</p>" +
+                            "<button id='Done-calendar' onclick='DoneCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-check'></span></button>" +
+                            "<button id='Edit-calendar' onclick='DoneCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-edit'></span></button>" +
+                            "<button id='Cancel-calendar'  onclick='CancelCalendarClick(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-cancel'></span></button>" +
+                            "<button id='Delete-calendar'  onclick='CalendarGridDestroyRow(#:شناسه#)' class='k-button k-button-md C-G-k-button' ><span class='k-icon k-i-close'></span></button>" +
+
+                        "</td>" +
+                      "</tr>"
+                    )
+                    .Pageable(pageable => pageable.PageSizes(true).Messages(m=>m.ItemsPerPage("تعداد رکورد هر صفحه")))
+                    .ToolBar(toolbar => toolbar.Template(@<text> @Html.Partial("/Views/Home/CalendarGridToolbarTemplate.cshtml") </text>))
+                    .Selectable()
+                    .Excel(excel => excel.FileName("برنامه_کاری.xlsx").AllPages(true))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model => model.Setting(CalendarForm.CoreObjectID.ToString()))
+                        .PageSize(7)
+                        .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                        .Destroy(action => action.Action("Destroy", "Desktop").Data(ActionData))
+                        .Group(group => group.Add("روز", typeof(string), System.ComponentModel.ListSortDirection.Ascending))
+                    )
+                    .Scrollable()
+                )
+            </div>
+        }
+}*@
+
+
+
+@(Html.Kendo().ToolBar()
+.Name("appbar")
+.HtmlAttributes(new { style = "margin:5px 8px;" })
+.Items(items =>
+{
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Id("ToggleDrawer").Icon("menu").Click("ToggleDrawerClick");
+    items.Add().Template("<div id='UserPhotoSide' class='avatar k-avatar k-avatar-solid-primary k-avatar-solid k-avatar-md k-rounded-full' data-role='avatar'><span class='k-avatar-image'><img id='avatar' src='" + @UserPoto + "'/><span/></div>");
+    items.Add().Template("<div class='UserInfo'><div class='UserInfoUserInfo'>" + @UserName + "</div> <div class='UserInfoRoleName'>" + @UserEmail + "</div></div>");
+    items.Add().Template("<div style='margin: 0px 15px;'><span class='k-icon k-i-clock'></span><span id='TimeCounter' class='TimeDateCounter'></span><hr style='margin: 0px;'><div  id='DateCalendar'><span class='k-icon k-i-calendar'></span><span  class='TimeDateCounter'>" + CDateTime.GetNowshamsiDate() + "</span></div> </div>");
+    items.Add().Template("<div><span class='fa fa-hourglass-start'></span><span id='TimerCounter' class='TimerCounter'></span></div>");
+    items.Add().Template("<div style='display:none;'>span id='TimerInformationEntryFormBadgeCounter' class='TimerCounter'></span></div>").Hidden(true);
+    items.Add().Template(@"<span class=' k-icon k-i-notification'><span id='UserNotificationBadge' data-role='badge' class='k-badge k-badge-solid " + (Referral.UserAccount.ReferralCount > 0 ? "k-badge-error" : "") + " k-badge-md k-badge-dot k-badge-outside k-top-end'></span></span>");
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Spacer);
+
+    if (Referral.UserAccount.IsAdmin)
+    {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.Button).HtmlAttributes(new { @tooltip = "تنظیمات سیستم" }).Icon("gear").Id("SysSetting").Click("SysSetting");
+
+    }
+    //items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Icon(" fa fa-desktop-alt").Click("UserSystemSetting");
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Id("PracticalTools").Icon("wrench");
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Id("UserCalendar").Icon("calendar");
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Icon("refresh").Click("RefreshAll");
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Id("SharedPublicFile").Icon("file-data");
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Icon("info").Id("LawsInfo");
+    items.Add().Type(Kendo.Mvc.UI.CommandType.Button).Icon("logout").Click("signOut");
+}))
+
+
+
+@(Html.Kendo().Tooltip()
+        .For("#UserPhotoSide")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("tooltip-template")
+)
+
+
+
+@(Html.Kendo().Tooltip()
+        .For("#UserPhotoSide")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("tooltip-template")
+)
+
+
+
+@(Html.Kendo().Tooltip()
+        .For("#DateCalendar")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("DateCalendar-template")
+)
+@(Html.Kendo().Tooltip()
+        .For("#SharedPublicFile")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("SharedPublicFile-template")
+)
+
+@(Html.Kendo().Tooltip()
+        .For("#PracticalTools")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("PracticalTools-template")
+)
+
+@(Html.Kendo().Tooltip()
+        .For("#LawsInfo")
+        .ShowOn(TooltipShowOnEvent.Click)
+        .AutoHide(false)
+        .ContentTemplateId("LawsInfo-template")
+)

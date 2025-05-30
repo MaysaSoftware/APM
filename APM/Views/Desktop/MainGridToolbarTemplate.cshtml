@@ -1,0 +1,594 @@
+﻿@using APM.Models; 
+@using APM.Models.APMObject.InformationForm; 
+@using APM.Models.Database;
+@using APM.Models.Tools;
+@using APM.Models.APMObject;
+
+@{
+    string MasterDataKey = (string)ViewData["MasterDataKey"];
+    long MasterProcessID = long.Parse(ViewData["MasterProcessID"].ToString());
+    long ProcessStepID = long.Parse(ViewData["ProcessStepID"].ToString());
+    long TableID = Desktop.DataTable[MasterDataKey].CoreObjectID;
+    string ParentID = (string)ViewData["ParentID"];
+    string ButtonName = MasterDataKey + "_" + ParentID+"_"+ MasterProcessID+"_"+ ProcessStepID;
+    PermissionInformationEntryForm Formpermission = new PermissionInformationEntryForm(long.Parse(MasterDataKey), Referral.UserAccount.Permition);
+    CoreObject DataKeyObject = CoreObject.Find(long.Parse(MasterDataKey));
+    string ShowRowCount = "1000";
+    bool ShowChartInformationEntryForm = false;
+    bool ISReadOnly = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+    bool IsDetailGrid = ViewData["IsDetailGrid"] == null ? false : (bool)ViewData["IsDetailGrid"];
+    string ToolbarName = IsDetailGrid ? "ToolbarDetailMainGrid" + ButtonName : "MainGridToolbar" + MasterDataKey;
+    string DataRowCountName = (IsDetailGrid ? "DetailDataRowCount" : "DataRowCount") + "_" + ButtonName;
+    string SearchButton = (IsDetailGrid ? "Detail" : "") + "SearchButton_" + ButtonName;
+    string SearchInput = (IsDetailGrid ? "Detail" : "") + "SearchInput_" + ButtonName;
+    string SelectedRow = IsDetailGrid ? "DetailSelectedRow" + MasterDataKey + "_" + ParentID : "SelectedRow" + MasterDataKey;
+    string FormComment = string.Empty;
+    bool IsCheckedSwitchFieldButton = true;
+    GridEditMode GridEditMode = GridEditMode.PopUp;
+    long GroupableField = 0;
+    List<CoreObject> TableButtonCore = new List<CoreObject>();
+    List<CoreObject> SearchFieldCore = new List<CoreObject>();
+    List<TableButton> TableButtonlist = new List<TableButton>();
+    long SearchDataKey = 0;
+    long SearchFormID = 0;
+    bool ShowNewButton = true; 
+    List<NewButtonForm> NewButtonFormList = new List<NewButtonForm>();
+
+    if (DataKeyObject.Entity == CoreDefine.Entities.جدول)
+    {
+        Table Table = new Table(CoreObject.Find(long.Parse(MasterDataKey)));
+        ShowRowCount = Table.ShowRecordCountDefault.ToString();
+
+        Formpermission.CanInsert = true;
+        Formpermission.CanShowComputedFieldInEditForm = true;
+        Formpermission.CanUpdate = true;
+        Formpermission.CanDelete = true;
+        Formpermission.CanOpenAttachment = true;
+        Formpermission.CanExportReport = true;
+        Formpermission.CanView = true;
+    }
+    else
+    {
+        InformationEntryForm InformationEntryForm = new InformationEntryForm(CoreObject.Find(long.Parse(MasterDataKey)));
+        ShowRowCount = InformationEntryForm.ShowRecordCountDefault.ToString();
+
+        Formpermission.CanInsert = InformationEntryForm.ShowNewButtonInToolbar? Formpermission.CanInsert: InformationEntryForm.ShowNewButtonInToolbar;
+        Formpermission.CanUpdate = InformationEntryForm.ShowUpdateButtonInToolbar ? Formpermission.CanUpdate : InformationEntryForm.ShowUpdateButtonInToolbar;
+        Formpermission.CanDelete = InformationEntryForm.ShowDeleteButtonInToolbar ? Formpermission.CanDelete : InformationEntryForm.ShowDeleteButtonInToolbar;
+        Formpermission.CanOpenAttachment = InformationEntryForm.ShowAttachmentButtonInToolbar ? Formpermission.CanOpenAttachment : InformationEntryForm.ShowAttachmentButtonInToolbar; 
+        Formpermission.CanView = InformationEntryForm.ShowViewButtonInToolbar ? Formpermission.CanView : InformationEntryForm.ShowViewButtonInToolbar; 
+
+        TableButtonCore = CoreObject.FindChilds(InformationEntryForm.CoreObjectID, CoreDefine.Entities.دکمه_رویداد_جدول);
+        List<CoreObject> SearchFormCore = CoreObject.FindChilds(InformationEntryForm.CoreObjectID, CoreDefine.Entities.فرم_جستجو);
+        GridEditMode = InformationEntryForm.GridEditMode;
+        FormComment = InformationEntryForm.FormComment;
+        GroupableField = InformationEntryForm.GroupableField;
+        ShowNewButton = Desktop.ShowButtonMainGridTools(CoreDefine.ButtonType.جدید, MasterDataKey);
+        foreach (CoreObject ButtonItem in TableButtonCore)
+        {
+            TableButtonlist.Add(new TableButton(ButtonItem));
+        }
+        ShowChartInformationEntryForm = Desktop.DataInformationEntryForm[MasterDataKey].ShowChartInformationEntryForm;
+
+        foreach (CoreObject SearchItem in SearchFormCore)
+        {
+            SearchForm searchForm = new SearchForm(SearchItem);
+
+            IsCheckedSwitchFieldButton = searchForm.CleareGridAfterSearch;
+            SearchFieldCore = CoreObject.FindChilds(SearchItem.CoreObjectID, CoreDefine.Entities.فیلد_جستجو);
+            if (SearchFieldCore.Count > 0)
+            {
+                SearchDataKey = searchForm.RelatedTable;
+                SearchFormID = SearchItem.CoreObjectID;
+            }
+        }
+        List<CoreObject> NewButtonFormCoreList =CoreObject.FindChilds(InformationEntryForm.CoreObjectID, CoreDefine.Entities.فرم_دکمه_جدید);
+        foreach(CoreObject coreObject in NewButtonFormCoreList)
+        {
+
+            PermissionTableButton _PermissionTableButton = new PermissionTableButton(coreObject.CoreObjectID, Referral.UserAccount.Permition);
+            if (_PermissionTableButton.CanShow)
+            {
+                NewButtonFormList.Add(new NewButtonForm(coreObject));
+            }
+        }
+    }
+
+    string SearchFieldcontainer = (IsDetailGrid ? "Detail" : "") + "SearchFieldcontainer_" + ButtonName + "_" + SearchFormID.ToString();
+    string SearchFieldButton = (IsDetailGrid ? "Detail" : "") + "SearchFieldButton_" + ButtonName + "_" + SearchFormID.ToString();
+    string SwitchFieldButton = (IsDetailGrid ? "Detail" : "") + "SwitchFieldButton_" + ButtonName + "_" + SearchFormID.ToString();
+}
+
+
+@foreach (TableButton TableButton in TableButtonlist)
+{
+    if (TableButton.TableButtonEventsType == CoreDefine.TableButtonEventsType.باز_کردن_فرم || TableButton.TableButtonEventsType == CoreDefine.TableButtonEventsType.باز_کردن_فرم_فقط_خواندنی || TableButton.TableButtonEventsType == CoreDefine.TableButtonEventsType.باز_کردن_فرم_به_صورت_ویرایش)
+    {
+        @Html.Partial("/Views/Desktop/Dialog.cshtml", new ViewDataDictionary { { "DataKey", TableButton.RelatedForm.ToString() } });
+    }
+}
+
+<span class="SelectedElement">@APM.Models.Tools.Tools.UnSafeTitle(DataKeyObject.FullName)</span>
+<span id=@SelectedRow></span>
+
+<div class="SearchInput">
+    <input class="k-input k-textbox k-input-solid k-input-md k-rounded-md" style="width:230px;background-color:white;left:-27px;" placeholder='جستجو' id=@SearchInput onkeydown='return SearchInputKeyDown(event)' autocomplete="off" />
+
+    <span id=@SearchButton onclick="SearchButton(this)" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton" style="left: 0px; top: 0px; ">
+        <span class="k-icon k-i-search k-button-icon"></span>
+    </span>
+</div>
+
+
+@if (!string.IsNullOrEmpty(FormComment))
+{
+    <p style="width: 100%; color: #c66c02;">*** @FormComment </p>
+}
+
+
+@(Html.Kendo().ToolBar()
+.Name(@ToolbarName)
+.HtmlAttributes(new { @class = "GridToolbar" })
+.Items(items =>
+{
+    if (GroupableField > 0)
+    {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+            .Buttons(buttons =>
+            {
+                buttons.Add().Icon("menu").HtmlAttributes(new { title = "گروهبندی" }).Id((IsDetailGrid ? "Detail" : "") + "GridGroupableFieldToggleDrawer_" + ButtonName).Click("GridToggleDrawerClick");
+            }
+            );
+    }
+
+    //if(!ISReadOnly)
+    //{
+    if(NewButtonFormList.Count>0)
+    {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+        .HtmlAttributes(new { title = @ShowRowCount })
+        .Id(IsDetailGrid ? "DetailCreate" + ButtonName : "Create" + ButtonName)
+        .Text(@"<span class=""k-icon k-i-plus""></span>جدید")
+        .MenuButtons(buttons =>
+        {
+            foreach(NewButtonForm newButtonFormItem in NewButtonFormList)
+            {
+                Dictionary<string, object> Attrs = new Dictionary<string, object>();
+                if (newButtonFormItem.UseUrl)
+                    Attrs.Add("data_Item", newButtonFormItem.Url);
+                else
+                    Attrs.Add("data_Item", newButtonFormItem.RelatedInformationForm);
+
+                buttons.Add().Id((IsDetailGrid ? "Detail" : "") + "NewButtonForm_" + newButtonFormItem.CoreObjectID.ToString() + "_" + ButtonName).HtmlAttributes(Attrs).Text(Tools.UnSafeTitle(newButtonFormItem.FullName)).Icon(" " + (string.IsNullOrEmpty(newButtonFormItem.Icon) ? "k-icon k-i-plus" : newButtonFormItem.Icon));
+            }
+        }
+        ).Click("MainGridCreateRowWithNewButtonForm");
+    }
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>{
+
+        if(NewButtonFormList.Count<=1)
+            buttons.Add().HtmlAttributes(new { title = "جدید", @class = "CreateButton" }).Id( IsDetailGrid ? "DetailCreate" + ButtonName : "Create" +ButtonName).Text(@"<span class=""k-icon k-i-plus""></span>جدید").Click(@TableID==19? "OpenRoleTypePermission" : "MainGridCreateRow").Hidden(!Formpermission.CanInsert || !ShowNewButton).Enable(Formpermission.CanInsert);
+
+        if (!(GridEditMode == GridEditMode.InCell || GridEditMode == GridEditMode.InLine)|| IsDetailGrid)
+        {
+            buttons.Add().HtmlAttributes(new { title = "ویرایش", @class = "UpdateButton" }).Id(IsDetailGrid ? "DetailUpdate" + ButtonName : "Update" + ButtonName).Text(@"<span class=""k-icon k-i-edit""></span>ویرایش").Click(@TableID == 19 ? "EditRoleTypePermission" : "MainGridUpdateRow").Hidden(!Formpermission.CanUpdate && !Formpermission.CanUpdateOneDey && !Formpermission.CanUpdateOneWeek && !Formpermission.CanUpdateOnlyUserRegistry && !Formpermission.CanUpdateThreeDey).Enable(Formpermission.CanUpdate || Formpermission.CanUpdateOneDey || Formpermission.CanUpdateOneWeek || Formpermission.CanUpdateOnlyUserRegistry || Formpermission.CanUpdateThreeDey);
+            buttons.Add().HtmlAttributes(new { title = "حذف", @class = "DestroyButton" }).Id(IsDetailGrid ? "DetailDestroy" + ButtonName : "Destroy" + ButtonName).Text(@"<span class=""k-icon k-i-close""></span>حذف").Click("MainGridDestroyRow").Hidden(!Formpermission.CanDelete).Enable(Formpermission.CanDelete);
+        }
+
+        buttons.Add().HtmlAttributes(new { title = "ضمیمه", @class = "AttachmentButton" }).Id(IsDetailGrid ? "DetailAttachment" + ButtonName : "Attachment" + ButtonName).Text(@"<span class=""k-icon k-i-attachment""></span>ضمیمه").Click("MainGridShowAttachment").Hidden(!Formpermission.CanOpenAttachment).Enable(Formpermission.CanOpenAttachment);
+
+    });
+    //}
+
+    if(Formpermission.CanShowCountRow)
+    {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+        .HtmlAttributes(new { title = @ShowRowCount })
+        .Id((IsDetailGrid ? "DetailGridDataRow_" : "GridDataRow_") + ButtonName)
+        .Text(@"<span id='" + DataRowCountName + "'>" + @ShowRowCount + "</span> ")
+        .MenuButtons(buttons =>
+        {
+
+            buttons.Add().Id(DataRowCountName + "_1000").Text("1000");
+            buttons.Add().Id(DataRowCountName + "_3000").Text("3000");
+            buttons.Add().Id(DataRowCountName + "_5000").Text("5000");
+            buttons.Add().Id(DataRowCountName + "_10000").Text("10000");
+            buttons.Add().Id(DataRowCountName + "_100000").Text("100000");
+            buttons.Add().Id(DataRowCountName + "_1000000").Text("1000000");
+        }
+        ).Click("SaveGridFilterButton");
+    }
+
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        if (GridEditMode != GridEditMode.InCell) buttons.Add().HtmlAttributes(new { title = "مشاهده", @class = "DisplayButton" }).Id((IsDetailGrid ? "Detail" : "")+"Display" + ButtonName).Text(@"<span class=""k-icon k-i-eye""></span>مشاهده").Hidden(!Formpermission.CanView).Click("MainGridDisplayForce");
+        buttons.Add().HtmlAttributes(new { title = "تنظیم ستون ها", @class = "AutoFitButton" }).Id((IsDetailGrid ? "Detail" : "")+"AutoFit" + ButtonName).Text(@"<span class=""k-icon k-i-columns""></span>تنظیم ستون").Hidden(!Formpermission.CanShowAutoFit).Click("MainGridAutoFitForce");
+        buttons.Add().HtmlAttributes(new { title = "بروزرسانی", @class = "RefreshButton" }).Id((IsDetailGrid ? "Detail" : "") + "Refresh" + ButtonName).Text(@"<span class=""k-icon k-i-reload""></span>بروز رسانی").Click("MainGridDataReload");
+
+        if(ShowChartInformationEntryForm)
+            buttons.Add().HtmlAttributes(new { title = "نمایش نمودار", @class = "OrgChartGridButton" }).Id((IsDetailGrid ? "Detail" : "") + "OrgChartGrid_" + ButtonName).Text(@"<span class=""k-icon k-i-inherited""></span>نمایش نمودار").Click("MainGridOrgChartShow");
+    }
+    );
+
+
+    if (MasterProcessID >0 && !ISReadOnly && ProcessStepID==0)
+    {
+        Dictionary<string, object> Attrs = new Dictionary<string, object>();
+        Attrs.Add("title", "مرحله فرآیند");
+        Attrs.Add("class", "NextItemButton");
+        Attrs.Add("data_name", (IsDetailGrid ? "Detail" : "") + "MainGridCommandButton_" + MasterDataKey + "_" + MasterProcessID);
+
+        items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+            .Buttons(buttons =>
+            {
+                buttons.Add().Id((IsDetailGrid ? "Detail" : "") + "StartProcessButton_" + MasterDataKey+"_" + MasterProcessID).HtmlAttributes(new { title = "شروع فرآیند جدید" }).Text(@"<span class=""k-icon k-i-play""></span><span class=""NextItemButtonLabel"">شروع</span>").Click("StartProcess");
+            }
+            );
+
+
+        items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+            .Id((IsDetailGrid ? "Detail" : "") + "MainGridCommandButton_" + MasterDataKey)
+            .Enable(true)
+            .HtmlAttributes(Attrs)
+            .Text(@"<span class=""k-icon k-i-button""></span><span id=""NextItemButtonLabel_"+ MasterDataKey + @"""></span>")
+            .MenuButtons(buttons =>
+            {
+                buttons.Add().Text("").Hidden(true);
+            }
+            ).Click("MainGridCommand");
+    }
+
+
+
+    if (Formpermission.CanExportReport)
+    {
+        items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+        .HtmlAttributes(new { title = "گزارش" })
+        .Id((IsDetailGrid ? "Detail" : "") + "Report_" + ButtonName)
+        .Text(@"<span class=""k-icon k-i-graph""></span>گزارش")
+        .MenuButtons(buttons =>
+        {
+            //if (GridEditMode != GridEditMode.InCell)
+            //{
+            if (MasterProcessID > 0)
+            {
+                ProcessType process = new ProcessType(CoreObject.Find(MasterProcessID));
+                if (process.ReportID > 0)
+                {
+                    CoreObject ReportCore = CoreObject.Find(process.ReportID);
+                    buttons.Add().Id((IsDetailGrid ? "Detail" : "") + "ProcessTypeParameter_" + ButtonName + "_" + MasterProcessID.ToString()).Text(Tools.UnSafeTitle(ReportCore.FullName));
+                }
+            }
+
+            foreach (ReportParameter Parameter in Desktop.DataReport[MasterDataKey])
+            {
+                CoreObject ParameterCore = CoreObject.Find(Parameter.CoreObjectID);
+                CoreObject ReportCore = CoreObject.Find(ParameterCore.ParentID);
+                Report report = new Report(ReportCore);
+                string Icon = report.Icon != "" ? report.Icon : "graph";
+                buttons.Add().Icon(" " + Icon).Id((IsDetailGrid ? "Detail" : "") + "Parameter_" + ButtonName + "_" + ReportCore.CoreObjectID.ToString() + "_" + ParameterCore.CoreObjectID.ToString() + "_" + (report.SelectedRow ? "1" : "0")).Text(Tools.UnSafeTitle(ReportCore.FullName));
+            }
+            //}
+            //buttons.Add().Icon("excel").Id("PrintColumns_" + ButtonName).Text("چاپ ستونی");
+            //buttons.Add().Icon("excel").Id("PrintRows_" + ButtonName).Text("چاپ سطری");
+            buttons.Add().Icon("excel").Id((IsDetailGrid ? "Detail" : "") + "Excel_" + ButtonName).Text("اکسل");
+            //buttons.Add().Icon("pdf").Id("Pdf_" + ButtonName).Text("pdf");
+        }
+        ).Click("OpenReportGrid");
+    }
+
+    if (Formpermission.CanShowEventEditRecord || Formpermission.CanShowEventEditAll || Formpermission.CanShowEventInsertRecord || Formpermission.CanShowEventInsertAll || Formpermission.CanShowEventDeleteAll || Formpermission.CanShowEventDownloadRecord || Formpermission.CanShowEventDownloadTable)
+    {
+        if (!(GridEditMode == GridEditMode.InCell && !IsDetailGrid))
+        {
+            items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+            .HtmlAttributes(new { title = "رویداد کاربر" })
+            .Id((IsDetailGrid ? "Detail" : "") + "Event_" + ButtonName)
+            .Text(@"<span class=""fa fa-flash""></span>")
+            .MenuButtons(buttons =>
+            {
+                if (Formpermission.CanShowEventEditRecord) buttons.Add().Icon("pencil").Id((IsDetailGrid ? "Detail" : "") + "EventEditRecord_" + ButtonName).Text("ویرایش سطر");
+                if (Formpermission.CanShowEventEditAll) buttons.Add().Icon("table-properties").Id((IsDetailGrid ? "Detail" : "") + "EventEditAll_" + ButtonName).Text("ویرایش کل");
+
+                if (Formpermission.CanShowEventInsertRecord) buttons.Add().Icon("plus").Id((IsDetailGrid ? "Detail" : "") + "EventInsertRecord_" + ButtonName).Text("درج سطر");
+                if (Formpermission.CanShowEventInsertAll) buttons.Add().Icon("table-add").Id((IsDetailGrid ? "Detail" : "") + "EventInsertAll_" + ButtonName).Text("درج کل");
+                if (Formpermission.CanShowEventDeleteAll) buttons.Add().Icon("replace-single").Id((IsDetailGrid ? "Detail" : "") + "EventDeleteAll_" + ButtonName).Text("بازیابی سطر حذف شده");
+
+                if (Formpermission.CanShowEventDownloadRecord) buttons.Add().Icon(" fa fa-down-to-line").Id((IsDetailGrid ? "Detail" : "") + "EventDownloadRecord_" + ButtonName).Text("بارگیری سطر");
+                if (Formpermission.CanShowEventDownloadTable) buttons.Add().Icon(" fa fa-download").Id((IsDetailGrid ? "Detail" : "") + "EventDownloadTable_" + ButtonName).Text("کل بارگیری");
+                if (Formpermission.CanShowEventDownloadTable) buttons.Add().Icon("eye").Id((IsDetailGrid ? "Detail" : "") + "EventViewRecordTable_" + ButtonName).Text("مشاهده رکورد");
+                if (Formpermission.CanShowEventDownloadTable) buttons.Add().Icon("eye").Id((IsDetailGrid ? "Detail" : "") + "EventViewTable_" + ButtonName).Text("مشاهده فرم");
+            }
+            ).Click("OpenEventGrid");
+        }
+    }
+
+    foreach (TableButton TableButton in TableButtonlist)
+    {
+
+        PermissionTableButton TableButtonPermission = new PermissionTableButton(TableButton.CoreObjectID, Referral.UserAccount.Permition);
+        if(TableButtonPermission.CanShow)
+        {
+            string ID = (IsDetailGrid ? "Detail" : "") + "TableButton_" + TableButton.CoreObjectID + "_" + ButtonName + "_";
+            switch (TableButton.TableButtonEventsType)
+            {
+                case CoreDefine.TableButtonEventsType.باز_کردن_فرم:
+                    ID += (IsDetailGrid ? "Detail" : "") + "1_" ;
+                    break;
+                case CoreDefine.TableButtonEventsType.باز_کردن_فرم_فقط_خواندنی:
+                    ID += (IsDetailGrid ? "Detail" : "") + "2_";
+                    break;
+                case CoreDefine.TableButtonEventsType.نمایش_ضمیمه:
+                    ID += (IsDetailGrid ? "Detail" : "") + "3_";
+                    break;
+                case CoreDefine.TableButtonEventsType.باز_کردن_فرم_به_صورت_ویرایش:
+                    ID += (IsDetailGrid ? "Detail" : "") + "4_";
+                    break;
+                case CoreDefine.TableButtonEventsType.تولید_کلید_عمومی_مالیاتی:
+                    ID += (IsDetailGrid ? "Detail" : "") + "5_";
+                    break;
+                case CoreDefine.TableButtonEventsType.بروزرسانی_کالا_مالیات:
+                    ID += (IsDetailGrid ? "Detail" : "") + "6_";
+                    break;
+                case CoreDefine.TableButtonEventsType.ارسال_صورتحساب_به_سامانه_مودیان:
+                    ID += (IsDetailGrid ? "Detail" : "") + "7_";
+                    break;
+                case CoreDefine.TableButtonEventsType.باز_کردن_فرم_با_لینک:
+                    ID += (IsDetailGrid ? "Detail" : "") + "8_";
+                    break;
+                default:
+                    ID += (IsDetailGrid ? "Detail" : "") + "0_";
+                    break;
+            }
+
+            ID += TableButton.RelatedForm + "_" +(TableButton.ExecutionConditionQuery!=""?"1":"0")+"_0_" +(CoreObject.Find(TableButton.RelatedField).FullName);
+            string Text = "<span id=\"InputDiv_TableButton_" + TableButton.FullName+ "_"+ TableButton.CoreObjectID.ToString()+"\">" +(TableButton.IsShowIcon ? "<span class=\"" + TableButton.Icon + "\"></span>" : "") + (TableButton.IsShowText ? "<span class=\"TableButtonText\">" + Tools.UnSafeTitle(TableButton.FullName) + "</span>" : "")+ "</span>";
+            if (TableButton.IsShowText || (TableButton.IsShowIcon && (TableButton.Icon != null && TableButton.Icon != "")))
+            {
+                items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                .Buttons(buttons =>
+                {
+                    buttons.Add().HtmlAttributes(new { title = Tools.UnSafeTitle(TableButton.FullName), @class = "DisplayButton" ,@style= "border-radius: 20px;background-color: " + TableButton.ButtonColor+";" }).Id(ID).Text(Text).Click("TableButtonClick");
+                });
+            }
+        }
+    }
+
+
+
+    if (DataKeyObject.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات && !IsDetailGrid)
+    {
+        foreach (CoreObject SearchFormItem in CoreObject.FindChilds(long.Parse(MasterDataKey), CoreDefine.Entities.فرم_جستجو))
+        {
+            SearchForm SearchForm = new SearchForm(SearchFormItem);
+            if (SearchForm.ShowText || SearchForm.ShowIcon)
+            {
+                items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                .Buttons(buttons =>
+                {
+                    buttons.Add().HtmlAttributes(new { title = Tools.UnSafeTitle(SearchForm.FullName), @class = "DisplaySearchButton" }).Id((IsDetailGrid ? "Detail" : "") + "SearchForm_" + SearchForm.CoreObjectID + "_" + ButtonName).Text("<span class=\"" + (SearchForm.ShowIcon ? SearchForm.Icon : "") + "\"></span><span class=\"AutoFitButtonLabel\">" + (SearchForm.ShowText ? Tools.UnSafeTitle(SearchForm.FullName) : "") + "</span>").Click("SearchFormButtonClick");
+                });
+            }
+
+        }
+
+    }
+
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().Icon("search").HtmlAttributes(new { title = "جستجو پیشرفته" }).Id((IsDetailGrid ? "Detail" : "") + "AdvancedSearch_" + ButtonName).Click("AdvancedSearchButtonClick");
+    }
+    );
+
+    if (Referral.AdminSetting.PermissionShowImportExportInForm)
+    {
+        if (Referral.AdminSetting.ShowImportExportInAllForm || Array.IndexOf(Referral.AdminSetting.AllowFormShowImportExport, MasterDataKey) > -1)
+        {
+            if (Formpermission.CanImportData)
+            {
+                items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                .Buttons(buttons =>
+                {
+                    buttons.Add().Icon("import").HtmlAttributes(new { title = "بارگذاری داده" }).Id((IsDetailGrid ? "Detail" : "") + "ImportDataButton_" + ButtonName).Click("ImportDataButtonClick");
+                    buttons.Add().Icon("export").HtmlAttributes(new { title = "نمونه فایل بارگیری داده" }).Id((IsDetailGrid ? "Detail" : "") + "ExportTempeletFileDataButton_" + ButtonName).Click("ExportTempeletFileDataButtonClick");
+                }
+                );
+            }
+        }
+    }
+
+    if (Referral.AdminSetting.PermissionShowCommentInForm)
+    {
+        if(Referral.AdminSetting.ShowCommentInAllForm|| Array.IndexOf( Referral.AdminSetting.AllowFormShowComment,MasterDataKey)>-1)
+        {
+            items.Add().Type(Kendo.Mvc.UI.CommandType.SplitButton)
+            .HtmlAttributes(new { title = "یادداشت" })
+            .Id((IsDetailGrid ? "Detail" : "") + "Comment_" + ButtonName)
+            .Text(@"<span class=""k-icon k-i-comment""></span>یادداشت")
+            .MenuButtons(buttons =>
+            {
+                buttons.Add().Icon("add").Id((IsDetailGrid ? "Detail" : "") + "AddComment_" + ButtonName).Text("ایجاد یادداشت جدید");
+                buttons.Add().Icon("eye").Id((IsDetailGrid ? "Detail" : "") + "ShowComment_" + ButtonName).Text("نمایش یادداشت های ردیف");
+            }
+            ).Click("OpenCommentGrid");
+        }
+    }
+
+    if (Referral.AdminSetting.PermissionShowEmailInForm)
+    {
+        if(Referral.AdminSetting.ShowEmailInAllForm|| Array.IndexOf( Referral.AdminSetting.AllowFormShowEmail,MasterDataKey)>-1)
+        {
+            if (GridEditMode != GridEditMode.InCell && Formpermission.CanSendEmail)
+            {
+                items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                .Buttons(buttons =>
+                {
+                    buttons.Add().Icon("import").Text("ارسال ایمیل").HtmlAttributes(new { title = "ارسال ایمیل" }).Id((IsDetailGrid ? "Detail" : "") + "SendEmail_" + ButtonName).Click("SendEmailClick");
+                });
+
+            }
+        }
+    }
+
+})
+)
+
+
+
+@if (SearchFieldCore.Count > 0)
+{
+    <div style=" margin: -12px;" class="k-filter-container SearchFieldContainer row" id=@SearchFieldcontainer>
+         @{ 
+            
+            List<SelectListItem> ComboOperator = new List<SelectListItem>()
+            {
+                new SelectListItem() {Text = "مساوی", Value = "مساوی"},
+                new SelectListItem() {Text = "نامساوی", Value ="نامساوی"},
+                new SelectListItem() {Text = "بزرگتر یا مساوی", Value ="بزرگتر یا مساوی"},
+                new SelectListItem() {Text = "بزرگتر", Value ="بزرگتر"},
+                new SelectListItem() {Text = "کوچکتر یا مساوی", Value ="کوچکتر یا مساوی"},
+                new SelectListItem() {Text = "کوچکتر", Value ="کوچکتر"},
+                new SelectListItem() {Text = "شروع با", Value ="شروع با"},
+                new SelectListItem() {Text = "شامل", Value ="شامل"},
+                new SelectListItem() {Text = "شامل نباشد", Value ="شامل نباشد"},
+                new SelectListItem() {Text = "پایان با", Value ="پایان با"},
+                new SelectListItem() {Text = "تهی", Value ="تهی"},
+                new SelectListItem() {Text = "تهی نیست", Value ="تهی نیست"},
+                new SelectListItem() {Text = "خالی", Value ="خالی"},
+                new SelectListItem() {Text = "خالی نیست", Value ="خالی نیست"},
+            };
+        }
+        @foreach (CoreObject SearchFieldItem in SearchFieldCore)
+        {
+            SearchField SearchField = new SearchField(SearchFieldItem);
+            CoreObject FieldCore = CoreObject.Find(SearchField.RelatedField);
+            Field field = new Field(FieldCore);
+            CoreObject TableCore = CoreObject.Find(FieldCore.ParentID);
+            string FieldName = (IsDetailGrid ? "Detail" : "") + "SearchField_" + field.FieldName + "_" + ButtonName + "_" + SearchFieldItem.CoreObjectID.ToString();
+            string SearchFieldOperator = (IsDetailGrid ? "Detail" : "") + "SearchFieldOperator_" + field.FieldName + "_" + ButtonName + "_" + SearchFieldItem.CoreObjectID.ToString();
+            if (TableID!=TableCore.CoreObjectID)
+            {
+                FieldName = (IsDetailGrid ? "Detail" : "") + "SearchField_" + field.FieldName + "_" + TableCore.CoreObjectID+"_"+ParentID+"_"+MasterProcessID+"_"+ProcessStepID + "_" + SearchFieldItem.CoreObjectID.ToString();
+                SearchFieldOperator = (IsDetailGrid ? "Detail" : "") + "SearchFieldOperator_" + field.FieldName + "_" + TableCore.CoreObjectID+"_"+ParentID+"_"+MasterProcessID+"_"+ProcessStepID + "_" + SearchFieldItem.CoreObjectID.ToString();
+            }
+
+            TemplateField TemplateField = new TemplateField();
+
+            List<SelectListItem> ComboItems = new List<SelectListItem>();
+
+            if (field.FieldType == CoreDefine.InputTypes.ComboBox)
+            {
+                string[] ValueItem = field.SpecialValue.Split('،');
+                foreach (string Value in ValueItem)
+                {
+                    ComboItems.Add(new SelectListItem() { Text = Value, Value = Value });
+                }
+            }
+
+            object Parameter = new
+            {
+                FieldName = FieldName,
+                InputType = field.FieldType,
+                IsReadonly = false,
+                IsRequired = false,
+                NullValue = "نامشخص",
+                FalseValue = field.FieldType == CoreDefine.InputTypes.TwoValues ? field.ComboValues()[0] : "",
+                TrueValue = field.FieldType == CoreDefine.InputTypes.TwoValues ? field.ComboValues()[1] : "",
+                IsInCellEditMode = false,
+                FieldTitle = field.Title(),
+                DigitsAfterDecimal = field.DigitsAfterDecimal,
+                RelatedField = field.RelatedField,
+                IsGridField = true,
+                IsLeftWrite = field.IsLeftWrite,
+                RelatedTable = field.RelatedTable,
+                FieldValue = Tools.GetDefaultValue(SearchField.DefaultValue),
+                _TableID = "0",
+                MaxValue = field.MaxValue,
+                MinValue = field.MinValue,
+                ComboItems = ComboItems,
+                IsExclusive = field.IsExclusive,
+                ActiveOnKeyDown = false,
+                CoreObjectID = field.CoreObjectID,
+                ShowHideElement = "",
+                FieldComment = "",
+                FieldClass = SearchFieldItem.IsDefault ? "SearchFieldKeydown" : ""
+            };
+
+            TemplateField.IsWide = false;
+            TemplateField.FullName = SearchFieldItem.FullName;
+            TemplateField.InputTypes = field.FieldType;
+            TemplateField.Parameter = Parameter;
+
+            string FieldID = field.FieldName + ButtonName;
+            <div class="k-toolbar SearchFieldItem m-sm-3">
+                <div class="k-filter-toolbar-item k-filter-field" id=@FieldID>
+                    @SearchFieldItem.Title()
+                </div>
+                @if(SearchField.ShowOperator)
+                {
+                    <div class="k-filter-toolbar-item k-filter-operator">
+                        @(Html.Kendo().ComboBox()
+                        .Name(SearchFieldOperator)
+                        .Filter("contains")
+                        .Placeholder("انتخاب نمایید")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Value(SearchField.DefaultOperator)
+                        .BindTo(@ComboOperator)
+                        .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+                        .Suggest(true)
+                        .HtmlAttributes(new {@class="k-filter-toolbar-item k-filter-operator", style="width:200px;" })
+                        )
+                    </div>
+                }
+                else{            
+                    <div class="k-filter-toolbar-item k-filter-operator" hidden>
+                        @(Html.Kendo().ComboBox()
+                        .Name(SearchFieldOperator)
+                        .Filter("contains")
+                        .Placeholder("انتخاب نمایید")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .Value(SearchField.DefaultOperator)
+                        .BindTo(@ComboOperator)
+                        .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+                        .Suggest(true)
+                        .HtmlAttributes(new {@class="k-filter-toolbar-item k-filter-operator", style="width:200px;" })
+                        )
+                    </div>
+
+                    }
+
+                <div class="k-filter-toolbar-item k-filter-value">
+                    @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", TemplateField }, { "DataKey",TableCore.CoreObjectID.ToString() } })
+                </div>
+            </div>
+
+        }
+        <div class="m-sm-4 SearchFieldItem" style="min-width:300px;">
+            @(Html.Kendo().Switch()
+                .Name(@SwitchFieldButton)
+                .HtmlAttributes(new {style= "max-width: 130px;" })
+                .Checked(IsCheckedSwitchFieldButton)
+                .Messages(c => c.Checked("حذف کل ردیف").Unchecked("افزودن به ردیف"))
+             )
+            @(Html.Kendo().Button()
+                .Name(@SearchFieldButton)
+                .HtmlAttributes(new {@class= "k-button-solid-primary",style= "width: 75px;margin-right: 8px;" })
+                .Content(@"<span class=""k-icon k-i-search k-button-icon""></span><span class=""k-button-text"">جستجو</span>")
+                .Events(e=>e.Click("SearchFieldClick"))
+             )
+        </div>
+
+
+
+
+    </div>
+}
+

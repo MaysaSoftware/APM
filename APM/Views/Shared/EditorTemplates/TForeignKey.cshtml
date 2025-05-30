@@ -1,0 +1,162 @@
+﻿@using APM.Models.Database;
+@using APM.Models;
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    bool DataKey_ShowWithOutPermissionConfig = Desktop.DataKey_ShowWithOutPermissionConfig[DataKey];
+    string FieldName = (string)ViewData["FieldName"];
+    string InputHiddenValue = "DropDownList" + (string)ViewData["FieldName"];
+    string ShowHideElement = "ShowHideElement_" + (string)ViewData["FieldName"];
+    string FieldValue = ViewData["FieldValue"] == null ? "0" : (ViewData["FieldValue"].ToString());
+    string ShowHideElementValue = ViewData["ShowHideElement"] == null ? "" : (ViewData["ShowHideElement"].ToString());
+    bool IsLeftWrite = ViewData["IsLeftWrite"] == null ? false : (bool)ViewData["IsLeftWrite"];
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    string FieldClass = ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString();
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    string RelatedField = ViewData["RelatedField"] == null ? "" : ViewData["RelatedField"].ToString();
+    string RelatedFieldID = "RelatedField"+ FieldName;
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("type", "pattern");
+    Attrs.Add("style", "color:" + TextColor);
+    Attrs.Add("data-Item", DataKey + "_" + (ViewData["ParentID"] == null ? "" : ViewData["ParentID"].ToString()));
+    Attrs.Add("class", "IElement IForeignKey w-100 " + FieldClass + " " + (IsLeftWrite ? " LTRColumn" : "") + " " + (ShowHideElementValue!="" ? "ActiveLoadElement" : "") +" "+ (ActiveOnKeyDown ? "ActiveOnKeyDown" : "") + " " + (RelatedField!="" ? "ActiveRelatedField" : ""));
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+
+    PermissionTable _PermissionTable = ViewData["RelatedTable"].ToString() == "0" ? new PermissionTable() : new PermissionTable((long)ViewData["RelatedTable"], Referral.UserAccount.Permition);
+    string B_Add_ID = "Add_" + (string)@ViewData["FieldName"] + (FieldName.IndexOf(DataKey) == -1 ? "_" + DataKey : "");
+    string B_Attachment_ID = "Attachment_" + (string)@ViewData["FieldName"] + (FieldName.IndexOf(DataKey) == -1 ? "_" + DataKey : "");
+    string B_Edit_ID = "Edit_" + (string)@ViewData["FieldName"] + (FieldName.IndexOf(DataKey) == -1 ? "_" + DataKey : "");
+    string B_Reload_ID = "Reload_" + (string)@ViewData["FieldName"] + (FieldName.IndexOf(DataKey) == -1 ? "_" + DataKey : "");
+
+}
+
+
+<div class="ButtonGroupFormItemTitle">
+    @if (ViewData["InputType"].ToString() == APM.Models.Tools.CoreDefine.InputTypes.RelatedTable.ToString())
+    {
+        <button class='k-button k-button-md T-G-k-button' onclick='Reload_RTB_Click(this)' id=@B_Reload_ID><span class='k-icon k-i-reload'></span></button>
+        if (_PermissionTable.CanOpenAttachment || DataKey_ShowWithOutPermissionConfig)
+        {
+            <button class='k-button k-button-md T-G-k-button' onclick='Attachment_RTB_Click(this)' id=@B_Attachment_ID><span class='k-icon k-i-attachment'></span></button>
+        }
+        if (_PermissionTable.CanUpdate || DataKey_ShowWithOutPermissionConfig)
+        {
+            <button class='k-button k-button-md T-G-k-button' onclick='Edit_RTB_Click(this)' id=@B_Edit_ID><span class='k-icon k-i-edit'></span></button>
+        }
+        if (_PermissionTable.CanInsert || DataKey_ShowWithOutPermissionConfig)
+        {
+            <button class='k-button k-button-md T-G-k-button' onclick='Add_RTB_Click(this)' id=@B_Add_ID><span class='k-icon k-i-plus'></span></button>
+        }
+    }
+</div>
+
+<div hidden>
+    <input type="hidden" id=@InputHiddenValue value=@ViewData["RelatedTable"] /> 
+    <input type="hidden" id=@RelatedFieldID value=@RelatedField /> 
+</div>
+
+@if (ViewData["_SpecialWordFullName"] != null && ViewData.TemplateInfo.GetFullHtmlFieldName("") != "")
+{
+    @(Html.Kendo().DropDownListFor(m => m)
+        .Filter(FilterType.Contains)
+        .DataValueField("Value")
+        .DataTextField("Text")
+        .DataSource(source => source.ServerFiltering(false).Read(read => read.Action("ReadValuesWithSpecialWord", "Desktop", new { _SpecialWordFullName = ViewData["_SpecialWordFullName"] })))
+        .HtmlAttributes(new { type = "pattern" })
+        .FooterTemplate("تعداد  <strong>#: instance.dataSource.total() #</strong> رکورد یافت شد")
+    )
+}
+else if (ViewData["Query"] != null && (string)ViewData["_TableID"] != "0")
+{
+    @(Html.Kendo().DropDownListFor(m => m)
+        .Filter(FilterType.Contains)
+        .DataValueField("Value")
+        .DataTextField("Text")
+        .DataSource(source => source.ServerFiltering(false).Read(read => read.Action("ReadValuesWithQuery", "Desktop", new { _Query = ViewData["Query"], _TableID = ViewData["_TableID"] })))
+        .HtmlAttributes(new { type = "pattern" })
+        .FooterTemplate("تعداد  <strong>#: instance.dataSource.total() #</strong> رکورد یافت شد")
+    )
+}
+else if ((string)ViewData["_TableID"] != "0")
+{
+    string TableIDValue = "TableID" + (string)ViewData["FieldName"];
+    string ActionData = "function() {return {_FieldName: '" + FieldName.Replace("Filtered_", "") + "', _TableID: '" + ((string)ViewData["_TableID"]) + "'} }";
+    <div hidden>
+        <input type="hidden" id=@TableIDValue value=@ViewData["_TableID"] />
+    </div>
+
+    @(Html.Kendo().DropDownListFor(m => m)
+        .Name(FieldName)
+        .Filter(FilterType.Contains)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .DataValueField("Value")
+        .DataTextField("Text")
+        .Value(FieldValue)
+        .Height(260)
+        .DataSource(source => source.Read(read => read.Action("ReadExternalIDValuesForTable", "Desktop").Data(ActionData)).ServerFiltering(false))
+        .HtmlAttributes(Attrs)
+        .Events(events =>
+        {
+            if (IsLeftWrite)
+            {
+                events.Open("DataGridFilterUILTRForeignKeyOpen");
+            }
+            if(ActiveOnKeyDown)
+                events.Change("OnKeyDownElement");
+        })
+        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+    )
+}
+else
+{
+    string ActionData = "function() {return {_FieldName: '" + FieldName.Replace("Filtered_", "") + "', _DataKey: '" + ((string)ViewData["DataKey"]) + "'} }";
+    @(Html.Kendo().DropDownListFor(m => m)
+        .Name(FieldName)
+        .Filter(FilterType.Contains)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .DataValueField("Value")
+        .DataTextField("Text")
+        .Value(FieldValue)
+        .Height(260)
+            .DataSource(source =>{
+                source.Custom()
+                      .ServerFiltering(false)
+                      .ServerPaging(false)
+                      .PageSize(1000000)
+                      .Type("aspnetmvc-ajax")
+                      .Transport(transport =>
+                      {
+                          transport.Read(read => read.Action("ReadExternalIDValues", "Desktop").Data(ActionData));
+                      });
+            })
+        .HtmlAttributes(Attrs)
+        .Events(events =>
+        {
+        if (IsLeftWrite)
+        {
+            events.Open("DataGridFilterUILTRForeignKeyOpen");
+        }
+
+            if(ActiveOnKeyDown)
+                events.Change("OnKeyDownElement");
+        })
+        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+    )
+}
+
+
+@if (ShowHideElementValue != "")
+{
+    <div hidden>
+        <input type="hidden" id=@ShowHideElement value=@ShowHideElementValue />
+    </div>
+
+    <script>
+        LoadElement(@ViewData["FieldName"])
+    </script>
+}

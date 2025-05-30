@@ -1,0 +1,56 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@{
+    string RoleTypeName = (string)ViewData["RoleTypeName"];
+    string DefaultRoleTypeUrl = (string)ViewData["DefaultRoleTypeUrl"];
+    string Permission = (string)ViewData["Permission"]; 
+}
+
+
+    <p class="FormItemTitle">عنوان</p>
+
+    @(Html.Kendo().TextBox()
+        .Name("RoleType")
+        .Value(@RoleTypeName)
+        .HtmlAttributes(new { style="width:250px",  autocomplete = "off" })
+    )
+<br />
+    <p class="FormItemTitle">لینک مشاهده صفحه پیشفرض</p>
+<br />
+    @(Html.Kendo().TextBox()
+        .Name("DefaultRoleTypeUrl")
+        .Value(@DefaultRoleTypeUrl)
+        .HtmlAttributes(new { style="width:250px",  autocomplete = "off" })
+    )
+
+    <input type="text" id="PermissionText" hidden value=@Permission />
+    <p>
+        @(Html.Kendo().TreeView()
+            .Name("PermissionTree")
+            .Checkboxes(checkboxes => checkboxes
+                .Name("CheckedPermission")
+                .CheckChildren(true)
+            )
+            .Events(events => events.Check("onCheckedPermission"))
+            .Items(items => {
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.پایگاه_داده) + @" TreeIconColor""></span>" + "پایگاه داده").Encoded(false).Id("0_Database").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.پایگاه_داده), "", Permission, "DataSource"));
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.فرم_ورود_اطلاعات) + @" TreeIconColor""></span>" + "فرم").Encoded(false).Id("0_InformationEntryForm").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فرم_ورود_اطلاعات), "", Permission, "InformationEntryForm"));
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.فرآیند) + @" TreeIconColor""></span>" + "فرآیند").Encoded(false).Id("0_Process").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فرآیند), "", Permission, "Process"));
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.گزارش) + @" TreeIconColor""></span>" + "گزارش").Encoded(false).Id("0_Report").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.گزارش), "", Permission, "Report"));
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.داشبورد) + @" TreeIconColor""></span>" + "داشبورد").Encoded(false).Id("0_Dashboard").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.داشبورد), "", Permission, "Dashboard"));
+                items.Add().Text(@"<span class=""k-icon " + Icon.IconName(CoreDefine.Entities.فایل_عمومی) + @" TreeIconColor""></span>" + "فایل عمومی").Encoded(false).Id("0_PublicFile").Items(subItems => subItems.CoreObjectTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فایل_عمومی), "", Permission, "PublicFile"));
+            })
+            .LoadOnDemand(true)
+        )
+    </p>
+    <p>
+        @(Html.Kendo().Button()
+            .Name("SaveButton")
+            .HtmlAttributes(new {@class= "k-button-solid-primary" })
+            .Content("ذخیره")
+            .Events(e=>e.Click("SavePermission"))
+        )
+    </p> 
+

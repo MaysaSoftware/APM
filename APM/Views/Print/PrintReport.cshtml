@@ -1,0 +1,34 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@Styles.Render("~/DesktopCSS")
+@Styles.Render("~/EditorCSS")
+
+@{
+    string DataKey = (string)ViewData["DataKey"]; 
+    string ParentID = ViewData["ParentID"] == null ? (string.IsNullOrEmpty(Request["ParentID"]) ? "0" : Request["ParentID"]) : (string)ViewData["ParentID"];
+    string ActionData = "function() {return {_DataKey: '" + DataKey + "', _ParentID:'" + ParentID + "'} }";
+}
+
+@Html.Partial("/Views/Print/PublicSetting.cshtml")
+<div id="ReportPrintMainDiv"></div>
+
+
+@*@(Html.Kendo().Grid<dynamic>()
+    .Name("MainGrid")
+    .HtmlAttributes(new { style = "height: 100%;" })
+    .Resizable(config => config.Columns(true))
+    .Reorderable(config => config.Columns(true))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .Model(model => model.Setting(Desktop.MasterDataKey))
+        .Read(action => action.Action("Print", "Desktop").Data(ActionData))
+    )
+    .Columns(columns =>
+    columns.Setting(Desktop.MasterDataKey, true))
+)*@
+
+<script>
+    onLoadPrintReport();
+</script>

@@ -1,0 +1,19 @@
+﻿@{
+    string ProcessModelXml = (string)Session["SysSetting_ProcessModelXml"];
+}
+
+@Html.Partial("/Views/Print/PublicSetting.cshtml")
+@Styles.Render("~/BPMNCSS")
+@Scripts.Render("~/BPMNViewerJS")
+
+<div id="BPMNModelXml" hidden>
+    @ProcessModelXml
+</div>
+
+<div class="canvas" style="background-color:#ffffff">
+    <div id="BPMNViewer_Canvas"></div>
+</div>
+
+<script>
+    ImportXml("BPMNViewer_Canvas");
+</script>

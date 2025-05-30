@@ -1,0 +1,28 @@
+﻿@using APM.Models.Tools;
+@using APM.Models.Database;
+
+
+@{ 
+    string FieldName = (string)ViewData["FieldName"];
+    string Value = ViewData["FieldValue"] == null ?"" : ViewData["FieldValue"].ToString();
+    CoreDefine.Entities Entitiy = ViewData["Entitiy"] == null ? CoreDefine.Entities.پایگاه_داده : Tools.GetEntity((string)ViewData["Entitiy"]);
+    long ParentID = ViewData["ParentID"] == null ? 0 : long.Parse(ViewData["ParentID"].ToString());
+} 
+
+
+<div class="ButtonGroupFormItemTitle">
+    <button class='k-button k-button-md T-G-k-button' onclick='Reload_CoreObject_Click(@FieldName)'><span class='k-icon k-i-reload'></span></button>
+    <button class='k-button k-button-md T-G-k-button' onclick='Add_CoreObject_Click(this)'><span class='k-icon k-i-plus'></span></button>
+</div>
+@(Html.Kendo().DropDownTree()
+        .Name(FieldName)
+        .HtmlAttributes(new { style = "width: 100%" })
+        .Items(items => {
+            items.BaseCoreObjectTreeDropDownFiller(ParentID,Entitiy); 
+        })
+        .Value(Value)
+        .Filter("contains")
+        .DataValueField("id")
+        .Height("430")
+        .Animation(true)
+    )

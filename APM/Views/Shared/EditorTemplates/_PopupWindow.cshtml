@@ -1,0 +1,16 @@
+﻿@{ 
+    string DataKey = (string)ViewData["DataKey"];
+    string FormName = (string)ViewData["FormName"];
+}
+
+@(Html.Kendo().Window()
+    .Name("EditorForm" + DataKey)
+    .Content("")
+    .Title(FormName.Replace("_"," "))
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Resizable()
+    .Actions(actions => actions.Minimize().Maximize().Close())
+    .Events(events => events.Close("OnclickCloseEditorForm"))
+)

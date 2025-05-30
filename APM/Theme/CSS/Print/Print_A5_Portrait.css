@@ -1,0 +1,15 @@
+﻿body {
+    width: 148mm;
+    height: 210mm;
+}
+
+@page {
+    size: A5 portrait;
+}
+
+@media print {
+    html, body {
+        width: 148mm;
+        height: 210mm;
+    }
+}

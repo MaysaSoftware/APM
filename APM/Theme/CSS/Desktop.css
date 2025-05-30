@@ -1,0 +1,308 @@
+﻿.MasterPopupEditorDiv {
+    padding-right: 10px;
+    padding-left: 10px;
+}
+
+.EditorForm, .k-popup-edit-form .k-edit-buttons {
+    right: 15px;
+    float: right;
+    background-color: transparent;
+    border-top-color: transparent;
+}
+
+.Grid_Image {
+    display: inline-block;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-size: 32px 35px;
+    background-color: #fff;
+    background-position: center center;
+    vertical-align: middle;
+    line-height: 32px;
+    box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+    margin-right: 5px;
+}
+
+    .Grid_Image:active {
+        width: 200px;
+        height: 200px;
+        position: absolute;
+        transition: 0.5s all ease-in-out;
+        z-index: 1;
+    }
+
+.k-edit-form-container {
+    width: 100%;
+}
+
+.k-button-solid-primary {
+    border-color: #28a745;
+    color: #fff;
+    background-color: #28a745;
+}
+
+    .k-button-solid-primary:hover {
+        border-color: #198754;
+        color: #fff;
+        background-color: #198754;
+    }
+
+.HeaderEditor {
+    display: flex;
+    border-top-right-radius: 10px;
+    border-top-left-radius: 10px;
+    background-position-y: top;
+    background-size: contain;
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 1px 2px rgb(0 0 0 / 10%);
+    text-align: center;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+}
+
+
+
+.PopupTabDiv {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border-style: solid;
+    border-width: 0.5px;
+    border-bottom-right-radius: 5px;
+    border-bottom-left-radius: 5px;
+}
+
+
+.k-breadcrumb .k-breadcrumb-link {
+    color: #262626;
+}
+
+
+.GridToolbar {
+    width: 100%;
+    height: 55px;
+    /*margin-top: -10px;*/
+    border-radius: 20px;
+    border-style: solid;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.k-grid-toolbar {
+    border-radius: 15px 15px 0px 0px;
+}
+
+.k-grid.k-grid-display-block {
+    border-radius: 20px;
+    border-style: solid;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.k-grid-pager {
+    border-radius: 0px 0px 15px 15px;
+}
+
+#appbar {
+    border-radius: 20px;
+    border-style: solid;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+    margin: 5px 0px;
+}
+
+#RightLayout{
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: #e8eaee;
+    right: 1px;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+} 
+
+.MainGridGroupRightLayout {
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 0.5px;
+    border-color: #e8eaee;
+    box-shadow: -1px -1px 5px rgba(0, 0, 0, 0.1);
+}
+
+.k-button-group > .k-button:first-child:not(:only-child) {
+    padding-right: 10px;
+}
+
+.GridToolbar .k-button-group {
+    background: rgba(255, 255, 255, 1);
+    border-radius: 20px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(5px);
+    -webkit-backdrop-filter: blur(5px);
+    border: 1px solid rgb(229 229 229 / 92%);
+}
+ 
+.k-grid a { 
+    border-radius: 20px;
+}
+.k-menu-link-text, .k-grid {
+    font-size: 14px;
+}
+
+.GridToolbar .k-button-group .k-icon:hover {
+    color: red;
+}
+
+
+.GridToolbar .k-button-solid-base {
+    border-color: transparent;
+    background-color: transparent;
+    padding: 5px;
+    margin: 0px;
+}
+
+.GridToolbar .k-icon {
+    font-size: 20px;
+}
+
+.GridToolbar .fa {
+    font-size: 14px;
+}
+
+.k-split-button-arrow .k-icon {
+    margin-left: 0;
+    margin-right: 0;
+}
+
+.GridToolbar .k-split-button-arrow {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+
+.LTRColumn {
+    direction: ltr;
+}
+
+.DefualtItem {
+    background-color: #e42929;
+    color: #fff;
+    border-color: #e42929;
+    font-weight: 900;
+}
+
+.LeftSection {
+    direction: ltr;
+}
+
+.DetailGridButtonIcon {
+    color: #fff;
+}
+
+.DetailGridButtonText {
+    color: #fff;
+    font-weight: normal;
+}
+
+.SearchButtonOpen {
+    width: 98%;
+    position: absolute;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+}
+
+    .SearchButtonOpen > a {
+        width: 100%;
+    }
+
+.SearchInputOpen {
+    width: 100%;
+    display: block;
+    -webkit-transition: width 0.4s ease-in-out;
+    transition: width 0.4s ease-in-out;
+    border: none;
+    outline: none;
+}
+
+.Hide {
+    display: none;
+}
+
+.Display {
+    display: block;
+}
+
+.OrgChartDiv {
+    height: -moz-fill-available;
+    height: -webkit-fill-available;
+    background-color: #f8f9fa;
+}
+
+.OrgChartMain {
+    height: -moz-fill-available;
+    height: -webkit-fill-available;
+}
+
+.Columnhover:hover {
+    color: red;
+    font-size: large;
+}
+
+.SearchInput {
+    position: absolute;
+    left: 22px;
+    top: 5px;
+    width: 250px;
+    z-index: 1;
+}
+
+.FormSearchInput {
+    position: absolute;
+    left: 15px;
+    top: 17px;
+    width: 250px;
+    z-index: 1;
+}
+
+.k-filter-value .ButtonGroupFormItemTitle {
+    display: none;
+}
+
+
+.k-filter-value .k-picker {
+    min-width: 150px;
+}
+
+.SearchFieldItem {
+    border-color: transparent;
+    display: inline-flex;
+}
+
+.SearchFieldContainer {
+    max-width: 100%;
+    display: inline-block;
+}
+
+.k-grid .k-grid-header .k-header .k-link {
+    height: auto;
+}
+
+.k-grid .k-grid-header .k-header {
+    white-space: normal;
+}
+
+.k-rtl .k-grid .k-grid-header .k-filterable {
+    padding-left: 0px;
+    padding-right: 0.5rem;
+}
+
+.k-grid-toolbar .k-filter-operator {
+    max-width: 150px;
+}
+
+.k-grid-toolbar .k-filter-value {
+    max-width: 160px;
+}
+
+.GridCellColumnCammeraButton {
+    border: 0px;
+    background-color: transparent;
+}

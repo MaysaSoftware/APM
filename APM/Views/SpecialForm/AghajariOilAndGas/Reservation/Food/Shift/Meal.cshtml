@@ -1,0 +1,97 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.SpecialModels.AghajariOilAndGas.Reservation;
+
+@{  
+    long RecordID = ViewData["RecordID"] == null ? 0 : (long)ViewData["RecordID"];
+    string FromDate = (string)ViewData["FromDate"];
+    string ToDate = (string)ViewData["ToDate"];
+    string SearchOfReserveID = (string)ViewData["SearchOfReserveID"];
+    long Restaurant = (long)ViewData["Restaurant"];
+    bool IsSatellite = (bool)ViewData["IsSatellite"];
+    string GridActionData = "function() {return {RecordID:"+ RecordID + ",Meals:'" + @ViewData["SelectedMeal"].ToString() + "',SearchOfReserveID:'"+ SearchOfReserveID + "'} }";
+} 
+
+<div class="classic-tabs rtl ">
+    <ul class="nav BackgroundIconColor" id="myTab" role="tablist">
+        <li class="nav-item ">
+            <i class="fas fa-pizza fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">وعده ی غذایی</i>
+        </li>
+    </ul>
+</div>
+<div class="row">
+    <div class="col-md-12 ">
+        @(Html.Kendo().Grid<dynamic>()
+        .Name("MealFoodGrid")
+        .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+        .Columns(columns =>
+        {
+            columns.Bound(typeof(long), "شناسه").Title("شناسه").Width(70).Visible(false).EditorTemplateName("InlineInteger");
+            columns.ForeignKey("GridMealReservationFood", DataConvertor.FillSelectListWithQuery("وعده_غذایی_کاربر")).Title("وعده غذایی").Width(100).EditorTemplateName("InlineGridForeignKey").EditorViewData(new { _SpecialWordFullName = "وعده_غذایی_کاربر", DeclareQuery = "" });
+            columns.Bound(typeof(int), "SaturdayToWednesdayReservationFood").Title("روزهای کاری").Width(100).EditorTemplateName("InlineInteger");
+            columns.Bound(typeof(int), "ThursdayReservationFood").Title("5 شنبه").Width(70).EditorTemplateName("InlineInteger");
+            columns.Bound(typeof(int), "FridayReservationFood").Title("جمعه و روز های تعطیل").Width(70).EditorTemplateName("InlineInteger");
+            if(IsSatellite)
+            {
+                columns.Bound(typeof(int), "ChangeShiftSaturdayToWednesdayReservationFood").Title("روزهای کاری تعویض شیفت").Width(100).EditorTemplateName("InlineInteger");
+                columns.Bound(typeof(int), "ChangeShiftFridayReservationFood").Title("جمعه و روز های تعطیل تعویض شیفت").Width(70).EditorTemplateName("InlineInteger");
+            }
+            columns.Command(command => command.Destroy().Text("حذف")).Width(80);
+        })
+        .HtmlAttributes(new { style = "height: 500px; width:100%" })
+        .Scrollable()
+        .Navigatable()
+        .Pageable(pageable => pageable.AlwaysVisible(false).PageSizes(true).Enabled(false).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+        .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+        .PersistSelection()
+        .Sortable(s => s.Enabled(false))
+        .LoaderType(GridLoaderType.Skeleton)
+        .AllowCopy(false)
+        .DataSource(dataSource =>dataSource
+                .Ajax()
+                .Model(model =>
+                {
+                    model.Id("id");
+                    model.Field("شناسه", typeof(long)).Editable(false);
+                    model.Field("GridMealReservationFood", typeof(int)).Editable(false);
+                    model.Field("SaturdayToWednesdayReservationFood", typeof(int)).Editable(true);
+                    model.Field("ThursdayReservationFood", typeof(int)).Editable(true);
+                    model.Field("FridayReservationFood", typeof(int)).Editable(true);
+                    model.Field("ChangeShiftSaturdayToWednesdayReservationFood", typeof(int)).Editable(true);
+                    model.Field("ChangeShiftFridayReservationFood", typeof(int)).Editable(true);
+                })
+                .PageSize(1000)
+                .Read(action => action.Action("ReadMealShift", "Food").Data(GridActionData))
+                )
+        
+        .Events(e=>e.CellClose("ShiftMealGridChange").Remove("RemoveShiftMealGrid"))
+        )
+    </div>
+</div>
+
+
+
+<div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style=" border-radius: 60px;  bottom: 0px; background-color: #0bb9a7e3; right: 15px;">
+
+    @(Html.Kendo().Button()
+        .Name("CancelButton21354_0_0")
+        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">بستن</span>")
+        .Events(e=>e.Click("CancelFormEditor"))
+    )
+    @(Html.Kendo().Button()
+        .Name("SaveReservationFood")
+        .HtmlAttributes(new {@class= "k-button-solid-primary SaveButton" })
+        .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">ثبت درخواست</span>")
+        .Events(e=>e.Click("SaveShiftReservationFood"))
+    )
+    @(Html.Kendo().Button()
+        .Name("NewReservationFood")
+        .HtmlAttributes(new { @class = "k-button-solid-cancel NewButton", style = "background-color:#ffee00" })
+        .Content(@"<span class=""fas fa-plus fa-lg""></span><span class=""k-button-text"">جدید</span>")
+        .Events(e=>e.Click("NewShiftReservationFood"))
+    )
+
+</div>
+ 

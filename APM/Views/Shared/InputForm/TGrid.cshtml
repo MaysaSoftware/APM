@@ -1,0 +1,802 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+@using APM.Models.DesktopManagement;
+@using System.Data;
+
+@Styles.Render("~/DesktopCSS")
+@Styles.Render("~/EditorCSS")
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    string SubDashboardID = ViewData["SubDashboardID"] == null ? "" : ViewData["SubDashboardID"].ToString();
+    bool IsDetailGrid = ViewData["IsDetailGrid"] == null ? false : (bool)ViewData["IsDetailGrid"];
+    string Category = ViewData["Category"] == null ? "" : ViewData["Category"].ToString();
+    long ProcessID = ViewData["ProcessID"] == null ? 0 : long.Parse(ViewData["ProcessID"].ToString());
+    long ProcessStepID = ViewData["ProcessStepID"] == null ? 0 : long.Parse(ViewData["ProcessStepID"].ToString());
+    string ParentID = ViewData["ParentID"] == null ? (string.IsNullOrEmpty(Request["ParentID"]) ? "0" : Request["ParentID"]) : (string)ViewData["ParentID"];
+    string RecordID = string.IsNullOrEmpty((string)ViewData["RecordID"]) ? "0" : (string)ViewData["RecordID"];
+    string ActionData = "function() {return {_DataKey: '" + DataKey + "', _ParentID:" + ParentID + ",_MasterProcessID:" + ProcessID + ",_ProcessStep:" + ProcessStepID + " ,RecordID:" + RecordID + ",SubDashboardID:'" + SubDashboardID + "',Category:'" + Category + "' } }";
+    string ImportDataActionData = "function() {return {_DataKey: '" + DataKey + "', _ParentID:'" + ParentID + "' ,_RecordID:" + RecordID + " } }";
+    int MasterPopupEditor_Width = Referral.MasterPopupEditor_Width;
+    int MasterPopupEditor_Height = Referral.MasterPopupEditor_Height;
+    string TableID = "_TableID" + DataKey;
+    string MainGridDetailTemplate = "MainGridDetailTemplate" + DataKey;
+    string MasterProcessIDTextID = "MasterProcessIDText" + ProcessID;
+    string MasterProcessIDTextValue = ProcessID == 0 ? "0" : DataKey.ToString();
+    bool IsChartDetail = ViewData["IsChartDetail"] == null ? false : (bool)ViewData["IsChartDetail"];
+    string GridName = IsDetailGrid ? "DetailMainGrid" + DataKey + "_" + ParentID : "MainGrid" + DataKey;
+    string SaveParentSubjectSaveChild = IsDetailGrid ? "DetailSaveParentSubjectSaveChild" + DataKey + "_" + ParentID : "SaveParentSubjectSaveChild" + DataKey;
+    string CheckValidChildGridID = IsDetailGrid ? "DetailCheckValidChildGrid" + DataKey + "_" + ParentID : "CheckValidChildGrid" + DataKey;
+
+    string DataSourceName = (IsDetailGrid ? "Detail" : "") + "DataSource_" + DataKey + "_" + ParentID;
+    string FilterName = (IsDetailGrid ? "Detail" : "") + "Filter_" + DataKey + "_" + ParentID;
+    string SaveFilterButton = (IsDetailGrid ? "Detail" : "") + "SaveFilterButton_" + DataKey + "_" + ParentID;
+    string DivFilterName = (IsDetailGrid ? "Detail" : "") + "DivFilter_" + DataKey + "_" + ParentID;
+    string InputValueColorRow = (IsDetailGrid ? "Detail" : "") + "InputValueColorRow_" + DataKey + "_" + ParentID;
+    string InputOperatorColorRow = (IsDetailGrid ? "Detail" : "") + "InputOperatorColorRow_" + DataKey + "_" + ParentID;
+    string InputColumnNameColorRow = (IsDetailGrid ? "Detail" : "") + "InputColumnNameColorRow_" + DataKey + "_" + ParentID;
+    string InputRowColorSelectedColor = (IsDetailGrid ? "Detail" : "") + "InputRowColorSelectedColor_" + DataKey + "_" + ParentID;
+    string WinImportDataName = (IsDetailGrid ? "Detail" : "") + "WinImportData_" + DataKey + "_" + ParentID;
+    string DialogImportDataName = (IsDetailGrid ? "Detail" : "") + "DialogImportData_" + DataKey + "_" + ParentID;
+    string UploadID = (IsDetailGrid ? "Detail" : "") + "UploadIDImportData_" + DataKey + "_" + ParentID;
+
+
+    string WinAddComment = (IsDetailGrid ? "Detail" : "") + "AddCommentDialog_" + DataKey + "_" + ParentID;
+    string WinSendEmail = (IsDetailGrid ? "Detail" : "") + "SendEmailDialog_" + DataKey + "_" + ParentID;
+    string ReciveSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "ReciveSendEmailDialog_" + DataKey + "_" + ParentID;
+    string ReportSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "ReportSendEmailDialog_" + DataKey + "_" + ParentID;
+    string IsSendAttachmentSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "IsSendAttachmentSendEmailDialog_" + DataKey + "_" + ParentID;
+    string TitleSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "TitleSendEmailDialog_" + DataKey + "_" + ParentID;
+    string MessageSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "MessageSendEmailDialog_" + DataKey + "_" + ParentID;
+    string SendButtonSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "SendButtonSendEmailDialog_" + DataKey + "_" + ParentID;
+    string CancelButtonSendEmailDialog = (IsDetailGrid ? "Detail" : "") + "CancelButtonSendEmailDialog_" + DataKey + "_" + ParentID;
+    string MainGridGroupMenuTree = (IsDetailGrid ? "Detail" : "") + "MainGridGroupMenuTree_" + DataKey + "_" + ParentID;
+    string InputMainGridGroupMenuTree = (IsDetailGrid ? "Detail" : "") + "InputMainGridGroupMenuTree_" + DataKey + "_" + ParentID;
+    string MainGridGroupLeftLayout = (IsDetailGrid ? "Detail" : "") + "MainGridGroupLeftLayout_" + DataKey + "_" + ParentID;
+    string MainGridGroupRightLayout = (IsDetailGrid ? "Detail" : "") + "MainGridGroupRightLayout_" + DataKey + "_" + ParentID;
+    string GridNewPageName = (IsDetailGrid ? "Detail" : "") + "MainGridNewPage_" + DataKey + "_" + ParentID;
+    string GridUpdatePageName = (IsDetailGrid ? "Detail" : "") + "MainGridUpdatePage_" + DataKey + "_" + ParentID;
+    string GridFullName = (IsDetailGrid ? "Detail" : "") + "MainGridFullName_" + DataKey + "_" + ParentID;
+    string GridSearchWithOnkeyDownCoreId = (IsDetailGrid ? "Detail" : "") + "SearchWithOnkeyDownCoreId_" + DataKey + "_" + ParentID;
+    long GridSearchWithOnkeyDownCoreIdValue = 0;
+    string OrgChartName = "OrgChart_" + DataKey + "_" + ParentID;
+    string OrgChartDivName = "OrgChartDiv_" + DataKey + "_" + ParentID;
+    CoreObject Form = CoreObject.Find(long.Parse(DataKey));
+    string TableIDValue = DataKey;
+    GridEditMode GridEditMode = GridEditMode.PopUp;
+    bool Pageable = true;
+    bool Groupable = true;
+    bool Aggregatesable = true;
+    bool ISReadOnly = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+    bool ShowChartInformationEntryForm = false;
+    bool ShowSelectedColumn = false;
+    string ValueColorRow = "";
+    string OperatorColorRow = "";
+    string ColumnNameColorRow = "";
+    string RowColorSelectedColor = "";
+    int RowCountInPage = 15;
+    string Height = "100%";
+    bool SaveParentSubjectSaveChildValue = false;
+    bool CheckValidChildGrid = false;
+    long GroupableField = 0;
+    string GridNewPageValue = string.Empty;
+    string GridUpdatePageValue = string.Empty;
+    string ClassGridDiv = "split left ";
+    string GridClass = string.Empty;
+
+    if (Form.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+    {
+        TableIDValue = Desktop.DataInformationEntryForm[@DataKey].RelatedTable.ToString();
+        GridEditMode = Desktop.DataInformationEntryForm[@DataKey].GridEditMode;
+        Pageable = Desktop.DataInformationEntryForm[@DataKey].Pageable;
+        Groupable = Desktop.DataInformationEntryForm[@DataKey].Groupable;
+        Aggregatesable = Desktop.DataInformationEntryForm[@DataKey].Aggregatesable;
+        ShowChartInformationEntryForm = Desktop.DataInformationEntryForm[@DataKey].ShowChartInformationEntryForm;
+        ShowSelectedColumn = Desktop.DataInformationEntryForm[@DataKey].ShowSelectedColumn;
+        GroupableField = Desktop.DataInformationEntryForm[@DataKey].GroupableField;
+        if (Form.ParentID > 0)
+        {
+            Height = Desktop.DataInformationEntryForm[@DataKey].Height.ToString() + "px";
+        }
+
+        foreach (CoreObject GridRowColorCore in CoreObject.FindChilds(Form.CoreObjectID, CoreDefine.Entities.رنگ_سطر_جدول))
+        {
+            APM.Models.APMObject.InformationForm.GridRowColor RowColor = new APM.Models.APMObject.InformationForm.GridRowColor(GridRowColorCore);
+            ValueColorRow += RowColor.RowColorColumnValue + ",";
+            OperatorColorRow += RowColor.RowColorOperator + ",";
+            RowColorSelectedColor += RowColor.RowColorSelectedColor + ",";
+            ColumnNameColorRow += (RowColor.RowColorColumnName != 0 ? CoreObject.Find(RowColor.RowColorColumnName).FullName : "") + ",";
+        }
+
+        RowCountInPage = Pageable ? Desktop.DataInformationEntryForm[@DataKey].RowCoutnInPage : 0;
+
+        SaveParentSubjectSaveChildValue = Desktop.DataInformationEntryForm[@DataKey].SaveParentSubjectSaveChild;
+        CheckValidChildGrid = Desktop.DataInformationEntryForm[@DataKey].CheckValidChildGrid;
+        GridNewPageValue = Desktop.DataInformationEntryForm[@DataKey].NewPageUrl.TrimEnd();
+        GridUpdatePageValue = Desktop.DataInformationEntryForm[@DataKey].UpdatePageUrl.TrimEnd();
+        GridClass = Desktop.DataInformationEntryForm[@DataKey].SearchWithOnkeyDownCoreId > 0 ? "SearchWithOnkeyDown" : GridClass;
+        GridSearchWithOnkeyDownCoreIdValue = Desktop.DataInformationEntryForm[@DataKey].SearchWithOnkeyDownCoreId;
+    }
+
+    string WindowName = "PopupEditorWindow" + DataKey;
+    int counter = 1;
+
+    string LeftSplitWidth = GroupableField > 0 ? "80%" : "100%";
+    string RightSplitWidth = GroupableField > 0 ? "20%" : "0%";
+    if (Referral.CustomerName == Software.Customers.AghajariOilAndGas && Referral.DBData.ConnectionData.DataBase == "NisocDCSData" && DataKey == "10284")
+    {
+        LeftSplitWidth = "75%";
+    }
+
+}
+
+@if (ProcessID > 0 && ProcessStepID == 0)
+{
+    List<CoreObject> BpmnPoolCooreList = CoreObject.FindChilds(ProcessID, CoreDefine.Entities.BPMN_بخش_بندی);
+    foreach (CoreObject BpmnPoolItem in BpmnPoolCooreList)
+    {
+        List<CoreObject> BpmnLenCoreList = CoreObject.FindChilds(BpmnPoolItem.CoreObjectID, CoreDefine.Entities.BPMN_مسیر);
+        foreach (CoreObject BpmnLenItem in BpmnLenCoreList)
+        {
+            List<CoreObject> ProcessStepCoreList = CoreObject.FindChilds(BpmnLenItem.CoreObjectID, CoreDefine.Entities.مرحله_فرآیند);
+            foreach (CoreObject ProcessStepItem in ProcessStepCoreList)
+            {
+                ProcessStep processStep = new ProcessStep(ProcessStepItem);
+                if (processStep.InformationEntryFormID > 0)
+                {
+                    @(Html.Kendo().Window()
+                        .Name("EditorForm"+ processStep.InformationEntryFormID.ToString())
+                        .HtmlAttributes(new { style = "top:0px;" })
+                        .Draggable()
+                        .Visible(false)
+                        .Resizable(resize => resize.Enabled(true))
+                        .Modal(true)
+                        .Actions(actions => actions.Close())
+                        .Events(events => events.Close("OnclickCloseEditorForm"))
+                    )
+
+                }
+            }
+        }
+    }
+}
+
+
+@(Html.Kendo().Window()
+    .Name(@WindowName)
+    .HtmlAttributes(new { style = "top:0px;" })
+    .Draggable()
+    .Visible(false)
+    .Resizable(resize => resize.Enabled(true))
+    .Modal(true)
+    .Actions(actions => actions.Close())
+    .Events(events => events.Close("OnclickCloseEditorForm"))
+)
+
+@(Html.Kendo().Dialog()
+    .Name(@DialogImportDataName)
+    .Title("بارگذاری داده " + Tools.UnSafeTitle(Form.FullName))
+    .Content(@Html.Kendo().Upload()
+                .Name("files")
+                .Multiple(false) 
+                .HtmlAttributes(new { id = @UploadID })
+                .Async(a => a.Save("Save", "ImportData").AutoUpload(true))
+                .Events(e => e.Upload("UploadUploadFileImportData").Success("SuccessUploadFileImportData").Complete("CompleteUploadFileImportData"))
+                .Validation(validation =>
+                {
+                    validation.AllowedExtensions(new string[] { ".xlsx", ".xls" });
+                })
+                .ToHtmlString())
+    .Width(400)
+    .Modal(false)
+    .Visible(false)
+)
+
+@{
+    Dictionary<string, object> AddCommentAttrs = new Dictionary<string, object>();
+    AddCommentAttrs.Add("style", "width: 100%;border-color: #c9c8c8; border-radius: 3px; height: 400px;");
+}
+
+@(Html.Kendo().Dialog()
+    .Name(@WinAddComment)
+    .Title("ایجاد یادداشت جدید")
+    .Content(@Html.Kendo().TextArea()
+            .Name("Input_"+ @WinAddComment)
+            .Resize(TextAreaResize.Vertical)
+            .Readonly(false)
+            .HtmlAttributes(AddCommentAttrs)
+            .ToHtmlString())
+    .Width(400)
+    .Modal(true)
+    .Actions(actions =>
+    {
+        actions.Add().Text("انصراف");
+        actions.Add().Text("انصراف");
+    })
+    .Visible(false)
+)
+
+
+@{
+    List<string> ReportList = new List<string>();
+    foreach (ReportParameter Parameter in Desktop.DataReport[DataKey])
+    {
+        CoreObject ParameterCore = CoreObject.Find(Parameter.CoreObjectID);
+        CoreObject ReportCore = CoreObject.Find(ParameterCore.ParentID);
+        ReportList.Add(Tools.UnSafeTitle(ReportCore.FullName) + "_" + ReportCore.CoreObjectID);
+    }
+    Dictionary<string, object> AttrsMultiSelect = new Dictionary<string, object>();
+
+    AttrsMultiSelect.Add("autocomplete", "off");
+    AttrsMultiSelect.Add("class", "MultiSelect");
+
+}
+
+@(Html.Kendo().Window()
+    .Name(@WinSendEmail)
+    .Title("ارسال ایمیل")
+    .Content("<div style='gap: 8px;display: grid;'><p>گیرندگان(با کاما گیرندگان را از هم جدا کنید)</p>" +
+                Html.Kendo().TextBox()
+                .Name(@ReciveSendEmailDialog)
+                .HtmlAttributes(new { @class = "FormItemInput", style = "height: 40px;min-height: 20px;" }).ToHtmlString() +
+
+                "<p>گزارشات</p>" +
+                Html.Kendo().MultiSelect()
+                .Name(ReportSendEmailDialog)
+                .BindTo(ReportList)
+                .HtmlAttributes(AttrsMultiSelect).ToHtmlString()+
+
+                "<p>آیا ضمائم ارسال شود</p>" +
+                Html.Kendo().Switch()
+                .Name(IsSendAttachmentSendEmailDialog)
+                .HtmlAttributes(new { style = "max-width: 130px;" })
+                .Checked(true)
+                .Messages(c => c.Checked("ارسال ضمائم").Unchecked("عدم ارسال ضمائم")).ToHtmlString()
+                +
+                "<p>موضوع</p>" +
+                Html.Kendo().TextBox()
+                .Name(TitleSendEmailDialog)
+                .HtmlAttributes(new { @class = "FormItemInput", style="height: 40px;min-height: 20px;" }).ToHtmlString()
+                +
+                "<p>متن</p>" +
+                Html.Kendo().TextArea()
+                .Name(@MessageSendEmailDialog)
+                .Resize(TextAreaResize.Vertical)
+                .HtmlAttributes(new {@class= "FormItemInput",style= "min-height: 250px; " }).ToHtmlString()
+                +
+                Html.Kendo().Button()
+                .Name(SendButtonSendEmailDialog)
+                .HtmlAttributes(new {@class= "k-button-solid-primary" })
+                .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">ارسال</span>")
+                .Events(e=>e.Click("SendEmailDialogClick")).ToHtmlString()
+                +
+                Html.Kendo().Button()
+                .Name(CancelButtonSendEmailDialog)
+                .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">انصراف</span>")
+                .Events(e=>e.Click("CancelSendEmail")).ToHtmlString()
+                +"</div>"
+                )
+
+    .Width(400)
+    .Modal(true)
+
+    .Visible(false)
+)
+@(Html.Kendo().Window()
+    .Name(@WinImportDataName)
+    .Title("بارگذاری داده "+ Tools.UnSafeTitle(Form.FullName))
+    .HtmlAttributes(new { style = "top:0px;" })
+    .Content("")
+    .Draggable()
+    .Visible(false)
+    .Resizable(resize => resize.Enabled(true))
+    .Modal(true)
+    .Actions(actions => actions.Close())
+    .Events(events => events.Close("OnclickCloseWinImportData"))
+ )
+
+<div hidden>
+    <input id=@InputOperatorColorRow value=@OperatorColorRow hidden />
+    <input id=@InputValueColorRow value=@ValueColorRow hidden />
+    <input id=@InputColumnNameColorRow value=@ColumnNameColorRow hidden />
+    <input id=@InputRowColorSelectedColor value=@RowColorSelectedColor hidden />
+    <input class=@GridName value=@ParentID hidden />
+    <input id=@GridFullName value=@Tools.UnSafeTitle(Form.FullName) hidden />
+    <input id=@GridSearchWithOnkeyDownCoreId value=@GridSearchWithOnkeyDownCoreIdValue hidden />
+
+    @if (SaveParentSubjectSaveChildValue)
+    {
+        <input type="checkbox" id=@SaveParentSubjectSaveChild checked hidden />
+    }
+    else
+    {
+        <input type="checkbox" id=@SaveParentSubjectSaveChild value=@SaveParentSubjectSaveChildValue hidden />
+    }
+
+    @if (CheckValidChildGrid)
+    {
+        <input type="checkbox" id=@CheckValidChildGridID checked hidden />
+    }
+    else
+    {
+        <input type="checkbox" id=@CheckValidChildGridID hidden />
+    }
+    @if (!string.IsNullOrEmpty(GridNewPageValue))
+    {
+        <input hidden id=@GridNewPageName value=@GridNewPageValue />
+    }
+
+    @if (!string.IsNullOrEmpty(GridUpdatePageValue))
+    {
+        <input hidden id=@GridUpdatePageName value=@GridUpdatePageValue />
+    }
+
+    @if (ProcessID > 0 && ProcessStepID == 0)
+    {
+        <input hidden class=@ProcessID value=@GridName />
+    }
+    @*<input id="_DataKey" value=@DataKey hidden />
+        <input id=@MasterProcessIDTextID hidden value=@MasterProcessIDTextValue />
+        <input id=@TableID value=@TableIDValue hidden />*@
+</div>
+
+
+@(Html.Kendo().DataSource<dynamic>()
+            .Name(DataSourceName)
+            .Ajax(t => t
+                    .Model(model => model.Setting(@DataKey))
+                    .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                 )
+     )
+
+@if (!IsDetailGrid)
+{
+    @Html.Partial("/Views/Desktop/Dialog.cshtml", new ViewDataDictionary { { "DataKey", DataKey } })
+    foreach (CoreObject core in CoreObject.FindChilds(long.Parse(DataKey), CoreDefine.Entities.فرم_ورود_اطلاعات))
+    {
+        @Html.Partial("/Views/Desktop/Dialog.cshtml", new ViewDataDictionary { { "DataKey", core.CoreObjectID.ToString() } })
+    }
+}
+
+
+<div class="GridFilter" id=@DivFilterName>
+    @(Html.Kendo().Filter<dynamic>()
+            .Name(FilterName)
+            .ApplyButton(false)
+            .ExpressionPreview()
+            .MainLogic(Kendo.Mvc.FilterCompositionLogicalOperator.And)
+            .DataSource(DataSourceName)
+            .Events(e=>e.Change("FilterChange"))
+    )
+    <div>
+        @(Html.Kendo().Button()
+            .Name(SaveFilterButton)
+            .HtmlAttributes(new {@class= "k-button-solid-primary" })
+            .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">جستجو</span>")
+            .Events(e=>e.Click("SaveGridFilterButton"))
+        )
+    </div>
+</div>
+
+@if (ShowChartInformationEntryForm)
+{
+    <div class="OrgChartDiv k-toolbar k-grid-toolbar k-grid-top" id=@OrgChartDivName>
+        @Html.Partial("/Views/Desktop/OrgChartToolbarTemplate.cshtml", new ViewDataDictionary { { "MasterDataKey", DataKey }, { "MasterProcessID", ProcessID }, { "ToolbarName", "MainGridToolbar" + @DataKey }, { "ParentID", ParentID }, { "ISReadOnly", ISReadOnly } })
+        <div class="OrgChartMain">
+            <div class="OrgChartMain" id=@OrgChartName></div>
+        </div>
+        <script>
+              ORGChartDataBinding(@OrgChartName)
+        </script>
+    </div>
+}
+
+
+<style>
+
+    .split {
+        height: 100%;
+        z-index: 1;
+        overflow-x: hidden;
+    }
+    .left {
+        width:@LeftSplitWidth ;
+        height: 100%;
+        float:left;
+    }
+    .right {
+        width: @RightSplitWidth;
+        background-color: @Referral.PublicSetting.MainColor;
+    }
+</style>
+
+
+<div style="overflow:hidden" class="@ClassGridDiv" id=@MainGridGroupLeftLayout>
+    @if (Aggregatesable == true)
+    {
+
+        if (GridEditMode != GridEditMode.PopUp && RecordID == "0" && ParentID == "0")
+        {
+            @(Html.Kendo().Grid<dynamic>()
+            .Name(GridName)
+            .Editable(e=>e.Mode(GridEditMode).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+            .Columns(columns => {columns.Setting(@DataKey,false,-1,-1,false,ProcessID,ProcessStepID); })
+            .HtmlAttributes(new { style = "height: "+(Height) + "; width:100%;    margin-bottom: 20px;", @class = GridClass })
+            .Groupable(e => e.Enabled(Groupable))
+            .Scrollable()
+            .Resizable(r => r.Columns(true))
+            .Navigatable()
+            .PersistSelection()
+            .Sortable(s=>s.AllowUnsort(true))
+            .LoaderType(GridLoaderType.Skeleton)
+            .AllowCopy(false)
+            .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+            .ToolBar(toolbar => toolbar.Template(@<text> @Html.Partial("/Views/Desktop/MainGridToolbarTemplate.cshtml",new ViewDataDictionary { { "MasterDataKey", DataKey }, { "MasterProcessID", ProcessID }, { "ProcessStepID", ProcessStepID }, { "ToolbarName", "MainGridToolbar" + @DataKey },{ "ParentID", ParentID },{ "ISReadOnly", ISReadOnly },{"IsDetailGrid", IsDetailGrid} }) </text>))
+            .DataSource(dataSource =>
+                            dataSource
+                            .Ajax()
+                            .Model(model => model.Setting(@DataKey))
+                            .Aggregates(model => model.Setting(@DataKey))
+                            .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                            .Create(action => action.Action("Create", "Desktop").Data(ActionData))
+                            .Update(action => action.Action("Update", "Desktop").Data(ActionData))
+                            .Destroy(action => action.Action("Destroy", "Desktop").Data(ActionData))
+                            .Events(e => e.RequestEnd("MainGridRequestEnd(this,"+ DataKey + ")")
+                                            .Change("MainGridChange"))
+                        )
+            .Events(events =>
+            {
+                events.DataBound("MainGridPreviewSetting");
+                events.Edit("MainGridEdit");
+                events.Remove("RemoveRowGrid");
+                if (ProcessID>0 || ShowSelectedColumn)
+                    events.Change("MainGridChange");
+            }
+            )
+        )
+
+        }
+        else
+        {
+            @(Html.Kendo().Grid<dynamic>()
+            .Name(GridName)
+            .Editable(e => e.Mode(GridEditMode.PopUp)
+                            .ConfirmDelete("آیا برای حذف مطمئن هستید؟")
+                            .TemplateName("_PopupWindow")
+                            .AdditionalViewData(new { DataKey = @DataKey, FormName = Tools.UnSafeTitle(Form.FullName) })
+                        )
+            .Columns(columns => { columns.Setting(@DataKey, false, -1, -1, false, ProcessID, ProcessStepID); })
+            .HtmlAttributes(new { style = "height: " + (Height) + "; width:100%;    margin-bottom: 20px;", @class = GridClass })
+            .Excel(excel => excel.FileName(Tools.UnSafeTitle(Form.FullName) + ".xlsx").AllPages(true))
+            //.Pdf(pdf=>pdf.FileName(Desktop.DataInformationEntryForm[@DataKey].InformationEntryFormName + ".pdf").AllPages())
+            .Pdf(pdf => pdf
+                .AllPages()
+                .AvoidLinks()
+                .PaperSize("A4")
+                .Scale(0.8)
+                .Margin("2cm", "1cm", "1cm", "1cm")
+                .Landscape()
+                .RepeatHeaders()
+                .TemplateId("page-template")
+                .KeepPNG(true)
+                .FileName(Tools.UnSafeTitle(Form.FullName) + ".pdf")
+            //.ProxyURL(Url.Action("Pdf_Export_Save", "Desktop"))
+            )
+            .Scrollable()
+            .Resizable(r => r.Columns(true))
+            .Navigatable()
+            .Pageable(pageable => pageable.AlwaysVisible(Pageable).PageSizes(true).Enabled(Pageable).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+            .Selectable(selectable =>selectable.Type(GridSelectionType.Row).Mode(ShowSelectedColumn ? GridSelectionMode.Multiple:GridSelectionMode.Single))
+            .PersistSelection()
+            .Sortable(s => s.AllowUnsort(true).SortMode(GridSortMode.Mixed))
+            .LoaderType(GridLoaderType.Skeleton)
+            .Groupable(e=>e.Enabled(Groupable))
+            .AllowCopy(false)
+            .ColumnMenu()
+            .ClientDetailTemplateId(@MainGridDetailTemplate)
+            .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+            .ToolBar(toolbar => toolbar.Template(@<text> @Html.Partial("/Views/Desktop/MainGridToolbarTemplate.cshtml",new ViewDataDictionary { { "MasterDataKey", DataKey }, { "MasterProcessID", ProcessID }, { "ProcessStepID", ProcessStepID } , { "ToolbarName", "MainGridToolbar" + @DataKey },{ "ParentID", ParentID }, { "ISReadOnly", ISReadOnly }, { "IsDetailGrid", IsDetailGrid } }) </text>))
+            .DataSource(dataSource => {
+                dataSource.Ajax()
+                            .ServerOperation(false)
+                            .PageSize(RowCountInPage)
+                            .Model(model => model.Setting(@DataKey))
+                            .Aggregates(model => model.Setting(@DataKey))
+                            .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                            .Create(action => action.Action("Create", "Desktop").Data(ActionData))
+                            .Update(action => action.Action("Update", "Desktop").Data(ActionData))
+                            .Destroy(action => action.Action("Destroy", "Desktop").Data(ActionData))
+                            //.AutoSync(true)
+                            .Events(e => e.RequestEnd("MainGridRequestEnd")
+                                            .Change("MainGridChange"));
+            })
+
+            .Events(events =>
+            {
+                events.DataBound("MainGridPreviewSetting");
+                events.Edit("MainGridEdit");
+
+                if (ProcessID > 0 || ShowSelectedColumn)
+                    events.Change("MainGridChange");
+            }
+            )
+         )
+        }
+    }
+    else
+    { 
+        if (GridEditMode != GridEditMode.PopUp && RecordID == ParentID)
+        {
+            @(Html.Kendo().Grid<dynamic>()
+            .Name(GridName)
+            .Editable(e=>e.Mode(GridEditMode).ConfirmDelete("آیا برای حذف مطمئن هستید؟").DisplayDeleteConfirmation(false))
+            .Columns(columns => { columns.Setting(@DataKey, IsDetailGrid, 0, long.Parse(RecordID), false, ProcessID, ProcessStepID); })
+            .HtmlAttributes(new { style = "height: " + (Height) + "; width:100%;    margin-bottom: 20px;", @class = GridClass })
+            .Groupable(e => e.Enabled(Groupable))
+            .Scrollable()
+            .Resizable(r => r.Columns(true))
+            .Navigatable()
+            .PersistSelection()
+            .LoaderType(GridLoaderType.Skeleton)
+            .AllowCopy(false)
+            .ColumnMenu()
+            .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(true))
+            .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(ShowSelectedColumn ? GridSelectionMode.Multiple : GridSelectionMode.Single))
+            .ToolBar(toolbar => toolbar.Template(@<text> @Html.Partial("/Views/Desktop/MainGridToolbarTemplate.cshtml",new ViewDataDictionary { { "MasterDataKey", DataKey }, { "MasterProcessID", ProcessID }, { "ProcessStepID", ProcessStepID } , { "ToolbarName", "MainGridToolbar" + @DataKey },{ "ParentID", ParentID },{ "ISReadOnly", ISReadOnly }, { "IsDetailGrid", IsDetailGrid } }) </text>))
+            .DataSource(dataSource =>
+                            dataSource
+                            .Ajax()
+                            .ServerOperation(false)
+                            .Model(model => model.Setting(@DataKey))
+                            .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                            .Create(action => action.Action("Create", "Desktop").Data(ActionData))
+                            .Update(action => action.Action("Update", "Desktop").Data(ActionData))
+                            .Destroy(action => action.Action("Destroy", "Desktop").Data(ActionData))
+                            .Events(e => e.RequestEnd("MainGridRequestEnd(this,"+ DataKey + ")")
+                                            //.Change("MainGridChange")
+                                            )
+                        )
+            .Events(events =>
+            {
+                events.DataBound("MainGridPreviewSetting");
+                events.Edit("MainGridEdit");
+                events.Remove("RemoveRowGrid");
+                //events.Change("OnChangeGrid");
+                events.CellClose("OnCellClose");
+                //if (ProcessID>0 || ShowSelectedColumn)
+                events.Change("MainGridChange");
+            }
+            )
+            )
+
+        }
+        else
+        {
+            @(Html.Kendo().Grid<dynamic>()
+            .Name(GridName)
+            .Editable(e => e.Mode(GridEditMode.PopUp)
+                            .ConfirmDelete("آیا برای حذف مطمئن هستید؟")
+                            .TemplateName("_PopupWindow")
+                            .AdditionalViewData(new { DataKey = @DataKey, FormName = Tools.UnSafeTitle(Form.FullName) })
+                        )
+            .Columns(columns => { columns.Setting(@DataKey, IsDetailGrid, 0, long.Parse(RecordID), false, ProcessID, ProcessStepID); })
+            .HtmlAttributes(new { style = "height: " + (Height) + "; width:100%;    margin-bottom: 20px;" ,@class=GridClass})
+            .Excel(excel => excel.FileName(Tools.UnSafeTitle(Form.FullName) + ".xlsx").AllPages(true))
+            //.Pdf(pdf=>pdf.FileName(Desktop.DataInformationEntryForm[@DataKey].InformationEntryFormName + ".pdf").AllPages())
+            .Pdf(pdf => pdf
+                .AllPages()
+                .AvoidLinks()
+                .PaperSize("A4")
+                .Scale(0.8)
+                .Margin("2cm", "1cm", "1cm", "1cm")
+                .Landscape()
+                .RepeatHeaders()
+                .TemplateId("page-template")
+                .KeepPNG(true)
+                .FileName(Tools.UnSafeTitle(Form.FullName) + ".pdf")
+            //.ProxyURL(Url.Action("Pdf_Export_Save", "Desktop"))
+            )
+            .Scrollable()
+            .Resizable(r => r.Columns(true))
+            .Navigatable()
+            .Pageable(pageable => pageable.AlwaysVisible(Pageable).PageSizes(true).Enabled(Pageable).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+            .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(ShowSelectedColumn ? GridSelectionMode.Multiple : GridSelectionMode.Single))
+            .PersistSelection()
+            .Sortable(s => s.AllowUnsort(true).SortMode(GridSortMode.Mixed))
+            .LoaderType(GridLoaderType.Skeleton)
+            .Groupable(e=>e.Enabled(Groupable))
+            .AllowCopy(false)
+            .ColumnMenu()
+            .ClientDetailTemplateId(@MainGridDetailTemplate)
+            .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+            .ToolBar(toolbar => toolbar.Template(@<text> @Html.Partial("/Views/Desktop/MainGridToolbarTemplate.cshtml",new ViewDataDictionary { { "MasterDataKey", DataKey }, { "MasterProcessID", ProcessID }, { "ProcessStepID", ProcessStepID }, { "ToolbarName", "MainGridToolbar" + @DataKey },{ "ParentID", ParentID }, { "ISReadOnly", ISReadOnly }, { "IsDetailGrid", IsDetailGrid } }) </text>))
+            .DataSource(dataSource => {
+                dataSource.Ajax()
+                            .ServerOperation(false) 
+                            .PageSize(RowCountInPage)
+                            .Model(model => model.Setting(@DataKey)) 
+                            .Read(action => action.Action("Read", "Desktop").Data(ActionData))
+                            .Create(action => action.Action("Create", "Desktop").Data(ActionData))
+                            .Update(action => action.Action("Update", "Desktop").Data(ActionData))
+                            .Destroy(action => action.Action("Destroy", "Desktop").Data(ActionData))
+                            .Events(e => e.RequestEnd("MainGridRequestEnd")
+                                            .Change("MainGridChange"));
+            })
+
+            .Events(events =>
+            {
+                events.DataBound("MainGridPreviewSetting");
+                events.Edit("MainGridEdit");
+
+                if (ProcessID > 0 || ShowSelectedColumn)
+                    events.Change("MainGridChange");
+            }
+            )
+        )
+        }
+    }
+
+</div>
+
+@if (GroupableField > 0)
+{
+    Field field = new Field(CoreObject.Find(Desktop.DataInformationEntryForm[@DataKey].GroupableField));
+    <input type="text" id=@InputMainGridGroupMenuTree value=@field.FieldName hidden>
+
+    <div class="split right MainGridGroupRightLayout" id=@MainGridGroupRightLayout>
+
+        <span style="color:@Referral.PublicSetting.MainColor;padding-right:15px;display: block;width: 100%;background-color: @Referral.PublicSetting.IconColor;height: 45px;text-align: center;padding: 15px;">
+            @field.Title()
+        </span>
+        @(Html.Kendo().TreeView()
+            .Name(@MainGridGroupMenuTree)
+            .Events(events => events.Change("SelectedMainGridGroupMenuTree"))
+            .LoadOnDemand(true)
+            .Items(root => {
+                root.GridGroupBaseMenuFiller(DataKey);
+            })
+        )
+    </div>
+
+}
+
+@if (Referral.CustomerName == Software.Customers.AghajariOilAndGas && Referral.DBData.ConnectionData.DataBase == "NisocDCSData" && DataKey == "10284")
+{
+    DataTable PlaneData = Referral.DBData.SelectDataTable("select top 1 Airplane.PersianTitle  " +
+        ",Airplane.Title" +
+        ",(select top 1 Value  FROM [NisocDCSAttachment].[dbo].[CoreObjectAttachment] where RecordID = 142 and InnerID = Airplane.شناسه  and FullName=N'Picture') as Picture " +
+        ",Airplane.شناسه as Airplane ,Airplane.RowsCount, Airplane.ColumnName ," +
+        "(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه) as TotalPassenger " +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4) as TotalAcceptPassenger " +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4 and AgeType=N'A') as TotalAcceptAdultPassenger" +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4 and AgeType=N'C') as TotalAcceptChildPassenger" +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4 and AgeType=N'I') as TotalAcceptInfantPassenger" +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4 and Gender=N'F') as TotalAcceptFemalePassenger" +
+        ",(select COUNT(1) from FlightPassengers where FlightPassengers.Flight = Flight.شناسه and PassengersStatus between 2 and 4 and Gender=N'M') as TotalAcceptMalePassenger" +
+        ",Flight.PersianWeekDay" +
+        ",Flight.ShamsiDate" +
+        ",(select City.EnglishName from City where شناسه = Flight.Station) as Station" +
+        ",(select City.EnglishName from City where شناسه = Flight.Destination) as Destination" +
+        " FROM Flight inner join Airplane on  Airplane.شناسه = Flight.Airplane  where Flight.شناسه = " + RecordID);
+    DataTable FlightPassengersSeatsData= Referral.DBData.SelectDataTable("select  FlightPassengers.CardNumber,  FlightPassengers.شناسه,   AirplaneSeat.Num,AirplaneSeat.RowChar ,FlightPassengers.PersianFirstName + N' '+FlightPassengers.PersianLastName as PassengerName ,FlightPassengers.AgeType,FlightPassengers.Gender ,FlightPassengers.NationalID,FlightPassengers.PassportID FROM FlightPassengers inner join AirplaneSeat on   FlightPassengers.AirplaneSeat =AirplaneSeat.شناسه  where FlightPassengers.Flight =  " + RecordID);
+    DataTable AirplaneSeat = Referral.DBData.SelectDataTable("Select * from AirplaneSeat where Airplane="+ PlaneData.Rows[0]["Airplane"].ToString());
+
+    <div class="plane">
+        <div class="cockpit">
+            <img class="Logo_HeaderLayout" src=@Field.FormatImage(Convert.ToBase64String((byte[])PlaneData.Rows[0][2])) />
+            <h1>@PlaneData.Rows[0]["PersianTitle"]</h1>
+            <h2>@PlaneData.Rows[0]["Station"] To  @PlaneData.Rows[0]["Destination"]</h2> 
+            <span id="AirPlane_TotalAcceptPassenger" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptPassenger"]</span> / <span id="AirPlane_TotalPassenger">@PlaneData.Rows[0]["TotalPassenger"]</span>
+            <br class="BrFlightPassengersTotal" />
+            <span>F</span> / <span>M</span> :
+            <span id="AirPlane_TotalAcceptFemalePassenger" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptFemalePassenger"]</span> / <span id="AirPlane_TotalAcceptMalePassenger" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptMalePassenger"]</span>
+            <br class="BrFlightPassengersTotal" />
+            <span>A</span> / <span>C</span> / <span>I</span> :
+            <span id="AirPlane_TotalAdult" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptAdultPassenger"]</span> / <span id="AirPlane_TotalChild" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptChildPassenger"]</span> / <span id="AirPlane_TotalInfant" class="FlightPassengersTotal">@PlaneData.Rows[0]["TotalAcceptInfantPassenger"]</span>
+
+        </div>
+
+        <ol class="cabin fuselage">
+            @{
+                string[] SeatChar = PlaneData.Rows[0]["ColumnName"].ToString().Split(','); 
+                int[] ExiteDoor = { 7 };
+                for (int Index = 1; Index <=int.Parse( PlaneData.Rows[0]["RowsCount"].ToString()) ; Index++)
+                {
+                    <li class=@("row row--"+Index)>
+                        <ol class="seats" type="A">
+                            @for (int CharIndex = 0; CharIndex < SeatChar.Length; CharIndex++)
+                            {
+                                DataRow[] AirplaneSeatRows = AirplaneSeat.Select("Num=" + Index.ToString() + " and RowChar='" + SeatChar[CharIndex] + "'");
+                                if (AirplaneSeatRows.Length > 0)
+                                {
+                                    string SeatID = Index.ToString() + "_" + SeatChar[CharIndex] + "_" + AirplaneSeatRows[0]["شناسه"].ToString();
+                                    string SeatLableID = SeatID + "_0";
+                                    string TooltiptextID = SeatID + "_1";
+                                    <li class="seat SeatTooltip">
+                                        @if ((bool)AirplaneSeatRows[0]["IsActive"] ==false)
+                                        {
+                                            <input type="checkbox" disabled id=@(SeatID) />
+                                            <label id=@(SeatLableID) for=@(SeatID)>@( "Occupied" )</label>
+                                        }
+                                        else
+                                        {
+                                            DataRow[] rows = FlightPassengersSeatsData.Select("Num=" + Index.ToString() + " and RowChar='" + SeatChar[CharIndex] + "'");
+                                            if (rows.Length > 0)
+                                            {
+                                                <input type="checkbox" checked id=@(SeatID) data-val=@rows[0]["شناسه"].ToString() />
+                                                <label id=@(SeatLableID) for=@(SeatID)>@( Index.ToString() + SeatChar[CharIndex]+"["+rows[0]["CardNumber"].ToString()+"]")</label>
+                                                <span class="tooltiptext"  id=@(TooltiptextID)>
+                                                    <span>Name : </span><span class="Seat_PassengerName">@rows[0]["PassengerName"].ToString()</span><br />
+                                                    <span>National ID : </span><span class="Seat_PassengerNationalID">@rows[0]["NationalID"].ToString()</span><br />
+                                                    <span>Passport ID : </span><span class="Seat_PassengerPassportID">@rows[0]["PassportID"].ToString()</span><br />
+                                                    <span>Gender : </span><span class="Seat_PassengerGender">@rows[0]["Gender"].ToString()</span><br />
+                                                    <span>AgeType : </span><span class="Seat_PassengerAgeType">@rows[0]["AgeType"].ToString()</span>
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <input type="checkbox" id=@(SeatID) data-val=@("0") />
+                                                <label id=@(SeatLableID) for=@(SeatID)>@( Index.ToString() + SeatChar[CharIndex])</label> 
+                                                <span class="tooltiptext"  id=@(TooltiptextID)>
+                                                    <span>Name : </span><span class="Seat_PassengerName"></span><br />
+                                                    <span>National ID : </span><span class="Seat_PassengerNationalID"></span><br />
+                                                    <span>Passport ID : </span><span class="Seat_PassengerPassportID"></span><br />
+                                                    <span>Gender : </span><span class="Seat_PassengerGender"></span><br />
+                                                    <span>AgeType : </span><span class="Seat_PassengerAgeType"></span>
+                                                </span>
+                                            }
+                                        }
+                                    </li>
+                                }  
+                            }
+                        </ol>
+                    </li>
+                    if (Array.IndexOf(ExiteDoor, Index) > -1)
+                    {
+                        <div class="exit exit--front fuselage"></div>
+                    }
+
+                }
+            } 
+
+        </ol> 
+    </div>
+    <script>
+        $(".seat input").on("click", function (Item) {
+            SeatOnclic(Item,@DataKey);
+        });
+    </script>
+}
+
+@*@(Html.Kendo().ContextMenu()
+            .Name("ContextMenu"+ GridName)
+            .Target("#"+ GridName)
+            .Animation(animation =>
+            {
+                animation.Open(open =>
+                {
+                    open.Fade(FadeDirection.In);
+                    open.Duration(500);
+                });
+            })
+            .Items(items =>
+            {
+                items.Add().Text("کپی").SpriteCssClasses("k-icon k-i-copy").HtmlAttributes(new { id = "Copy_" + GridName });
+                items.Add().Text("کپی با عنوان").SpriteCssClasses("k-icon k-i-copy").HtmlAttributes(new { id = "CopyWithHeaders_" + GridName });
+                items.Add().Separator(true);
+                items.Add().Text("خروجی").SpriteCssClasses("k-icon k-i-export").HtmlAttributes(new { id = "Export_" + GridName });
+                items.Add().Text("خروجی با عنوان").SpriteCssClasses("k-icon k-i-export").HtmlAttributes(new { id = "ExportWithHeaders_" + GridName });
+                //items.Add().Text("Export to Chart").HtmlAttributes(new { id = "ExportToChart_" + GridName });
+            })
+            .Events(ev => ev.Select("OnSelectContextMenuGrid"))
+    )*@
+
+@if (Form.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+{
+    foreach (InformationEntryForm TableFormItem in Desktop.DataInformationEntryForm[DataKey].Childs(APM.Models.Tools.CoreDefine.Entities.فرم_ورود_اطلاعات))
+    {
+        @Html.Partial("/Views/Shared/EditorTemplates/_PopupWindow.cshtml", new ViewDataDictionary { { "DataKey", TableFormItem.CoreObjectID.ToString() }, { "FormName", TableFormItem.InformationEntryFormName } })
+    }
+}
+@Html.Partial("/Views/Desktop/GridDetail.cshtml", new ViewDataDictionary { { "MainGridDetailTemplate", MainGridDetailTemplate }, { "MasterDataKey", DataKey }, { "ProcessID", ProcessID }, { "ProcessStepID", ProcessStepID } })

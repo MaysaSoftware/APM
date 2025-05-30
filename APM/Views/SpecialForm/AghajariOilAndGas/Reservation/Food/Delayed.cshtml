@@ -1,0 +1,266 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using System.Data;
+@using APM.Models.SpecialModels.AghajariOilAndGas.Reservation;
+
+@{  
+    long RecordID = 0;
+    DataTable ReserveData = new DataTable();
+    if (ViewData["RecordID"] != null)
+    {
+        RecordID = long.Parse(ViewData["RecordID"].ToString());
+        ReserveData = Referral.DBData.SelectDataTable("Select * From درخواست_رزرو_غذا Where شناسه = " + RecordID.ToString());
+    }
+
+    string NowshamsiDate = @CDateTime.GetNowshamsiDate();
+    string ActionData = "function() {return {RecordID:" + RecordID + "} }";
+}
+
+@(Html.Kendo().Window()
+.Name("SearchDelayedPersonWin")
+.Title("جستجوی پرسنل")
+.Content(@<text> @Html.Partial("/Views/SpecialForm/AghajariOilAndGas/Reservation/Food/Delayed/DelayedPersonOfGrid.cshtml") </text>)
+.Visible(false)
+.Modal(true)
+.Draggable(true)
+.Resizable()
+.Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+
+<input type="text" hidden id="RecordID" value=@RecordID />
+<input type="text" hidden id="NowDateReservationFood" value=@NowshamsiDate />
+
+<div class="card rtl text-right BackgroundColor">
+    <div class="classic-tabs rtl ">
+        <ul class="nav BackgroundIconColor" id="myTab" role="tablist">
+            <li class="nav-item ">
+                <i class="fas fa-business-time fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">درخواست روزکار ثابت</i>
+            </li>
+        </ul>
+    </div>
+ 
+    @Html.AntiForgeryToken()
+    <div id="ReservationFoodForm" class="card-body">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+            <div class="col-sm-2 px-4">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="FormItemTitle">از تاریخ <span class="RequiredStar">*</span></label>
+                    <input data-jdp autocomplete="off"
+                            id="StartDateReservationFood"
+                            name="StartDateReservationFood"
+                            data-role="textbox"
+                            aria-disabled="false"
+                            class="DateReservationFood k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers form-control text-center"
+                            onfocusout="DatePickers_onfocusout(this)"
+                           value=@(RecordID>0?ReserveData.Rows[0]["از_تاریخ"] : NowshamsiDate)>
+                    <div class="input-group-prepend" onclick=" CalenderClick(StartDateReservationFood)">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+            <script>addEventListenerChangeDateReservationFood("StartDateReservationFood");</script>
+            <div class="col-sm-2 px-4">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="FormItemTitle">تا تاریخ <span class="RequiredStar">*</span></label>
+                    <input data-jdp autocomplete="off"
+                            id="EndDateReservationFood"
+                            name="EndDateReservationFood"
+                            data-role="textbox"
+                            aria-disabled="false"
+                            class="DateReservationFood k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers form-control text-center"
+                            onfocusout="DatePickers_onfocusout(this)"
+                           value=@(RecordID>0?ReserveData.Rows[0]["تا_تاریخ"] : NowshamsiDate)>
+                    <div class="input-group-prepend" onclick=" CalenderClick(EndDateReservationFood)">
+                        <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
+                    </div>
+                </div>
+            </div>
+            <script>addEventListenerChangeDateReservationFood("EndDateReservationFood");</script>
+            <div class="col-sm-3 px-3 ">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="m-active">شماره حساب <span class="RequiredStar">*</span></label>
+                    @(Html.Kendo().DropDownListFor(m => m)
+                    .Name("OfficeDepartmentAccountNumber")
+                    .Filter(FilterType.Contains)
+                    .DataValueField("Value")
+                    .DataTextField("Text")
+                    .Value(RecordID > 0 ? ReserveData.Rows[0]["شماره_حساب"].ToString() : "0")
+                    .SelectedIndex(0)
+                    .Height(260)
+                    .DataSource(source =>{
+                        source.Custom()
+                                .ServerFiltering(false)
+                                .ServerPaging(false)
+                                .PageSize(1000000)
+                                .Type("aspnetmvc-ajax")
+                                .Transport(transport =>
+                                {
+                                    transport.Read(read => read.Action("OfficeDepartmentAccountNumber", "Food"));
+                                });
+                    })
+                    .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                )
+                </div>
+            </div>  
+           <div class="col-sm-3 px-3">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="m-active">رستوران <span class="RequiredStar">*</span></label> 
+                    @{ string RestaurantActionData = "function() {return {FromDate:'" + NowshamsiDate + "',ToDate:'" + NowshamsiDate + "',Meal:0,RequestType:4} }"; }
+                    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("PersonRestaurant")
+                        .Filter(FilterType.Contains)
+                        .DataValueField("Value")
+                        .DataTextField("Text")
+                        .SelectedIndex(0)
+                        .Value(RecordID > 0 ? ReserveData.Rows[0]["رستوران"].ToString() : "0")
+                        .Height(260)
+                        .DataSource(source =>{
+                            source.Custom()
+                                    .ServerFiltering(false)
+                                    .ServerPaging(false)
+                                    .PageSize(1000000)
+                                    .Type("aspnetmvc-ajax")
+                                    .Transport(transport =>
+                                    {
+                                        transport.Read(read => read.Action("PersonRestaurant", "Food").Data(RestaurantActionData));
+                                    });
+                        })
+                        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                    )
+                </div>
+           </div>
+        </div>
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="m-active">پیام</label>
+                    @(Html.Kendo().TextBox()
+                        .Value((RecordID > 0 ? ReserveData.Rows[0]["توضیحات"].ToString() : ""))
+                        .Name("OfficeDepartmentAccountNumberMessage")
+                    )
+                </div>
+            </div>
+        </div> 
+    </div>
+  
+    <div class="classic-tabs rtl "  id="MainBedHeaderTitle">
+        <ul class="nav BackgroundIconColor" id="myTab" role="tablist">
+            <li class="nav-item ">
+                <i class="fas fa-user fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">نفرات</i>
+            </li>
+        </ul>
+    </div>  
+    <div class="row" >
+        <div class="col-md-12 ">
+            @(Html.Kendo().Grid<dynamic>()
+            .Name("PersonGrid")
+            .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+            .Columns(columns =>
+            {
+                columns.Bound(typeof(int), "شناسه").Title("شناسه").Width(70).EditorTemplateName("InlineString").Visible(false);
+                columns.Bound(typeof(int), "شناسه_درخواست_رزرو_غذا").Title("شناسه_درخواست_رزرو_غذا").Width(70).EditorTemplateName("InlineString").Visible(false);
+                columns.Bound(typeof(int), "ردیف").Title("ردیف").Width(50).EditorTemplateName("InlineString");
+                columns.Bound(typeof(string), "نام").Title("نام").Width(100).EditorTemplateName("InlineString");
+                columns.Bound(typeof(string), "نام_خانوادگی").Title("نام خانوادگی").Width(100).EditorTemplateName("InlineString");
+                columns.Bound(typeof(string), "شماره_ملی").Title("شماره ملی").Width(100).EditorTemplateName("InlineString");
+                columns.Bound(typeof(string), "شماره_پرسنلی").Title("شماره پرسنلی").Width(100).EditorTemplateName("InlineString");
+                columns.Bound(typeof(string), "نوع_استخدام").Title("نوع استخدام").Width(100).EditorTemplateName("InlineString");
+                columns.Command(command => command.Destroy().Text("حذف")).Width(80);
+            })
+            .HtmlAttributes(new { style = "height: 500px; width:100%" })
+            .Scrollable()
+            .Navigatable()
+            .Pageable(pageable => pageable.AlwaysVisible(false).PageSizes(true).Enabled(false).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+            .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+            .PersistSelection()
+            .Sortable(s => s.Enabled(false))
+            .LoaderType(GridLoaderType.Skeleton)
+            .AllowCopy(false)
+            .ToolBar(toolbar => toolbar.Template(@<text>
+                                                    <div class="row "  style="width: 100%; padding-right: 20px;">
+                                                        <div style="min-height:0px;">
+                                                            <label class="m-active">پرسنل</label>
+                                                                @(Html.Kendo().TextBox()
+                                                                .Name("PersonOfficeDepartmentAccountNumber")
+                                                                .Placeholder("جستجو نام،کد ملی، شماره پرسنلی ...")
+                                                                .HtmlAttributes(new { style = "width:200px" })
+                                                                .Events(events =>
+                                                                {
+                                                                    events.Change("PersonDelayedOnKeyDown");
+                                                                })
+                                                                )
+                                                        </div>
+                                                        <div class="col-md-3">
+                                                            <button class="waves-effect  btn btn-link  mr-auto text-primary p-0"
+                                                                    style="vertical-align:text-top" type="button" onclick="OpenDelayedPersonOfGrid()">
+                                                                <i class="fas fa-plus-square ml-2 fa-2x "></i>
+                                                                <span class="align-top lh24 border-bottom"> افزودن از لیست</span>
+                                                            </button>
+                                                         </div>
+
+
+                                                        <div style="min-height:0px;">
+                                                            <label class="m-active">شماره مجوز</label>
+                                                                @(Html.Kendo().TextBox()
+                                                                .Name("SearchOfReserveID")
+                                                                .Placeholder("جستجو مجوز رزرو ...")
+                                                                .HtmlAttributes(new { style = "width:200px" })
+                                                                .Events(events =>
+                                                                {
+                                                                    events.Change("SearchOfReserveIDOnKeyDown");
+                                                                })
+                                                                )
+                                                        </div>
+                                                    </div>
+                                                </text>))
+            .DataSource(dataSource =>dataSource
+                    .Ajax()
+                    .Model(model =>
+                    {
+                        model.Id("شناسه");
+                        model.Field("شناسه", typeof(long)).Editable(false);
+                        model.Field("شناسه_درخواست_رزرو_غذا", typeof(long)).Editable(false);
+                        model.Field("ردیف", typeof(int)).Editable(false);
+                        model.Field("نام", typeof(string)).Editable(false);
+                        model.Field("نام_خانوادگی", typeof(string)).Editable(false);
+                        model.Field("شماره_ملی", typeof(string)).Editable(false);
+                        model.Field("شماره_پرسنلی", typeof(string)).Editable(false);
+                        model.Field("نوع_استخدام", typeof(string)).Editable(false);
+                    })
+                    .PageSize(1000)
+                    .Read(read => read.Action("ReadDelayedReservationFood", "Food").Data(ActionData))
+                    )
+            .Events(e => e.Remove("RemoveDelayedPerson"))
+        )
+        </div>
+    </div>
+ 
+
+    <div class="row">
+        <div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style=" border-radius: 60px;  bottom: 0px; background-color: #0bb9a7e3; right: 15px;">
+
+            @(Html.Kendo().Button()
+                .Name("CancelButton21354_0_0")
+                .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">بستن</span>")
+                .Events(e=>e.Click("CancelFormEditor"))
+            )
+            @(Html.Kendo().Button()
+                .Name("SaveReservationFood")
+                .HtmlAttributes(new {@class= "k-button-solid-primary SaveButton" })
+                .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">ثبت درخواست</span>")
+                .Events(e=>e.Click("SaveDelayedReservationFood"))
+            )
+            @(Html.Kendo().Button()
+                .Name("NewReservationFood")
+                .HtmlAttributes(new { @class = "k-button-solid-cancel NewButton", style = "background-color:#ffee00" })
+                .Content(@"<span class=""fas fa-plus fa-lg""></span><span class=""k-button-text"">جدید</span>")
+                .Events(e=>e.Click("NewDelayedReservationFood"))
+            )
+
+        </div>
+    </div>
+</div>
+
+ 

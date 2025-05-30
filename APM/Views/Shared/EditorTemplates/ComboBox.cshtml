@@ -1,0 +1,57 @@
+﻿@model object
+
+@{
+    string Value = ViewData["FieldValue"] == null ? "" : (ViewData["FieldValue"].ToString());
+    List<SelectListItem> ComboItems = (List<SelectListItem>)ViewData["ComboItems"];
+
+    string FieldClass = ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString();
+    string ShowHideElement = "ShowHideElement_" + (string)ViewData["FieldName"];
+    string ShowHideElementValue = ViewData["ShowHideElement"] == null ? "" : (ViewData["ShowHideElement"].ToString());
+
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    bool IsLeftWrite = ViewData["IsLeftWrite"] == null ? false : (bool)ViewData["IsLeftWrite"];
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("style", "width:100%;color:" + TextColor);
+    Attrs.Add("class", "IElement IForeignKey w-100 " + FieldClass + " " + (IsLeftWrite ? " LTRColumn" : "") + " " + (ShowHideElementValue != "" ? "ActiveLoadElement" : "") +" "+ (ActiveOnKeyDown ? "ActiveOnKeyDown" : ""));
+
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+
+}
+
+
+@(Html.Kendo().ComboBox()
+    .Name((string)ViewData["FieldName"])
+    .Filter("contains")
+    .Placeholder("انتخاب نمایید")
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .HtmlAttributes(Attrs)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .Value(Value)
+    .BindTo(@ComboItems)
+    .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+    .Suggest(true) 
+    .Events(events =>
+    { 
+        if (ActiveOnKeyDown)
+            events.Change("OnKeyDownElement");
+    })
+    )
+ 
+
+@if (ShowHideElementValue != "")
+{ 
+    <div hidden>
+        <input type="hidden" id=@ShowHideElement value=@ShowHideElementValue />
+    </div>
+
+    <script>
+        LoadElement(@ViewData["FieldName"])
+    </script>
+}

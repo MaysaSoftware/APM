@@ -1,0 +1,25 @@
+﻿@using APM.Models.Tools;
+
+@(Html.Kendo().DropDownList()
+    .Name((string)ViewData["FieldName"])
+    .HtmlAttributes(new { style = "width:100%" })
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .Value(((CoreDefine.ProcessStepActionType)ViewData["FieldValue"]).ToString())
+    .Height(310)
+    .Filter("contains")
+    .DataSource(source =>
+    {
+        source.Custom()
+              .ServerFiltering(false)
+              .ServerPaging(false)
+              .PageSize(40)
+              .Type("aspnetmvc-ajax")
+              .Transport(transport =>
+              {
+                  transport.Read("NotificationType", "Desktop");
+              });
+    })
+    .FooterTemplate("تعداد  <strong>#: instance.dataSource.total() #</strong> رکورد یافت شد")
+    .AutoBind(false)
+)

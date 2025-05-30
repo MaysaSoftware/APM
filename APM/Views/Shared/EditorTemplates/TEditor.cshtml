@@ -1,0 +1,67 @@
+﻿@using APM.Models;
+ 
+
+@{
+    string FieldName = ((string)ViewData["FieldName"]);
+    string FieldValue = ViewData["FieldValue"]==null?"":(string)ViewData["FieldValue"];
+    bool IsReadonly = ((bool)ViewData["IsReadonly"]);
+    bool IsRequired = ((bool)ViewData["IsRequired"]);
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("class", "IElement IEditor w-100");
+
+    if (!IsReadonly && IsRequired)
+    {
+        Attrs.Add("data-required-msg", "الزامی است");
+        Attrs.Add("required", "required");
+    }
+}
+
+@(Html.Kendo().Editor()
+        .Name(FieldName)
+    .HtmlAttributes(Attrs)
+    .StyleSheets(StyleSheets => {
+        StyleSheets.Add("/Fonts/Base.css");
+        StyleSheets.Add("/Fonts/BFonts.css");
+    })
+    .Tools(tools => tools
+        .Clear()
+        .Bold().Italic().Underline().Strikethrough()
+        .JustifyRight().JustifyCenter().JustifyLeft().JustifyFull()
+        .InsertUnorderedList().InsertOrderedList()
+        .Indent().Outdent()
+        .CreateLink().Unlink()
+        .InsertImage()
+        .InsertFile()
+        .SubScript()
+        .SuperScript()
+        .TableEditing()
+        .ViewHtml()
+        .Formatting()
+        .CleanFormatting()
+        .FormatPainter()
+        .FontName(FontName => {
+            foreach(string Item in Referral.FontList)
+            {
+                FontName.Add(Item, Item.ToLower());
+            }
+        })
+        .FontSize()
+        .FontColor().BackColor()
+        .Print()
+    )
+    .Value(WebUtility.HtmlDecode(FieldValue))
+    .Placeholder((string)ViewData["Title"])
+)
+
+
+@if (IsReadonly)
+{
+    <script type="text/javascript">
+    $(document).ready(function () {
+        var editor = $("@("#" + FieldName)").data("kendoEditor"),
+            editorBody = $(editor.body);
+
+        editorBody.removeAttr("contenteditable").find("a").on("click.readonly", false);
+    });
+    </script>
+}

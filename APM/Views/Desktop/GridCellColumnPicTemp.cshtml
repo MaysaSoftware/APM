@@ -1,0 +1,32 @@
+﻿
+<div class="CommentTitle" style="margin-top: -16px; margin-bottom: 15px;">
+    حداکثر حجم فایل : <b style="font-size:9px" class="MaxFileSizeG-C-C-C-B"></b> kb
+    <br />
+    پسوند فایل باید : <b style="font-size:9px" class="AllowedExtensionsG-C-C-C-B"></b>
+</div>
+
+<div class="ButtonGroupFormItemTitle">
+    <button class='k-button k-button-md T-G-k-button DeleteAtt DeleteAttG-C-C-C-B' onclick='DeleteAtt_Click(this)'><span class='k-icon k-i-trash'></span></button>
+    <button class='k-button k-button-md T-G-k-button ScannerAtt ScannerAttG-C-C-C-B' onclick='ScannerAtt_Click(this)'><span class='k-icon fa fa-scanner-image'></span></button>
+    <button class='k-button k-button-md T-G-k-button CameraAtt  CameraAttG-C-C-C-B' onclick='CameraAtt_Click(this, true)'><span class='k-icon fa fa-camera-web'></span></button>
+</div>
+
+
+<input type="text" style="display: none;" id="InputG-C-C-C-B">
+<img class="UploadFile_img UploadFile_imgG-C-C-C-B" src="" />
+<div class="UploadFile_img UploadFile_imgDivG-C-C-C-B" style="display:none;"></div>
+<div class="UploadFile">
+
+ @(Html.Kendo().Upload()
+.Name("filesG-C-C-C-B")
+.Multiple(false)
+.Async(a => a.SaveField("files").Save("Templates_Save", "Attachment", "").AutoUpload(true))
+.Events(e=>e.Upload("StartUploadFile").Complete("CompleteUploadFile"))
+.Validation(validation =>
+{
+    validation.AllowedExtensions(new string[] {".png",".jpeg",".jpg"});
+    validation.MaxFileSize(24*1024);
+    validation.MinFileSize(0);
+})
+)
+</div>

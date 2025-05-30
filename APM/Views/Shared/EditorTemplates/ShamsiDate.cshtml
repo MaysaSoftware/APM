@@ -1,0 +1,64 @@
+﻿@model object
+
+ @{  
+     bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+ } 
+
+@if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    <input data-jdp
+           autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           required="required"
+           validationmessage="ورود داده الزامی است"
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers "
+           onload="AddListenerCalendar(this)"
+           onfocusout="DatePickers_onfocusout(this)"
+           style="width: 100%;">
+}
+else if ((bool)ViewData["IsReadonly"])
+{
+    <input data-jdp autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers "
+           onload="AddListenerCalendar(this)"
+           onfocusout="DatePickers_onfocusout(this)"
+           style="width: 100%;"
+           disabled="disabled">
+}
+else if(ActiveOnKeyDown) 
+{
+    <input data-jdp autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+           onload="AddListenerCalendar(this)" 
+           onfocusout="DatePickers_onfocusout(this)"
+           onchange="OnKeyDownElement"
+           style="width: 100%;">
+}
+else
+{
+    <input data-jdp autocomplete="off"
+           id=@ViewData["FieldName"]
+           name=@ViewData["FieldName"]
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+           onload="AddListenerCalendar(this)" 
+           onfocusout="DatePickers_onfocusout(this)"
+           style="width: 100%;">
+}
+
+<span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton" onclick=" CalenderClick(@ViewData["FieldName"])">
+    <span class="k-icon k-i-calendar k-button-icon"></span>
+</span>
+ 

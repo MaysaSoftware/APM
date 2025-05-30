@@ -1,0 +1,467 @@
+﻿.k-input,.k-input-inner {
+    font-family: IRANSans !important;
+}
+
+.ImageInput {
+    border-radius: 5px;
+    text-align: center;
+    background-color: #ffffff;
+    position: relative;
+    width: 100%;
+    height: 137px;
+}
+
+.ImageDiv {
+    height: 139px;
+    margin-top: 50px;
+}
+
+.UploadImage {
+    position: relative;
+    float: left;
+    margin-top: -32px;
+    z-index: 1;
+    left: 10px;
+}
+
+@media only screen and (min-width: 400px) {
+    .InputDiv {
+        width: 50%;
+    }
+
+    @media (max-height: 720px) {
+        .InputDiv {
+            width: 450px;
+        }
+    }
+}
+
+.InputText {
+    border-radius: 6px;
+    width: 100%;
+    font-size: 16px;
+    font-weight: 500
+}
+
+.InputDiv {
+    padding: 20px 0 0 0;
+}
+
+    .InputDiv p {
+        position: relative;
+        padding: 0 20px 10px 20px;
+    }
+
+.BooleanRadioButtonLabel {
+    margin-left: 20px;
+}
+
+.FormItemInput {
+    /*margin: 8px 0px;*/
+    font-size: 14px;
+    min-height: 100px;
+}
+
+
+.FormItemTitle {
+    float: right;
+    width: 100%;
+}
+
+.CommentTitle {
+    font-size: 9px;
+    height: 22px;
+    float: right;
+    width: 100%;
+}
+
+.ButtonGroupFormItemTitle {
+    margin-top: -30px;
+    width: 100%;
+    float: right;
+    min-height: 28px;
+}
+
+    .ButtonGroupFormItemTitle .k-button-group {
+        height: 34px;
+        float: left;
+    }
+
+        .ButtonGroupFormItemTitle .k-button-group .k-icon-button .k-button-md > .k-button-icon {
+            min-width: 1.5px;
+            min-height: 1.5px;
+        }
+
+    .ButtonGroupFormItemTitle .T-G-k-button .k-icon:hover {
+        color: red;
+    }
+
+    .ButtonGroupFormItemTitle .T-G-k-button {
+        border-width: 0px;
+        padding: 4px;
+        float: left;
+        background: transparent;
+    }
+
+.RequiredStar {
+    color: #dc1616;
+    font-family: 'Times New Roman';
+    font-size: 18px;
+    margin-right: 5px;
+    position: absolute;
+    margin: 0px 0px;
+}
+
+.RelatedLink {
+    margin-right: 15px;
+}
+
+.validator-msg,
+.validator-msg .k-tooltip {
+    position: static;
+    display: inline-block;
+}
+
+    .validator-msg .k-tooltip .k-callout {
+        display: none;
+    }
+
+.k-switch-md {
+    width: 100%;
+}
+
+.k-switch-label-off, .k-switch-label-on {
+    display: block;
+}
+
+.k-switch-label-off {
+    left: 10px;
+}
+
+.k-switch-label-on {
+    right: 10px;
+}
+
+.PlaqueIcon {
+    background-image: url("../../Theme/Image/images/PlaqueLabel.png");
+    background-size: 100% 100%;
+}
+
+.PlaqueInput, .PlaqueInput:hover, .PlaqueInput:focus-within {
+    font-weight: 600;
+    font-size: 16px;
+    direction: ltr;
+    padding-left: 15px;
+    text-align: left;
+    max-height: 30px;
+}
+
+.InputButton {
+    border-radius: 6px;
+    width: 50%;
+    font-size: 20px;
+    background-color: #09961b;
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 900;
+}
+
+    .InputButton:hover {
+        background-color: #7df78c;
+    }
+
+    .InputButton:active {
+        background-color: #09961b;
+    }
+
+.AppendButton {
+    position: relative;
+    float: left;
+    top: -30.5px;
+    z-index: 1;
+    left: 0.9px;
+    border-radius: 3px 0px 0px 3px;
+    background-color: #e4e7eb;
+}
+
+.LeftWrite {
+    direction: ltr;
+}
+
+.RightWrite {
+    direction: rtl;
+}
+
+.UploadFileDiv {
+    margin: 8px 0px;
+}
+
+.UploadFile_img {
+    min-width: 100%;
+    height: 200px;
+    background-color: #f8f8f8;
+    border: 1px solid #c7c7c7;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.UploadFile {
+    width: 100%;
+}
+
+.highlight {
+    background-color: #fcf11c;
+}
+
+
+.QueryObjectTree {
+    height: 400px;
+    width: 30%;
+    display: inline;
+    float: right;
+    margin-top: 10px;
+    overflow: scroll;
+}
+
+.QueryObjectTabstrip {
+    height: 400px;
+    width: 69%;
+    display: inline;
+    float: right;
+    margin-right: 6px;
+    margin-top: 10px;
+}
+
+
+@media only screen and (max-width: 600px) {
+    .QueryObjectTree, .QueryObjectTabstrip {
+        width: 100%;
+    }
+}
+
+.k-popup-dropdowntree {
+    height: 400px;
+}
+
+
+
+.Valid-row {
+    color: green;
+    background-color: rgba(0, 255, 0, 0.4);
+}
+
+    .Valid-row.k-alt {
+        color: green;
+        background-color: rgba(81, 242, 81, 0.74);
+    }
+
+
+.Error-row {
+    color: red;
+    background-color: rgba(255, 216, 0, 0.21);
+}
+
+    .Error-row.k-alt {
+        color: red;
+        background-color: rgba(255, 216, 0, 0.21);
+    }
+
+
+.Yellow-row {
+    color: #637508;
+    background-color: rgb(255 232 0 / 69%);
+}
+
+
+.Yellow-row.k-alt {
+    color: #637508;
+    background-color: rgb(255 232 0 / 69%);
+}
+
+
+
+.Purple-row {
+    color: #2d055f;
+    background-color: rgb(91 0 243 / 33%);
+}
+
+
+.Purple-row.k-alt {
+    color: #2d055f;
+    background-color: rgb(91 0 243 / 33%);
+}
+
+
+
+.pink-row{
+    color: #5f0547;
+    background-color: rgb(243 0 216 / 33%);
+}
+
+.pink-row.k-alt {
+    color: #5f0547;
+    background-color: rgb(243 0 216 / 33%);
+}
+
+.Brown-row {
+    color: #5f2305;
+    background-color: rgb(155 94 8 / 33%);
+}
+
+    .Brown-row.k-alt {
+        color: #5f2305;
+        background-color: rgb(155 94 8 / 33%);
+    }
+
+.Orange-row {
+    color: #690a0a;
+    background-color: rgb(255 115 0 / 80%);
+}
+    .Orange-row.k-alt {
+        color: #690a0a;
+        background-color: rgb(255 115 0 / 80%);
+    }
+.Warning-row {
+    color: black;
+    background-color: rgb(255, 243, 10);
+}
+
+    .Warning-row.k-alt {
+        color: black;
+        background-color: rgb(255, 243, 10);
+    }
+
+
+.Info-row {
+    color: blue;
+    background-color: rgba(0, 176, 255, 0.21);
+}
+
+    .Info-row .k-alt {
+        color: blue;
+        background-color: rgba(0, 176, 255, 0.21);
+    }
+
+.EditorButtonDiv {
+    position: sticky;
+    bottom: -16px;
+    margin: -16px;
+    background-color: #ffffff;
+    border-top: 1px solid #dee2e6;
+    z-index: 10;
+    display: inline-block;
+}
+
+    .EditorButtonDiv .k-button {
+        margin: 2px 5px;
+        border-radius: 20px;
+    }
+
+.TTreeDiv {
+    width: 200px;
+    border-width: 1px;
+    border-left: 1px solid #dee2e6;
+    height: -webkit-fill-available;
+    height: -moz-available;
+    float: right;
+}
+
+    .TTreeDiv .TreeItem {
+        margin-bottom: 7px;
+    }
+
+    .TTreeDiv .k-icon {
+        margin-left: 5px;
+    }
+
+
+.HeaderEditor p {
+    text-align: center;
+    width: 100%;
+    margin: auto;
+    padding: 9px 0px;
+}
+
+.RequiredField {
+    border-color: #ff0000;
+}
+
+.ErrorMessageDalert {
+    background-color: #ff9c9c;
+}
+
+.SuccessMessageDalert {
+    background-color: #98ff8b;
+}
+
+.InfoMessageDalert {
+    background-color: #8be5ff;
+}
+
+.GridRedText {
+    color: red;
+}
+
+.GridGreenText {
+    color: forestgreen;
+}
+
+.GridYellowText {
+    color: yellow;
+}
+
+.GridBlueText {
+    color: blue;
+}
+
+.GridBlackText {
+}
+
+.col-sm-1-5 {
+    max-width: 12.5%;
+    min-width: 12.5%;
+}  
+
+.col-sm-1-25 {
+    max-width: 10%;
+    min-width: 10%;
+}  
+.col-sm-0-5 {
+    max-width: 7.14%;
+    min-width: 7.14%;
+}  
+/*.col-sm-2 {
+    max-width: 11.11%;
+    min-width: 11.11%;
+} */ 
+
+@media only screen and (max-width: 600px) {
+    .col-sm-2 {
+        max-width: 100%;
+    }
+}
+
+.Small_UploadFile{
+    display:inline-flex;
+}
+.Small_UploadFile .UploadFile_img{
+    width:50px;
+    height:45px;
+}
+.Small_UploadFile .UploadFile{
+    width: 100%; 
+    float: left;
+}
+
+.PopupTabDiv .k-filemanager {
+    border-radius: 15px;
+}
+.PopupTabDiv .k-filemanager-toolbar {
+    border-radius: 15px 15px 0px 0px;
+}
+.PopupTabDiv .k-filemanager-content-container {
+    border-radius: 0px 0px 15px 15px;
+}
+.ClearPopupTabDiv {
+    background-color: #fafafa00;
+    border-color: #04040400;
+} 

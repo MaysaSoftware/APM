@@ -1,0 +1,18 @@
+﻿@using APM.Models;
+@using APM.Models.Database;
+
+@{
+    string LogoPhoto = Field.FormatImage(Referral.PublicSetting.AppLogo);
+}
+
+@if (Referral.PublicSetting.GeneralMessage != null && Referral.PublicSetting.GeneralMessage.Trim() != "")
+{
+    <header class="MessageHeader">
+        <img class="Logo_HeaderLayout" src=@LogoPhoto />
+        <div class="HeaderMessage">
+            <p class="marquee" style="display: inline; margin-top:7px;">@Referral.PublicSetting.GeneralMessage</p>
+        </div>
+    </header>
+}
+
+@Html.Partial("/Views/Shared/ToolbarLayout.cshtml")

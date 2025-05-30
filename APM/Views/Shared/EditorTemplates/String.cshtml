@@ -1,0 +1,34 @@
+﻿@{
+    string FieldName = (string)ViewData["FieldName"];
+    string Value = ViewData["FieldValue"] == null || ViewData["FieldValue"].ToString() == "null" ? "" : (ViewData["FieldValue"].ToString());
+    string TextColor = ViewData["TextColor"] == null ? "#000" : ViewData["TextColor"].ToString();
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("style", "color:" + TextColor);
+    Attrs.Add("class", (ViewData["IsLeftWrite"]==null?"":((bool)ViewData["IsLeftWrite"] ? "LeftWrite" : "")) + " " + (ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString()));
+
+    if (ViewData["IsRequired"]!=null)
+    {
+        if((bool)ViewData["IsRequired"])
+        {
+            Attrs.Add("required", "required");
+            Attrs.Add("validationMessage", "ورود داده الزامی است");
+        }
+    }
+}
+
+@(Html.Kendo().TextBox()
+        .Name(@FieldName)
+        .Enable(!(bool)ViewData["IsReadonly"])
+        .HtmlAttributes(Attrs)
+        .Value(Value)
+        .Events(events =>
+        {
+            if (ActiveOnKeyDown)
+                events.Change("OnKeyDownElement");
+            if((ViewData["FieldClass"] == null ? "" : ViewData["FieldClass"].ToString()).IndexOf("SearchFieldKeydown") >-1)
+                events.Change("SearchFieldClick");
+        })
+    )

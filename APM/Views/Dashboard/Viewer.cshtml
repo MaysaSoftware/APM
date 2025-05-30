@@ -1,0 +1,1125 @@
+﻿@using APM.Models.Database;
+@using APM.Models.Tools;
+@using APM.Models.APMObject.InformationForm; 
+@using APM.Models;
+
+@using System.Data;
+@{
+    string LogoPhoto = Field.FormatImage(Referral.PublicSetting.AppLogo);
+    long DashboardID = (long)ViewData["DashboardID"];
+    string MainDivID = "MainDivDashboard_" + DashboardID.ToString();
+    string[] SearchFieldItemArr = (string[])ViewData["SearchFieldItem"];
+    string[] SearchFieldOperatorArr = (string[])ViewData["SearchFieldOperator"];
+    string[] SearchFieldValueArr = (string[])ViewData["SearchFieldValue"];
+
+    CoreObject DashboardCore = CoreObject.Find(DashboardID);
+    bool ShowDate = true;
+    while (DashboardCore.Entity != CoreDefine.Entities.داشبورد)
+    {
+        DashboardCore = CoreObject.Find(DashboardCore.ParentID);
+        ShowDate = false;
+    }
+    Dashboard MasterDashboard = new Dashboard(DashboardCore);
+    List<CoreObject> SearchFieldList = CoreObject.FindChilds(MasterDashboard.CoreObjectID,CoreDefine.Entities.فیلد_جستجو);
+    string SearchFieldcontainer = "SearchFieldcontainer_" + MasterDashboard.CoreObjectID;
+    List<string[]> ChartList = new List<string[]>();
+    string FromDate = ViewData["FromDate"] == null ? Tools.GetDefaultValue(MasterDashboard.StartDate) : ViewData["FromDate"].ToString();
+    string ToDate = ViewData["ToDate"] == null ? Tools.GetDefaultValue(MasterDashboard.EndDate) : ViewData["ToDate"].ToString();
+    string WindowName = "PopupDashboardWindow" + DashboardID.ToString();
+    string DashboardTile = "DashboardTile" + DashboardID.ToString();
+
+    object FromDateParameter = new
+    {
+        FieldValue = FromDate,
+        IsReadonly = false,
+        FieldName = "Dashboard_از_تاریخ",
+        IsRequired = true
+    };
+
+    object ToDateParameter = new
+    {
+        FieldValue = ToDate,
+        IsReadonly = false,
+        FieldName = "Dashboard_تا_تاریخ",
+        IsRequired = true
+    };
+
+}
+
+
+@(Html.Kendo().Window()
+    .Name(@WindowName)
+    .HtmlAttributes(new { style = "top:0px;" })
+    .Draggable()
+    .Visible(false)
+    .Resizable(resize => resize.Enabled(true))
+    .Modal(true)
+    .Actions(actions => actions.Close())
+    .Events(events => events.Close("OnclickCloseEditorForm"))
+)
+
+@if (MasterDashboard.ShowDate && ShowDate || SearchFieldList.Count>0)
+{  
+    <div id="DashboardHeaderLayout" class="row col-sm-12" style="background-color: #f8f9fa; display: flex; padding: 10px 0px; left: -15px;">
+
+        <div class="col-sm-3  k-toolbar SearchFieldItem " >
+            <span>از تاریخ :</span>
+            <div  > @Html.Editor("از_تاریخ", "TableShamsiDate", FromDateParameter)</div>
+        </div>
+
+
+        <div  class="col-sm-3  k-toolbar SearchFieldItem " >
+            <span> تا تاریخ :</span>
+            <div >  @Html.Editor("تا_تاریخ", "TableShamsiDate", ToDateParameter)</div>
+        </div>
+
+
+        @if (SearchFieldList.Count > 0)
+        {
+            List<SelectListItem> ComboOperator = new List<SelectListItem>()
+            {
+                    new SelectListItem() {Text = "مساوی", Value = "مساوی"},
+                    new SelectListItem() {Text = "نامساوی", Value ="نامساوی"},
+                    new SelectListItem() {Text = "بزرگتر یا مساوی", Value ="بزرگتر یا مساوی"},
+                    new SelectListItem() {Text = "بزرگتر", Value ="بزرگتر"},
+                    new SelectListItem() {Text = "کوچکتر یا مساوی", Value ="کوچکتر یا مساوی"},
+                    new SelectListItem() {Text = "کوچکتر", Value ="کوچکتر"},
+                    new SelectListItem() {Text = "شروع با", Value ="شروع با"},
+                    new SelectListItem() {Text = "شامل", Value ="شامل"},
+                    new SelectListItem() {Text = "شامل نباشد", Value ="شامل نباشد"},
+                    new SelectListItem() {Text = "پایان با", Value ="پایان با"},
+                    new SelectListItem() {Text = "تهی", Value ="تهی"},
+                    new SelectListItem() {Text = "تهی نیست", Value ="تهی نیست"},
+                    new SelectListItem() {Text = "خالی", Value ="خالی"},
+                    new SelectListItem() {Text = "خالی نیست", Value ="خالی نیست"},
+            };
+
+
+            foreach (CoreObject SearchFieldItem in SearchFieldList)
+            {
+                SearchField SearchField = new SearchField(SearchFieldItem);
+                CoreObject FieldCore = CoreObject.Find(SearchField.RelatedField);
+                Field field = new Field(FieldCore);
+                CoreObject TableCore = CoreObject.Find(FieldCore.ParentID);
+                string FieldName = "SearchField_" + field.FieldName + "_" + TableCore.CoreObjectID + "_0_0_0_" + SearchFieldItem.CoreObjectID.ToString();
+                string SearchFieldOperator = "SearchFieldOperator_" + field.FieldName + "_" + TableCore.CoreObjectID + "_0_0_0_" + SearchFieldItem.CoreObjectID.ToString();
+                TemplateField TemplateField = new TemplateField();
+
+                List<SelectListItem> ComboItems = new List<SelectListItem>();
+
+                if (field.FieldType == CoreDefine.InputTypes.ComboBox)
+                {
+                    string[] ValueItem = field.SpecialValue.Split('،');
+                    foreach (string Value in ValueItem)
+                    {
+                        ComboItems.Add(new SelectListItem() { Text = Value, Value = Value });
+                    }
+                }
+
+                string FieldValue = Tools.GetDefaultValue(SearchField.DefaultValue);
+
+                if (SearchFieldItemArr !=null)
+                {
+                    int FindIndex = Array.IndexOf(SearchFieldItemArr, field.FieldName);
+                    if(FindIndex>-1)
+                    {
+                        FieldValue = SearchFieldValueArr[FindIndex];
+                    }
+                }
+
+                object Parameter = new
+                {
+                    FieldName = FieldName,
+                    InputType = field.FieldType,
+                    IsReadonly = false,
+                    IsRequired = false,
+                    NullValue = "نامشخص",
+                    FalseValue = field.FieldType == CoreDefine.InputTypes.TwoValues ? field.ComboValues()[0] : "",
+                    TrueValue = field.FieldType == CoreDefine.InputTypes.TwoValues ? field.ComboValues()[1] : "",
+                    IsInCellEditMode = false,
+                    FieldTitle = field.Title(),
+                    DigitsAfterDecimal = field.DigitsAfterDecimal,
+                    RelatedField = field.RelatedField,
+                    IsGridField = true,
+                    IsLeftWrite = field.IsLeftWrite,
+                    RelatedTable = field.RelatedTable,
+                    FieldValue = FieldValue,
+                    _TableID = "0",
+                    MaxValue = field.MaxValue,
+                    MinValue = field.MinValue,
+                    ComboItems = ComboItems,
+                    IsExclusive = field.IsExclusive,
+                    ActiveOnKeyDown = false,
+                    CoreObjectID = field.CoreObjectID,
+                    ShowHideElement = "",
+                    FieldComment = "",
+                    FieldClass = SearchFieldItem.IsDefault ? "SearchFieldKeydown" : ""
+                };
+
+                TemplateField.IsWide = false;
+                TemplateField.FullName = SearchFieldItem.FullName;
+                TemplateField.InputTypes = field.FieldType;
+                TemplateField.Parameter = Parameter;
+
+                string FieldID = field.FieldName;
+                <div class="k-toolbar SearchFieldItem m-sm-3">
+                    <div class="k-filter-toolbar-item k-filter-field" id=@FieldID>
+                        @SearchFieldItem.Title()
+                    </div>
+                    @if (SearchField.ShowOperator)
+                    {
+                        <div class="k-filter-toolbar-item k-filter-operator">
+                            @(Html.Kendo().ComboBox()
+                            .Name(SearchFieldOperator)
+                            .Filter("contains")
+                            .Placeholder("انتخاب نمایید")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Value(SearchField.DefaultOperator)
+                            .BindTo(@ComboOperator)
+                            .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+                            .Suggest(true)
+                            .HtmlAttributes(new {@class="k-filter-toolbar-item k-filter-operator", style="width:200px;" })
+                            )
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="k-filter-toolbar-item k-filter-operator" hidden>
+                            @(Html.Kendo().ComboBox()
+                            .Name(SearchFieldOperator)
+                            .Filter("contains")
+                            .Placeholder("انتخاب نمایید")
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .Value(SearchField.DefaultOperator)
+                            .BindTo(@ComboOperator)
+                            .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+                            .Suggest(true)
+                            .HtmlAttributes(new {@class="k-filter-toolbar-item k-filter-operator", style="width:200px;" })
+                            )
+                        </div>
+                    }
+
+                    <div class="k-filter-toolbar-item k-filter-value">
+                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", TemplateField }, { "DataKey", TableCore.CoreObjectID.ToString() } })
+                    </div>
+                </div>
+
+            }
+
+        }
+
+        <button class="k-input-button k-icon-button k-button-md k-button-solid Button" style=" display: inline-block; height: 30px; color: #fff; padding: 0px 15px; margin: 10px;" onclick="ReloadDashboard(@DashboardID)">
+            <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+        </button>
+    </div>
+
+}
+    @foreach (CoreObject CoreItem in CoreObject.FindChilds(DashboardID, CoreDefine.Entities.زیر_بخش_داشبورد))
+    {
+        SubDashboard subDashboard = new SubDashboard(CoreItem);
+        //if (new PermissionBase(CoreItem.CoreObjectID, Referral.UserAccount.Permition).IsAllow)
+        //{
+        string ScriptID = subDashboard.FullName + "_Template" + "_" + CoreItem.CoreObjectID.ToString();
+        string DateDivID = "TemplateDate_" + CoreItem.CoreObjectID.ToString();
+        string ReloadTimeID = "ReloadTime_" + CoreItem.CoreObjectID.ToString();
+        string Sub_FromDate = "TemplateSub_FromDate_" + CoreItem.CoreObjectID.ToString();
+        string Sub_ToDate = "TemplateSub_ToDate_" + CoreItem.CoreObjectID.ToString();
+        string ChartName = subDashboard.FullName + "___" + DashboardID + "___Chart" + subDashboard.CoreObjectID.ToString();
+        string ReloadTimeName = subDashboard.FullName + "___" + DashboardID + "___ReloadTime" + subDashboard.CoreObjectID.ToString();
+        string SwitchName = subDashboard.FullName + "___" + DashboardID + "___Switch" + subDashboard.CoreObjectID.ToString();
+        string ShowFilterName = subDashboard.FullName + "___" + DashboardID + "___ShowFilter" + subDashboard.CoreObjectID.ToString();
+        string ChartTypesName = subDashboard.FullName + "___" + DashboardID + "___ChartTypes" + subDashboard.CoreObjectID.ToString();
+        string FontSizeTypesName = subDashboard.FullName + "___" + DashboardID + "___FontSizeTypes" + subDashboard.CoreObjectID.ToString();
+        string HeaderFontWeight = subDashboard.FullName + "___" + DashboardID + "___HeaderFontWeight" + subDashboard.CoreObjectID.ToString();
+        string BodyFontWeight = subDashboard.FullName + "___" + DashboardID + "___BodyFontWeight" + subDashboard.CoreObjectID.ToString();
+        string HeaderColorPicker = subDashboard.FullName + "___" + DashboardID + "___HeaderColorPicker" + subDashboard.CoreObjectID.ToString();
+        string ChartTitle = string.IsNullOrEmpty(subDashboard.Title) ? Tools.UnSafeTitle(subDashboard.FullName) : subDashboard.Title;
+        DataTable Data = Desktop.GetDashboardData(FromDate, ToDate, subDashboard, SearchFieldItemArr, SearchFieldOperatorArr, SearchFieldValueArr);
+
+        string ValueColorRow = "";
+        string OperatorColorRow = "";
+        string ValueColorRow2 = "";
+        string OperatorColorRow2 = "";
+        string ColumnNameColorRow = "";
+        string RowColorSelectedColor = "";
+
+        string InputValueColorRow =  "InputValueColorRow_" + ChartName;
+        string InputOperatorColorRow =  "InputOperatorColorRow_" + ChartName;
+        string InputValueColorRow2 =  "InputValueColorRow2_" + ChartName;
+        string InputOperatorColorRow2 =  "InputOperatorColorRow2_" + ChartName;
+        string InputColumnNameColorRow = "InputColumnNameColorRow_" + ChartName;
+        string InputRowColorSelectedColor = "InputRowColorSelectedColor_" + ChartName;
+
+        foreach (CoreObject GridRowColorCore in CoreObject.FindChilds(subDashboard.CoreObjectID, CoreDefine.Entities.رنگ_سطر_جدول))
+        {
+            APM.Models.APMObject.InformationForm.GridRowColor RowColor = new APM.Models.APMObject.InformationForm.GridRowColor(GridRowColorCore);
+            ValueColorRow += RowColor.RowColorColumnValue + ",";
+            OperatorColorRow += RowColor.RowColorOperator + ",";
+            ValueColorRow2 += RowColor.RowColorColumnValue2 + ",";
+            OperatorColorRow2 += RowColor.RowColorOperator2 + ",";
+            RowColorSelectedColor += RowColor.RowColorSelectedColor + ",";
+            ColumnNameColorRow += RowColor.RowColorColumnFullName + ",";
+        }
+
+        <div hidden> 
+            <input id=@InputOperatorColorRow value=@OperatorColorRow hidden />
+            <input id=@InputValueColorRow value=@ValueColorRow hidden />
+            <input id=@InputOperatorColorRow2 value=@OperatorColorRow2 hidden />
+            <input id=@InputValueColorRow2 value=@ValueColorRow2 hidden />
+            <input id=@InputColumnNameColorRow value=@ColumnNameColorRow hidden />
+            <input id=@InputRowColorSelectedColor value=@RowColorSelectedColor hidden />
+            <input id=@ChartTypesName value=@subDashboard.ChartTypes hidden />
+        </div>
+
+        if (subDashboard.ChartTypes == CoreDefine.ChartTypes.تکی)
+        {
+            foreach (DataRow row in Data.Rows)
+            {
+                ScriptID = Tools.SafeTitle(row[0].ToString()) + "_Template" + "_" + CoreItem.CoreObjectID.ToString();
+                ChartList.Add(new string[] { (string.IsNullOrEmpty(subDashboard.Title) ? Tools.UnSafeTitle(subDashboard.FullName) : subDashboard.Title), ScriptID, subDashboard.ColumnSpan.ToString(), subDashboard.RowSpan.ToString(), subDashboard.Icon });
+
+                <script id=@ScriptID type="text/x-kendo-template">
+                    <div>
+                        <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                        <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+                        @(Html.Kendo().Switch()
+                            .Name(SwitchName)
+                            .Checked(false)
+                            .HtmlAttributes(new {style="max-width:150px;"})
+                            .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                            .ToClientTemplate()
+                        )
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@DateDivID>
+                        <span>از تاریخ :</span>
+                        <div class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_FromDate
+                                name=@Sub_FromDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@FromDate >
+                        </div>
+                        <span>تا تاریخ :</span>
+                        <div  class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_ToDate
+                                name=@Sub_ToDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@ToDate >
+                        </div>
+
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadBarSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                            <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                        </button>
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                        <span>زمان بروز رسانی(دقیقه) :</span>
+                        <div class="DashboardDate">
+                            <input autocomplete="off"
+                                id=@ReloadTimeName
+                                name=@ReloadTimeName
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                onload="onloadDashboard(this)"
+                                value=@subDashboard.ReloadTime >
+                        </div>
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                            <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                        </button>
+                    </div>
+                    <h3 style='text-align: center; height: 30%;padding: 15%;font-size: 32px;font-weight: 900;'>@row[1].ToString()</h3>
+                    <div style='text-align: center;font-size: 18px;'> @row[0].ToString()</div>
+                </script>
+            }
+        }
+        else
+        {
+            ChartList.Add(new string[] { ChartTitle, ScriptID, subDashboard.ColumnSpan.ToString(), subDashboard.RowSpan.ToString(), subDashboard.Icon });
+        }
+
+        switch (subDashboard.ChartTypes)
+        {
+            case CoreDefine.ChartTypes.میله_ای:
+                {
+                    List<double[]> SeriesBarList = new List<double[]>();
+                    double[] SeriesBar = new double[Data.Rows.Count];
+                    string[] Categories = new string[Data.Rows.Count];
+                    for (int Index = 0; Index < Data.Rows.Count; Index++)
+                    {
+                        Categories[Index] = Data.Rows[Index][0].ToString();
+                        SeriesBar[Index] = double.Parse(Data.Rows[Index][1].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                    }
+
+
+                    <script id=@ScriptID type="text/x-kendo-template">
+                       <div>
+                           <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                           <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+                            @(Html.Kendo().Switch()
+                                .Name(SwitchName)
+                                .Checked(false)
+                                .HtmlAttributes(new {style="max-width:150px;"})
+                                .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                                .ToClientTemplate()
+                            )
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@DateDivID>
+                            <span>از تاریخ :</span>
+                            <div class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                   id=@Sub_FromDate
+                                   name=@Sub_FromDate
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                   onload="AddListenerCalendar(this)"
+                                   value=@FromDate >
+                            </div>
+                            <span>تا تاریخ :</span>
+                            <div  class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                   id=@Sub_ToDate
+                                   name=@Sub_ToDate
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                   onload="AddListenerCalendar(this)"
+                                   value=@ToDate >
+                            </div>
+
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadBarSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                                <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                            </button>
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                            <span>زمان بروز رسانی(دقیقه) :</span>
+                            <div class="DashboardDate">
+                                <input autocomplete="off"
+                                   id=@ReloadTimeName
+                                   name=@ReloadTimeName
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                   onload="onloadDashboard(this)"
+                                   value=@subDashboard.ReloadTime >
+                            </div>
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                                <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                            </button>
+                        </div>
+                            @(Html.Kendo().Chart()
+                                .Name(@ChartName)
+                                .Theme(subDashboard.Theme)
+                                .Title(title => title
+                                    .Text(subDashboard.Title)
+                                    .Font("IRANSans")
+                                    .Position(ChartTitlePosition.Top))
+                                .Legend(legend => legend
+                                    .Visible(true)
+                                    .Position(ChartLegendPosition.Top)
+                                    .Font("10px IRANSans")
+                                )
+                                .ChartArea(chart => chart.Background("transparent"))
+                                .Zoomable(true)
+                                .Series(series =>
+                                {
+                                    series.Column(SeriesBar).Name(Tools.UnSafeTitle(subDashboard.FullName));
+                                    //foreach (CoreObject core in CoreObject.FindChilds(subDashboard.CoreObjectID, CoreDefine.Entities.ادغام_داشبورد))
+                                    //{
+                                    //    //Data = Desktop.GetDashboardData(FromDate, ToDate, subDashboard);
+
+                                    //    series.Column(SeriesBar).Name(Tools.UnSafeTitle(core.FullName));
+                                    //}
+                                })
+                                .CategoryAxis(axis => axis.Name("label-axis").Categories(Categories))
+                                .ValueAxis(axis => axis.Numeric().Labels(labels => labels.Format("{0}")).AxisCrossingValue(0, int.MinValue))
+                                .Tooltip(tooltip => tooltip.Visible(true)
+                                //.Format("{0}%")
+                                )
+                                .Events(e => e.SeriesClick("PieChartClick"))
+                                .ToClientTemplate()
+                            )
+                    </script>
+
+                    break;
+                }
+            case CoreDefine.ChartTypes.ستونی:
+                {
+                    List<double[]> SeriesBarList = new List<double[]>();
+                    double[] SeriesBar = new double[Data.Rows.Count];
+                    string[] Categories = new string[Data.Rows.Count];
+                    for (int Index = 0; Index < Data.Rows.Count; Index++)
+                    {
+                        Categories[Index] = Data.Rows[Index][0].ToString();
+                        SeriesBar[Index] = double.Parse(Data.Rows[Index][1].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                    }
+
+
+                    <script id=@ScriptID type="text/x-kendo-template">
+                       <div>
+                           <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                           <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+                            @(Html.Kendo().Switch()
+                                .Name(SwitchName)
+                                .Checked(false)
+                                .HtmlAttributes(new {style="max-width:150px;"})
+                                .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                                .ToClientTemplate()
+                            )
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@DateDivID>
+                            <span>از تاریخ :</span>
+                            <div class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                   id=@Sub_FromDate
+                                   name=@Sub_FromDate
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                   onload="AddListenerCalendar(this)"
+                                   value=@FromDate >
+                            </div>
+                            <span>تا تاریخ :</span>
+                            <div  class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                   id=@Sub_ToDate
+                                   name=@Sub_ToDate
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                   onload="AddListenerCalendar(this)"
+                                   value=@ToDate >
+                            </div>
+
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadBarSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                                <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                            </button>
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                            <span>زمان بروز رسانی(دقیقه) :</span>
+                            <div class="DashboardDate">
+                                <input autocomplete="off"
+                                   id=@ReloadTimeName
+                                   name=@ReloadTimeName
+                                   data-role="textbox"
+                                   aria-disabled="false"
+                                   class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                   onload="onloadDashboard(this)"
+                                   value=@subDashboard.ReloadTime >
+                            </div>
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                                <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                            </button>
+                        </div>
+
+
+                            @(Html.Kendo().Chart()
+                                .Name(@ChartName)
+                                .Theme(subDashboard.Theme)
+                                .Title(title => title
+                                    .Text(subDashboard.Title)
+                                    .Font("IRANSans")
+                                    .Position(ChartTitlePosition.Top))
+                                .Legend(legend => legend
+                                    .Visible(true)
+                                    .Position(ChartLegendPosition.Top)
+                                    .Font("10px IRANSans")
+                                )
+                                .ChartArea(chart => chart.Background("transparent"))
+                                .Zoomable(true)
+                                .Series(series =>
+                                {
+                                    series.Bar(SeriesBar).Name(Tools.UnSafeTitle(subDashboard.FullName));
+                                    //foreach (CoreObject core in CoreObject.FindChilds(subDashboard.CoreObjectID, CoreDefine.Entities.ادغام_داشبورد))
+                                    //{
+                                    //    //Data = Desktop.GetDashboardData(FromDate, ToDate, subDashboard);
+                                    //    series.Column(SeriesBar).Name(Tools.UnSafeTitle(core.FullName));
+                                    //}
+                                })
+                                .CategoryAxis(axis => axis.Name("label-axis").Categories(Categories))
+                                .ValueAxis(axis => axis.Numeric().Labels(labels => labels.Format("{0}")).AxisCrossingValue(0, int.MinValue))
+                                .Tooltip(tooltip => tooltip.Visible(true)
+                                //.Format("{0}%")
+                                )
+                                .Events(e => e.SeriesClick("PieChartClick"))
+                                .ToClientTemplate()
+                            )
+                    </script>
+
+                    break;
+                }
+            case CoreDefine.ChartTypes.جدول:
+                {
+                    Session[@ChartName] = Data;
+                    string GridActionData = "function() {return {ChartName:'" + @ChartName + "',FromDate:'"+FromDate+ "',ToDate:'"+ToDate+ "',SubDashboardID:"+ subDashboard.CoreObjectID.ToString() + "} }";
+
+                     <script id=@ScriptID type="text/x-kendo-template">
+                        <div class="Dashboard_HeaderToolbar">
+                            <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                            <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+                            <span class="k-icon k-i-fullscreen ToggleFullScreenSubDashboard" onclick="ToggleFullScreenSubDashboard(@DateDivID,this)"></span>
+                            <span class="k-icon fa fa-dashboard" onclick="ShowDashboard(@DateDivID,this)"></span>
+                            <span class="k-icon k-i-file-excel" onclick="ReportExcelDashboard(@ChartTypesName,this)"></span>
+                            @*<span class="k-icon k-i-file-pdf" onclick="ReportPDFDashboard(@ChartTypesName,this)"></span>*@
+                            @(Html.Kendo().Switch()
+                                .Name(SwitchName)
+                                .Checked(false)
+                                .HtmlAttributes(new {style="max-width:150px;"})
+                                .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                                .ToClientTemplate()
+                            )
+                        </div>
+                        <div class="Dashboard_HeaderLayout" >
+                            <img class="Logo_HeaderLayout Dashboard_Logo_HeaderLayout ElementBox" src=@LogoPhoto />
+                            <div>
+                                <p class="Dashboard_Title_HeaderLayout"> @(ChartTitle)</p>
+                                <hr>
+                                <p class="Dashboard_CompanyName_HeaderLayout"> @(Referral.PublicSetting.CompanyName)</p>
+                            </div>
+                            <div style="margin:0px 15px 0px 35px;">
+                                <span class="k-icon k-i-clock"></span>
+                                <span class="TimeDateCounter ClockTimeCounter"></span>
+                                <hr style="margin: 0px;">
+                                <span class="k-icon k-i-calendar"></span>
+                                <span class="TimeDateCounter"> @CDateTime.GetNowshamsiDate() </span>
+                            </div>
+
+                            <span class="k-icon k-i-close" style="position: absolute;left: 20px;border: 0.5px solid;" onclick="CloseHeaderDashboard(@DateDivID,this)"></span>
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@DateDivID>
+                            <span>از تاریخ :</span>
+                            <div class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                    id=@Sub_FromDate
+                                    name=@Sub_FromDate
+                                    data-role="textbox"
+                                    aria-disabled="false"
+                                    class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                    onload="AddListenerCalendar(this)"
+                                    value=@FromDate >
+                            </div>
+                            <span>تا تاریخ :</span>
+                            <div  class="DashboardDate">
+                            <input data-jdp autocomplete="off"
+                                    id=@Sub_ToDate
+                                    name=@Sub_ToDate
+                                    data-role="textbox"
+                                    aria-disabled="false"
+                                    class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                    onload="AddListenerCalendar(this)"
+                                    value=@ToDate >
+                            </div>
+
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadBarSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                                <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                            </button>
+                        </div>
+                        <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                            <span>زمان بروز رسانی(دقیقه) :</span>
+                            <div class="DashboardDate">
+                                <input autocomplete="off"
+                                    id=@ReloadTimeName
+                                    name=@ReloadTimeName
+                                    type="number"
+                                    data-role="textbox"
+                                    aria-disabled="false"
+                                    class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                    onload="onloadDashboard(this)"
+                                    value=@subDashboard.ReloadTime >
+                            </div>
+                            <br/>
+                            <span>نمایش جستجو :</span>
+                            <div class="DashboardDate">
+                               @(Html.Kendo().Switch()
+                                .Name(ShowFilterName)
+                                .Checked(true)
+                                .HtmlAttributes(new {style="max-width:150px;"})
+                                .Messages(c => c.Checked("بله").Unchecked("خیر"))
+                                .Events(e=>e.Change("SubdashboardShowFilter_Change"))
+                                .ToClientTemplate()
+                                )
+                            </div>
+                            <br/>
+                            <span>انتخاب فونت سرتیتر:</span>
+                            <div class="DashboardDate">
+
+                                @(Html.Kendo().ComboBox()
+                                .Name("Header_"+FontSizeTypesName)
+                                .Filter("contains")
+                                .Placeholder("انتخاب نمایید")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .BindTo(new List<SelectListItem>()
+                                {
+                                    new SelectListItem() { Text = "پیش فرض", Value = "" },
+                                    new SelectListItem() { Text = "بزرگ", Value = "large" },
+                                    new SelectListItem() { Text = "بزرگتر", Value = "larger" },
+                                    new SelectListItem() { Text = "متوسط", Value = "medium" },
+                                    new SelectListItem() { Text = "کوچک", Value = "small" },
+                                    new SelectListItem() { Text = "کوچکتر", Value = "smaller" },
+                                    new SelectListItem() { Text = "x-بزرگ", Value = "x-large" },
+                                    new SelectListItem() { Text = "x-کوچک", Value = "x-small" },
+                                    new SelectListItem() { Text = "xx-بزرگ", Value = "xx-large" },
+                                    new SelectListItem() { Text = "x-کوچک", Value = "xx-small" },
+                                    new SelectListItem() { Text = "xxx-بزرگ", Value = "xxx-large" }
+                                })
+                                .Events(events =>{
+                                    events.Change("ChangeHeaderFontSizeTypes");
+                                })
+                                .ToClientTemplate()
+                                )
+                            </div>
+
+                            <span>وزن سرتیتر :</span>
+                            <div class="DashboardDate">
+                                <input autocomplete="off"
+                                    id=@HeaderFontWeight
+                                    name=@HeaderFontWeight
+                                    type="number"
+                                    data-role="textbox"
+                                    aria-disabled="false"
+                                    class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                    onchange="onkeydownFontWeightDashboard(this)"
+                                    value="600"
+                                 >
+                            </div>
+    
+                            @(Html.Kendo().ColorPicker()
+                                .Name(HeaderColorPicker)
+                                .Input(true)
+                                .Preview(true) 
+                                .Buttons(false) 
+                                .Views(new string[] {"gradient"}) 
+                                .Events(e=>e.Select("ChangeHeaderColorPicker"))
+                                .ToClientTemplate() 
+                            )
+                            <span class="k-icon k-i-align-right" onclick="AlignColumnTextDashboard(@ChartTypesName,this)" title="راست چین"></span>
+                            <span class="k-icon k-i-align-center" onclick="AlignColumnTextDashboard(@ChartTypesName,this)" title="وسط چین"></span>
+                            <span class="k-icon k-i-align-left" onclick="AlignColumnTextDashboard(@ChartTypesName,this)" title="چپ چین"></span>
+
+
+                            <span>انتخاب فونت بدنه:</span>
+                            <div class="DashboardDate">
+
+                                @(Html.Kendo().ComboBox()
+                                .Name("Body_"+FontSizeTypesName)
+                                .Filter("contains")
+                                .Placeholder("انتخاب نمایید")
+                                .DataTextField("Text")
+                                .DataValueField("Value")
+                                .BindTo(new List<SelectListItem>()
+                                {
+                                    new SelectListItem() { Text = "پیش فرض", Value = "" },
+                                    new SelectListItem() { Text = "بزرگ", Value = "large" },
+                                    new SelectListItem() { Text = "بزرگتر", Value = "larger" },
+                                    new SelectListItem() { Text = "متوسط", Value = "medium" },
+                                    new SelectListItem() { Text = "کوچک", Value = "small" },
+                                    new SelectListItem() { Text = "کوچکتر", Value = "smaller" },
+                                    new SelectListItem() { Text = "x-بزرگ", Value = "x-large" },
+                                    new SelectListItem() { Text = "x-کوچک", Value = "x-small" },
+                                    new SelectListItem() { Text = "xx-بزرگ", Value = "xx-large" },
+                                    new SelectListItem() { Text = "x-کوچک", Value = "xx-small" },
+                                    new SelectListItem() { Text = "xxx-بزرگ", Value = "xxx-large" }
+                                })
+                                .Events(events =>{
+                                    events.Change("ChangeBodyFontSizeTypes");
+                                })
+                                .ToClientTemplate()
+                                )
+                            </div>
+
+
+                            <span>وزن بدنه :</span>
+                            <div class="DashboardDate">
+                                <input autocomplete="off"
+                                    id=@BodyFontWeight
+                                    name=@BodyFontWeight
+                                    type="number"
+                                    data-role="textbox"
+                                    aria-disabled="false"
+                                    class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                    onchange="onkeydownFontWeightDashboard(this)"
+                                    value="600"
+                                 >
+                            </div>  
+                            <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                                <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                            </button>
+                        </div>
+
+                        @(Html.Kendo().Grid<dynamic>()
+                        .Name(@ChartName)
+                        .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+                        .Columns(columns =>
+                        {
+                            foreach(DataColumn column in Data.Columns)
+                            {
+                                columns.Bound(typeof(string), column.ColumnName).Title(Tools.UnSafeTitle(column.ColumnName)).Width(70).EditorTemplateName("InlineString");
+                            }
+                        })
+                        .HtmlAttributes(new { style = "top: 15px;height: 90%; width:100%" })
+                        .Scrollable()
+                        .Navigatable()
+                        .Excel(excel => excel.FileName(ChartTitle + ".xlsx").AllPages(true))
+                        .Pdf(excel => excel.FileName(ChartTitle + ".pdf").AutoPrint(true))
+                        .Pageable(pageable => pageable.AlwaysVisible(true).PageSizes(new int[] { 5,10,15,20}).Enabled(true).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+                        .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+                        .Filterable(x => x.Mode(GridFilterMode.Row))
+                        .PersistSelection()
+                        .Sortable(s => s.AllowUnsort(false))
+                        .LoaderType(GridLoaderType.Skeleton)
+                        .AllowCopy(false)
+                        .Resizable(x=>x.Columns(true))
+                        .DataSource(dataSource =>dataSource
+                                .Ajax()
+                                .ServerOperation(false)
+                                .Model(model =>
+                                {
+                                    model.Id("id");
+
+                                    foreach (DataColumn column in Data.Columns)
+                                    {
+                                        model.Field(column.ColumnName, typeof(string)).Editable(false);
+                                    }
+                                })
+                                .PageSize(10)
+                                .Read(action => action.Action("Read", "Dashboard").Data(GridActionData))
+                                )
+                        .Events(events =>
+                        {
+                            events.DataBound("MainGridPreviewSetting");
+                        })
+                        .ToClientTemplate()
+                        )
+                     </script>
+
+                    break;
+                }
+            case CoreDefine.ChartTypes.منطقه:
+                {
+                    double[] SeriesBar = new double[Data.Rows.Count];
+                    string[] Categories = new string[Data.Rows.Count];
+                    for (int Index = 0; Index < Data.Rows.Count; Index++)
+                    {
+                        Categories[Index] = Data.Rows[Index][0].ToString();
+                        SeriesBar[Index] = double.Parse(Data.Rows[Index][1].ToString(), System.Globalization.CultureInfo.InvariantCulture);
+                    }
+                    <script id=@ScriptID type="text/x-kendo-template">
+                    <div>
+                        <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                        <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+                        @(Html.Kendo().Switch()
+                            .Name(SwitchName)
+                            .Checked(false)
+                            .HtmlAttributes(new {style="max-width:150px;"})
+                            .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                            .ToClientTemplate()
+                        )
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@DateDivID>
+                        <span>از تاریخ :</span>
+                        <div class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_FromDate
+                                name=@Sub_FromDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@FromDate >
+                        </div>
+                        <span>تا تاریخ :</span>
+                        <div  class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_ToDate
+                                name=@Sub_ToDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@ToDate >
+                        </div>
+
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadBarSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                            <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                        </button>
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                        <span>زمان بروز رسانی(دقیقه) :</span>
+                        <div class="DashboardDate">
+                            <input autocomplete="off"
+                                id=@ReloadTimeName
+                                name=@ReloadTimeName
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                onload="onloadDashboard(this)"
+                                value=@subDashboard.ReloadTime >
+                        </div>
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                            <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                        </button>
+                    </div>
+
+                        @(Html.Kendo().Chart()
+                            .Name(@ChartName)
+                            .Theme(subDashboard.Theme)
+                            .Title(title => title
+                                .Text(subDashboard.Title)
+                                .Font("IRANSans")
+                                .Position(ChartTitlePosition.Top))
+                            .Legend(legend => legend
+                                .Visible(true)
+                                .Position(ChartLegendPosition.Top)
+                                .Font("10px IRANSans")
+                            )
+                            .ChartArea(chart => chart.Background("transparent"))
+                            .Zoomable(true)
+                            .SeriesDefaults(seriesDefaults =>
+                                seriesDefaults.Area().Line(line => line.Style(ChartAreaStyle.Smooth))
+                            )
+                            .Series(series =>
+                            {
+                                series.Column(SeriesBar).Name(Tools.UnSafeTitle(subDashboard.FullName));
+                            })
+                            .CategoryAxis(axis => axis.Name("label-axis").Categories(Categories))
+                            .ValueAxis(axis => axis.Numeric().Labels(labels => labels.Format("{0}")).AxisCrossingValue(0, int.MinValue))
+                            .Tooltip(tooltip => tooltip.Visible(true)
+                            //.Format("{0}%")
+                            )
+                            .Events(e => e.SeriesClick("PieChartClick"))
+                            .ToClientTemplate()
+                        )
+                    </script>
+                    break;
+                }
+            case CoreDefine.ChartTypes.دایره_ای:
+                {
+                    dynamic[] DynamicData = new dynamic[Data.Rows.Count];
+                    for (int Index = 0; Index < Data.Rows.Count; Index++)
+                    {
+                        DynamicData[Index] = new { category = Data.Rows[Index][0].ToString() == "" ? "تهی" : Data.Rows[Index][0], value = Data.Rows[Index][1] };
+                    }
+                    <script id=@ScriptID type="text/x-kendo-template">
+                    <div>
+                        <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                        <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+
+                        @(Html.Kendo().Switch()
+                            .Name(SwitchName)
+                            .Checked(false)
+                            .HtmlAttributes(new {style="max-width:150px;"})
+                            .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                            .ToClientTemplate()
+                        )
+
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@DateDivID>
+                        <span>از تاریخ :</span>
+                        <div class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_FromDate
+                                name=@Sub_FromDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@FromDate >
+                        </div>
+                        <span>تا تاریخ :</span>
+                        <div  class="DashboardDate">
+                        <input data-jdp autocomplete="off"
+                                id=@Sub_ToDate
+                                name=@Sub_ToDate
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                onload="AddListenerCalendar(this)"
+                                value=@ToDate >
+                        </div>
+
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadPieSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                            <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                        </button>
+                    </div>
+                    <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                        <span>زمان بروز رسانی(دقیقه) :</span>
+                        <div class="DashboardDate">
+                            <input autocomplete="off"
+                                id=@ReloadTimeName
+                                name=@ReloadTimeName
+                                data-role="textbox"
+                                aria-disabled="false"
+                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                onload="onloadDashboard(this)"
+                                value=@subDashboard.ReloadTime >
+                        </div>
+                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                            <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                        </button>
+                    </div>
+                        @(Html.Kendo().Chart()
+                            .Name(ChartName)
+                            .Theme(subDashboard.Theme)
+                            .Title(title => title
+                                .Text(subDashboard.Title)
+                                .Font("IRANSans")
+                                .Position(ChartTitlePosition.Top)
+                                .Visible(false))
+                            .Legend(legend => legend
+                                .Visible(true)
+                                .Position(ChartLegendPosition.Top)
+                                .Font("12px IRANSans")
+                            )
+                            .ChartArea(chart => chart.Background("transparent"))
+                            .Series(series => {
+                                series.Pie(DynamicData)
+                                .Labels(labels => labels
+                                    .Font("11px IRANSans")
+                                    .Background("transparent")
+                                    .Visible(true)
+                                )
+                                .StartAngle(150);
+                            })
+                            .Tooltip(tooltip => tooltip
+                                .Visible(false)
+                                .Format("{0}")
+                            )
+                            .Events(e => e.Render("onloadDashboard").SeriesClick("PieChartClick"))
+                            .ToClientTemplate()
+                        )
+                    </script>
+
+                    break;
+                }
+            case CoreDefine.ChartTypes.قوس_سنج:
+                {
+                    <script id=@ScriptID type="text/x-kendo-template">
+                                    <div>
+                                        <span class="k-icon k-i-gear"  onclick="FilterSubDashboard(@ReloadTimeID)"></span>
+                                        <span class="k-icon k-i-filter" onclick="FilterSubDashboard(@DateDivID)"></span>
+
+                                        @(Html.Kendo().Switch()
+                                            .Name(SwitchName)
+                                            .Checked(false)
+                                            .HtmlAttributes(new {style="max-width:150px;"})
+                                            .Messages(c => c.Checked("نمایش جزئیات").Unchecked("نمایش زیر مجموعه"))
+                                            .ToClientTemplate()
+                                        )
+
+                                    </div>
+                                    <div class="MainDivDashboardDate"  id=@DateDivID>
+                                        <span>از تاریخ :</span>
+                                        <div class="DashboardDate">
+                                        <input data-jdp autocomplete="off"
+                                                id=@Sub_FromDate
+                                                name=@Sub_FromDate
+                                                data-role="textbox"
+                                                aria-disabled="false"
+                                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                                onload="AddListenerCalendar(this)"
+                                                value=@FromDate >
+                                        </div>
+                                        <span>تا تاریخ :</span>
+                                        <div  class="DashboardDate">
+                                        <input data-jdp autocomplete="off"
+                                                id=@Sub_ToDate
+                                                name=@Sub_ToDate
+                                                data-role="textbox"
+                                                aria-disabled="false"
+                                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers"
+                                                onload="AddListenerCalendar(this)"
+                                                value=@ToDate >
+                                        </div>
+
+                                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button " onclick="ReloadPieSubDashboard(@CoreItem.CoreObjectID,@ChartName)">
+                                            <span class="k-icon k-i-play k-button-icon" style="color:white"></span> اجرا
+                                        </button>
+                                    </div>
+                                    <div class="MainDivDashboardDate"  id=@ReloadTimeID>
+                                        <span>زمان بروز رسانی(دقیقه) :</span>
+                                        <div class="DashboardDate">
+                                            <input autocomplete="off"
+                                                id=@ReloadTimeName
+                                                name=@ReloadTimeName
+                                                data-role="textbox"
+                                                aria-disabled="false"
+                                                class="k-input k-textbox k-input-solid k-input-md k-rounded-md "
+                                                onload="onloadDashboard(this)"
+                                                value=@subDashboard.ReloadTime >
+                                        </div>
+                                        <button class="RunDashboard k-input-button k-button-md k-button-solid Button k-button-solid-primary" onclick="SetReloadTime(@ChartName)">
+                                            <span class="k-icon k-i-check k-button-icon" style="color:white"></span> تنظیم کردن
+                                        </button>
+                                    </div>
+                                    @(Html.Kendo().ArcGauge()
+                                        .Name(ChartName)
+                                        .Value(long.Parse(Data.Rows[0][0].ToString()))
+                                        .Scale(x => x.Min(subDashboard.MinValue).Max(subDashboard.MaxValue))
+                                        .ToClientTemplate()
+                                    )
+                                    <div style="width: 100%;height: 100%;top: 200px;text-align: center;font-size: 25px;font-weight: 800;position: absolute;left: 1%;" onclick="PieChartClick(@ChartName)">@Data.Rows[0][0].ToString()</div>
+                    </script>
+
+                    break;
+                }
+
+        }
+
+        <script>
+            LoadFirstSubDashboard(@ChartTypesName);
+        </script>
+        //}
+    }
+
+
+    <div style="height: 100%; background-color: #f8f9fa; border-radius: 18px; padding: 5px; overflow: auto; padding-bottom: 100px;" id=@MainDivID>
+        @(Html.Kendo().TileLayout()
+            .Name(@DashboardTile)
+            .Columns(5)
+            .RowsHeight("235px")
+            .ColumnsWidth("300px")
+            .Containers(Item => {
+
+                foreach(string[] ChartItem in ChartList)
+                {
+                    Item.Add().Header(h => h.Text("<span class='TileLayoutIcon " + ChartItem[4]+"'></span>"+ ChartItem[0])).BodyTemplateId(ChartItem[1]).ColSpan(long.Parse(ChartItem[2])).RowSpan(long.Parse(ChartItem[3]));
+                }
+            })
+            .Reorderable(true)
+            .Resizable(true)
+            .Events(e=>e.Resize("onTileResize"))
+        )
+    </div>
+
+
+    <style>
+        .k-card-header {
+            flex: 0 0 auto;
+        }
+
+        .k-card-body {
+            overflow: hidden;
+        }
+        .Dashboard_HeaderLayout{
+            background-color:@Referral.PublicSetting.IconColor;
+            color:@Referral.PublicSetting.MainColor;
+        }
+        .Dashboard_HeaderLayout hr{
+            background-color:@Referral.PublicSetting.MainColor;
+        }
+        .Dashboard_HeaderLayout .k-icon{
+            color:@Referral.PublicSetting.MainColor;
+        }
+    </style>
+
+ 

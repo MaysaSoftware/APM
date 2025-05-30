@@ -1,0 +1,47 @@
+﻿ <div style="width: 100%; height: 37px">
+
+    @if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+    {
+        <input data-mdp
+               autocomplete="off"
+               id=@ViewData["FieldName"]
+               name=@ViewData["FieldName"]
+               required="required"
+               validationmessage="ورود داده الزامی است"
+               data-role="textbox"
+               aria-disabled="false"
+               class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers "
+               onload="AddListenerMiladiCalendar(this)"
+               style="width: 100%;">
+    }
+    else if ((bool)ViewData["IsReadonly"])
+    {
+        <input data-mdp autocomplete="off"
+               id=@ViewData["FieldName"]
+               name=@ViewData["FieldName"]
+               data-role="textbox"
+               aria-disabled="false"
+               class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers "
+               style="width: 100%;"
+               onload="AddListenerMiladiCalendar(this)"
+               disabled="disabled">
+    }
+    else
+    {
+        <input data-mdp autocomplete="off"
+               id=@ViewData["FieldName"]
+               name=@ViewData["FieldName"]
+               data-role="textbox"
+               aria-disabled="false"
+               class="k-input k-textbox k-input-solid k-input-md k-rounded-md MildayDatePickers"
+               style="width: 100%;"
+               onload="AddListenerMiladiCalendar(this)">
+
+    }
+
+    <span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton" onclick="MiladiCalenderClick(@ViewData["FieldName"])">
+        <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+
+
+</div>

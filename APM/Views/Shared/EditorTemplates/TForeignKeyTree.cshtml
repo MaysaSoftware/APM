@@ -1,0 +1,12 @@
+﻿
+@{
+    ViewBag.Title = "DropDownTree";
+}
+
+@(Html.Kendo().DropDownTree()
+        .Name("DataSourceObjectTree")
+        .HtmlAttributes(new { style = "width: 100%" })
+        .Items(items => {
+            items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.پایگاه_داده)).Text("پایگاه داده").Items(subItems => subItems.CoreObjectTreeDropDownFiller(CoreObject.FindChilds(0, CoreDefine.Entities.پایگاه_داده), "", ""));
+        })
+    )

@@ -1,0 +1,65 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database; 
+@{ 
+    string ActionData = "function() {return {RequestType: 'Shift',IsReload:false} }"; 
+}
+ 
+
+@(Html.Kendo().Grid<dynamic>()
+.Name("SearchPersonGrid")
+.Editable(e => e.Mode(GridEditMode.InCell))
+.Columns(columns =>
+{
+    columns.Bound(typeof(object), "افزودن").Title("").Width(15).Filterable(false).Sortable(false).ClientTemplate("<span  onclick = 'AddShiftPersonToGrid(#=data.id#)' style='color: green' class='k-icon k-font-icon k-i-plus'></span>");
+    columns.Bound(typeof(int), "شناسه").Title("شناسه").Width(70).EditorTemplateName("InlineString").Visible(true);
+    columns.Bound(typeof(string), "نام").Title("نام پرسنل").Width(150).EditorTemplateName("InlineString");
+    columns.Bound(typeof(string), "شماره_پرسنلی").Title("شماره پرسنلی").Width(100).EditorTemplateName("InlineString");
+    columns.Bound(typeof(string), "کد_ملی").Title("شماره ملی").Width(100).EditorTemplateName("InlineString");
+    columns.Bound(typeof(string), "واحد_سازمانی").Title("واحد سازمانی").Width(100).EditorTemplateName("InlineString");
+    columns.Bound(typeof(string), "اداره").Title("اداره").Width(100).EditorTemplateName("InlineString");
+    columns.Bound(typeof(string), "نوع_استخدام").Title("نوع استخدام").Width(100).EditorTemplateName("InlineString");
+})
+.HtmlAttributes(new { style = "height: 100%; width:100%" })
+.Scrollable()
+.Resizable(r => r.Columns(true))
+.Navigatable()
+.Pageable(pageable => pageable.PageSizes(true).Messages(m=>m.ItemsPerPage("تعداد رکورد هر صفحه")))
+.PersistSelection()
+.Sortable()
+.LoaderType(GridLoaderType.Skeleton)
+.AllowCopy(false)
+.Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+.ToolBar(toolBar => toolBar.Template(
+"<div class='FormSearchInput'>" +
+"<input class='k-input k-textbox k-input-solid k-input-md k-rounded-md' style='width:230px;background-color:white;left:-27px;' placeholder='جستجو' id='SearchPersonInput' onkeydown = 'return PersonGridSearchInputKeyDown(event)' />" +
+"<span id='SearchPersonButton' onclick = 'SearchButton(this)' class='k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton' style='left: 1px; top: 1px; height: 30px;'>" +
+"<span class='k-icon k-i-search k-button-icon'></span></span></div>"+
+Html.Kendo().ToolBar().Name("SearchGridToolBar").HtmlAttributes(new { @class = " GridToolbar" })
+.Items(items => {
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                        .Buttons(buttons =>
+                        {
+                            buttons.Add().HtmlAttributes(new { @class = "SearchButton" }).Text(@"<span class=""k-icon k-i-reload""></span>بروز رسانی").Click("ReloadSearchPersonGrid");
+                        });
+}).ToHtmlString()
+))
+.DataSource(dataSource =>
+            dataSource
+            .Ajax()
+            .PageSize(100)
+            .Model(model =>
+            {
+                model.Id("شناسه");
+                model.Field("شناسه", typeof(long)).Editable(false);
+                model.Field("افزودن", typeof(object)).Editable(false);
+                model.Field("نام", typeof(string)).Editable(false);
+                model.Field("شماره_پرسنلی", typeof(string)).Editable(false);
+                model.Field("کد_ملی", typeof(string)).Editable(false);
+                model.Field("واحد_سازمانی", typeof(string)).Editable(false);
+                model.Field("اداره", typeof(string)).Editable(false);
+                model.Field("نوع_استخدام", typeof(string)).Editable(false);
+            })
+            .Read(action => action.Action("ReadPerson", "Food").Data(ActionData))
+            )
+)

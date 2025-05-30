@@ -1,0 +1,265 @@
+﻿@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.Tools; 
+@using APM.Models.APMObject;
+
+@{
+    List<Folder> FolderList = (List<Folder>)ViewData["FolderDataKey"];
+    List<TemplateField> FieldParameterList = (List<TemplateField>)ViewData["FieldParameterList"];
+    string MasterDivID = "PopupTabDiv_" + (string)ViewData["DataKey"];
+    string DataKey = (string)ViewData["DataKey"];
+    long ProcessID = ViewData["ProcessID"]==null?0:(long)ViewData["ProcessID"];
+    long ProcessStepID = ViewData["ProcessStepID"] ==null?0:(long)ViewData["ProcessStepID"];
+    string RecordID = (string)ViewData["RecordID"];
+    bool ISReadOnly = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+    CoreObject Form = CoreObject.Find(long.Parse(ViewData["DataKey"].ToString()));
+    string PrimeryKey = "";
+    string Comment = "";
+    string ClassForm = "";
+    bool ShowAttachment = ViewData["ShowAttachment"] == null ? true : (bool)ViewData["ShowAttachment"];
+    if (Form.CoreObjectID > 0 && Form.Entity == CoreDefine.Entities.جدول)
+    {
+        Table Table = new Table(Form);
+        PrimeryKey = Table.IDField().FieldName;
+        Comment = Table.Comment;
+    }
+    else if (Form.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+    {
+        CoreObject TableObject = CoreObject.Find(Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].RelatedTable);
+        Table Table = new Table(TableObject);
+        PrimeryKey = Table.IDField().FieldName;
+        Comment = Table.Comment;
+        InformationEntryForm informationEntryForm = new InformationEntryForm(Form);
+        ClassForm = informationEntryForm.CSS;
+    }
+
+
+    string ClassTableAttachment = "TableAttachment-" + ClassForm;
+    string ClassFormAttachment = "FormAttachment-" + ClassForm;
+}
+
+<div class="col-sm-12 MasterPopupEditorDiv" id=@MasterDivID>
+
+    @if (Comment != "")
+    {
+        <p>
+            @Comment
+        </p>
+    }
+    <div class="@("col-sm-12 "+ClassForm)">
+        @foreach (Folder Folder in FolderList)
+        { 
+            string BlockDivID = "MainBlockDiv_" + DataKey + "_" +( Folder.FullName == null?"":Tools.SafeTitle(Folder.FullName));
+            <div class="MainBlockDiv" id=@BlockDivID>
+                <div class="HeaderEditor">
+                    <p>@(Folder.FullName == null?"":Tools.SafeTitle(Folder.FullName))</p>
+                </div>
+
+                <div class="container">
+
+                    <div class="PopupTabDiv MainInputDiv row">
+                        @foreach (TemplateField FieldItem in FieldParameterList)
+                        {
+
+                            string InputDivId = "InputDiv_" + FieldItem.FullName;
+                            if (Tools.UnSafeTitle(Folder.FullName) == FieldItem.Folder|| FieldItem.Folder== Folder.FullName)
+                            {
+                                if (FieldItem.IsWide)
+                                {
+                                    <div class="FormItemInput WideInput col-sm-12" id=@InputDivId>
+                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                    </div>
+                                }
+                                else if (FieldItem.FullName == PrimeryKey + "_" + ViewData["DataKey"].ToString())
+                                {
+
+                                    switch (Form.Entity)
+                                    {
+                                        case CoreDefine.Entities.جدول:
+                                            {
+                                                <div class="@("FormItemInput col-sm-"+FieldItem.ColumnWidth)" id=@InputDivId>
+                                                    @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                                    @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                                </div>
+                                                break;
+                                            }
+                                        case CoreDefine.Entities.فرم_ورود_اطلاعات:
+                                            {
+                                                if (Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].IsShowID)
+                                                {
+                                                    <div class="@("FormItemInput col-sm-"+FieldItem.ColumnWidth)" id=@InputDivId>
+                                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="@("FormItemInput col-sm-"+FieldItem.ColumnWidth)" style="display:none" id=@InputDivId>
+                                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                                    </div>
+                                                }
+                                                break;
+                                            }
+
+                                    }
+
+                                }
+                                else if (FieldItem.InputTypes == CoreDefine.InputTypes.Image)
+                                {
+                                    <div class="FormItemInput col-sm-2" style="height:200px;overflow:hidden" id=@InputDivId>
+                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                    </div>
+                                }
+                                else if (FieldItem.InputTypes == CoreDefine.InputTypes.Upload)
+                                {
+                                    <div class="@("FormItemInput col-sm-"+FieldItem.ColumnWidth+" Uploadcol")" id=@InputDivId>
+                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="@("FormItemInput col-sm-"+FieldItem.ColumnWidth)"  id=@InputDivId>
+                                        @Html.Editor(FieldItem.FullName, "Title", FieldItem.Parameter)
+                                        @Html.Partial("/Views/Shared/InputForm/InputField.cshtml", new ViewDataDictionary { { "FieldItem", FieldItem }, { "DataKey", @ViewData["DataKey"] } })
+                                    </div> 
+
+                                }
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+
+    @if ((string)ViewData["DataKey"] != "0" && ShowAttachment)
+    {
+        if (CoreObject.Find(long.Parse((string)ViewData["DataKey"])).Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+        {
+            foreach (InformationEntryForm EntryForm in Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].Childs(CoreDefine.Entities.فرم_ورود_اطلاعات))
+            {
+                if ((new PermissionBase(EntryForm.CoreObjectID, Referral.UserAccount.Permition).IsAllow && EntryForm.ShowInParentForm) || ProcessID>0)
+                {
+                    string InputDivId = "InputDiv_Grid_" + EntryForm.InformationEntryFormName + "_" + DataKey;
+                    <div style="float:right; width:100%" id=@InputDivId class="@("col-sm-"+EntryForm.ColumnWidth +" "+@EntryForm.CSS )">
+                        <div class="PopupTabDiv ClearPopupTabDiv">
+                            @Html.Partial("/Views/Shared/InputForm/TGrid.cshtml", new ViewDataDictionary { { "ParentID", RecordID }, { "DataKey", EntryForm.CoreObjectID.ToString() }, { "ProcessID", ProcessID }, { "ProcessStepID", ProcessStepID }, { "RecordID", RecordID }, { "ISReadOnly", ISReadOnly } })
+                        </div>
+                    </div>
+                }
+            }
+
+            List<CoreObject> ItemCoreList = CoreObject.FindChilds(Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].RelatedTable, CoreDefine.Entities.ضمیمه_جدول);
+
+            @*if (ItemCoreList.Count > 0)
+                {
+                    <div class=@ClassTableAttachment>
+                        <div class="HeaderEditor">
+                            <p>ضمیمه</p>
+                        </div>
+
+                    <div class="container">
+                            <div class="PopupTabDiv row">
+                                @foreach (CoreObject Item in ItemCoreList)
+                                {
+                                    PermissionTableAttachment Permission = new PermissionTableAttachment(Item.CoreObjectID, Referral.UserAccount.Permition);
+                                    if (Permission.CanOpenAttachment)
+                                    {
+                                        TableAttachment attachment = new TableAttachment(Item);
+                                        var Parameter = new
+                                        {
+                                            RelatedTable = 0,
+                                            IsGridField = false,
+                                            IsRequired = attachment.IsRequired,
+                                            InputType = "",
+                                            FieldTitle = Tools.UnSafeTitle(Item.FullName)
+                                        };
+
+
+                                        <div class="UploadFileDiv col-sm-2">
+                                            @Html.Editor(Item.FullName, "Title", Parameter)
+                                            @Html.Partial("/Views/Shared/EditorTemplates/Upload.cshtml", new ViewDataDictionary { { "RecordID", Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].RelatedTable }, { "InnerID", RecordID }, { "FileFullName", Item.FullName }, { "DataKey", (string)ViewData["DataKey"] }, { "ParentID", @ViewData["ParentID"] }, { "TableAttachment", attachment }, { "FileName", Item.FullName }, { "PermissionTableAttachment", Permission }, { "ISReadOnly", ISReadOnly } })
+                                        </div>
+                                    }
+                                }
+                            </div>
+                            </div>
+                    </div>
+                }*@
+
+
+            if (Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].ShowAttachment && (new PermissionInformationEntryForm(long.Parse((string)ViewData["DataKey"]), Referral.UserAccount.Permition).CanOpenAttachment || ProcessID>0))
+            {
+                <div class="@("row FormAttachment FormAttachment-" + ClassForm+" col-sm-"+Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].AttachmentColumnWidth)" style="float: right; height: @(Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].HieghtAttachment.ToString()+"px")">
+                    @*<div class="HeaderEditor" style="width:100%">
+                        <p>ضمیمه</p>
+                    </div>*@ 
+                    <div class="PopupTabDiv ClearPopupTabDiv"  style="width:100%">
+                        @Html.Partial("/Views/Attachment/Index.cshtml", new ViewDataDictionary { { "DataKey", (string)ViewData["DataKey"] }, { "RecordID", Desktop.DataInformationEntryForm[(string)ViewData["DataKey"]].RelatedTable.ToString() }, { "InnerID", RecordID }, { "ParentID", @ViewData["ParentID"] }, { "ISReadOnly", ISReadOnly } })
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            List<CoreObject> ItemCoreList = CoreObject.FindChilds(long.Parse((string)ViewData["DataKey"]), CoreDefine.Entities.ضمیمه_جدول);
+
+            if (ItemCoreList.Count > 0)
+            {
+
+                <div class="HeaderEditor">
+                    <p>ضمیمه</p>
+                </div>
+
+                <div class="PopupTabDiv">
+                    @foreach (CoreObject Item in ItemCoreList)
+                    {
+                        PermissionTableAttachment Permission = new PermissionTableAttachment(Item.CoreObjectID, Referral.UserAccount.Permition);
+
+                        if (Form.Entity == CoreDefine.Entities.جدول)
+                        {
+                            Permission.CanOpenAttachment = true;
+                            Permission.CanUpload = true;
+                        }
+
+                        if (Permission.CanOpenAttachment)
+                        {
+                            TableAttachment attachment = new TableAttachment(Item);
+                            var Parameter = new
+                            {
+                                RelatedTable = 0,
+                                InputType = CoreDefine.InputTypes.Attachment,
+                                IsGridField = false,
+                                IsRequired = attachment.IsRequired,
+                                FieldTitle = Tools.UnSafeTitle(Item.FullName),
+                                FieldName = Item.FullName + "_" + (string)ViewData["DataKey"]
+                            };
+
+
+                            <div class="UploadFileDiv col-sm-2">
+                                @Html.Editor(Item.FullName, "Title", Parameter)
+                                @Html.Partial("/Views/Shared/EditorTemplates/Upload.cshtml", new ViewDataDictionary { { "RecordID", (string)ViewData["DataKey"] }, { "InnerID", RecordID }, { "FileFullName", Item.FullName }, { "DataKey", (string)ViewData["DataKey"] }, { "ParentID", @ViewData["ParentID"] }, { "TableAttachment", attachment }, { "FileName", Item.FullName }, { "PermissionTableAttachment", Permission }, { "ISReadOnly", ISReadOnly } })
+                            </div>
+                        }
+                    }
+                </div>
+            }
+
+            if (new PermissionInformationEntryForm(long.Parse((string)ViewData["DataKey"]), Referral.UserAccount.Permition).CanOpenAttachment)
+            {
+                <div class="HeaderEditor">
+                    <p>ضمیمه</p>
+                </div>
+                <div class="PopupTabDiv">
+                    @Html.Partial("/Views/Attachment/Index.cshtml", new ViewDataDictionary { { "DataKey", (string)ViewData["DataKey"] }, { "RecordID", (string)ViewData["DataKey"] }, { "InnerID", RecordID }, { "ParentID", @ViewData["ParentID"] }, { "ISReadOnly", ISReadOnly } })
+                </div>
+            }
+        }
+
+    }
+</div>
+

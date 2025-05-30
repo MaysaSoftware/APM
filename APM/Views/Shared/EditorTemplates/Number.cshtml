@@ -1,0 +1,30 @@
+@model double?
+ @{ 
+     string Format = "n" + (int)ViewData["DigitsAfterDecimal"];
+     int Decimals = (int)ViewData["DigitsAfterDecimal"];
+ }
+
+@if (!(bool)ViewData["IsReadonly"] && (bool)ViewData["IsRequired"])
+{
+    @(Html.Kendo().NumericTextBoxFor(m => m)
+              .Enable(!(bool)ViewData["IsReadonly"])
+              .HtmlAttributes(new {@class="IsIDField"})
+              .Min(double.MinValue)
+              .Max(double.MaxValue)
+              .Decimals(@Decimals)
+              .Format(@Format)
+              .HtmlAttributes(new { @class = "Numeric", required = "required", validationMessage = "ورود داده الزامی است", autocomplete = "off" })
+    )
+}
+else
+{
+    @(Html.Kendo().NumericTextBoxFor(m => m)
+              .Enable(!(bool)ViewData["IsReadonly"])
+              .HtmlAttributes(new { @class = "IsIDField" })
+              .Min(double.MinValue)
+              .Max(double.MaxValue)
+              .Decimals(@Decimals)
+              .Format(@Format)
+              .HtmlAttributes(new { @class = "Numeric", autocomplete = "off" })
+    )
+}

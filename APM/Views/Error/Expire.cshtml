@@ -1,0 +1,25 @@
+﻿@using APM.Models
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    ViewBag.Title = "انقضاء";
+}
+
+
+
+<div id="MainDivision">
+    <div style="width:100%;text-align:center;margin-top:8%;">
+        <div class="col-sp-4 row-sp-4">
+            <span class="k-icon k-i-clock" style="font-size: 98px;color: #ff0000;"></span>
+            <br />
+            <span style="font-size: 200%; color: #ff0000; ">مدت زمان حضور شما به اتمام رسیده است </span>
+            <br />
+            <p style="font-size: 200%; margin-top: 20px;">در صورت تمایل برای ورود مجدد بر روی لینک زیر کلیک کنید</p>
+        </div>
+        <div class="col-sp-4" style="font-size:150%;margin-top:25px;">
+            <a href="~/signin">ورود به سامانه</a>
+        </div>
+        <div class="col-sp-4" style="font-size:150%;margin-top:25px;">
+            <img src="~/Theme/Image/Error.png" />
+        </div>
+    </div>
+</div>

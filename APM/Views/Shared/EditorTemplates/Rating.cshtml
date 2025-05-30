@@ -1,0 +1,16 @@
+﻿@{ 
+    int Decimals = (int)ViewData["DigitsAfterDecimal"];
+    string FieldName = (string)ViewData["FieldName"];
+    double Value = ViewData["FieldValue"] == null ? 0 : (ViewData["FieldValue"].ToString() == "" ? 0 : (Double.Parse(ViewData["FieldValue"].ToString(), System.Globalization.CultureInfo.InvariantCulture)));
+    double MaxValue = ViewData["MaxValue"] == null ? double.MaxValue : double.Parse(ViewData["MaxValue"].ToString());
+    double MinValue = ViewData["MinValue"] == null ? double.MinValue : double.Parse(ViewData["MinValue"].ToString());
+    string FieldClass = "Numeric " + (ViewData["FieldClass"] == null ? "" : (string)ViewData["FieldClass"]);
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+}
+
+@(Html.Kendo().Rating()
+        .Name(@FieldName)
+        .Min(MinValue)
+        .Max(MaxValue)
+        .Value(Value) 
+)

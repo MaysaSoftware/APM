@@ -1,0 +1,10 @@
+﻿@using APM.Models;
+
+@{
+    Layout = "~/Views/Report/_PublicLayout.cshtml";
+    ViewBag.Title = Referral.PublicSetting.AppPersianName; 
+}
+
+@Html.Partial("/Views/Shared/PublicLinkScript.cshtml")
+
+@Html.Partial("/Views/Report/Viewer.cshtml")

@@ -1,0 +1,15 @@
+﻿body {
+    width: 210mm;
+    height: 148mm;
+}
+
+@page {
+    size: A5 landscape;
+}
+
+@media print {
+    html, body {
+        width: 210mm;
+        height: 148mm;
+    }
+}

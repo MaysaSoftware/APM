@@ -1,0 +1,127 @@
+﻿﻿@using APM.Models;
+@using APM.Models.Database;
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    string AppLogo = Field.FormatImage(Referral.PublicSetting.AppLogo);
+}
+
+
+@Html.Partial("/Views/Signin/PublicStyle.cshtml")
+@Styles.Render("~/SigninCSS")
+@Scripts.Render("~/Login/IndexJS")
+<section>
+    <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span> <span></span>
+
+    <div class="signin">
+
+        <div class="content">
+            <div id="logo-wrapper">
+                <img id="logo" src=@AppLogo class="ImageCenter">
+                <h2 id='banner' class="TitleColor">
+                    @Referral.PublicSetting.AppPersianName
+                </h2>
+                <div id='AppVersion' style="padding-top:10px; font-size:12px;text-align:center; color:@Referral.PublicSetting.TitleColor">
+                    نسخه : @Referral.AppVersion
+                </div>
+            </div>
+
+            <div id="ValidationMessage">
+                @ViewData["Login.Message"]
+            </div>
+            <form id="SignInForm" class="form" action="/Signin" method="post">
+                <i class="TitleColor">نام کاربری</i>
+                @(Html.Kendo().TextBox()
+            .Name("UserName")
+            .HtmlAttributes(new {@class= "FormItemInput", required = "required", validationMessage = "ایمیل یا شماره تلفن همراه را وارد نمایید" })
+            )
+
+                <i class="TitleColor">کلمه عبور</i>
+                @(Html.Kendo().TextBox()
+            .Name("Password")
+            .HtmlAttributes(new {@class= "FormItemInput", required= "required", type= "password", validationMessage = "کلمه عبور را وارد نمایید" })
+            )
+
+                @if (Referral.AdminSetting.ShowUserRegistryInLoginForm)
+                {
+
+                    <div class="links">
+                        <a href="#" id="SignUp">ثبت نام</a><a href="#" id="ForgotPassword">فراموشی کلمه عبور</a>
+                    </div>
+                }
+
+                <div class="inputBox">
+                    <button onclick="Loginclick()">ورود</button>
+                </div>
+
+            </form>
+
+
+            @Html.Partial("/Views/Signin/Signup.cshtml")
+            @Html.Partial("/Views/Signin/ForgotPassword.cshtml")
+            @Html.Partial("/Views/Signin/ForgotPassword.cshtml")
+
+            <div>
+                @if (!string.IsNullOrEmpty(Referral.PublicSetting.SupportLink))
+                {
+                    if (Context.Request.Url.GetLeftPart(UriPartial.Authority) != Referral.PublicSetting.SupportLink)
+                    {
+                        <div style="padding-bottom:10px; padding-top:10px; font-size:12px;text-align:center; color:@Referral.PublicSetting.TitleColor">
+                            <a target="_self" href=@Referral.PublicSetting.SupportLink>
+                                <div class="TitleColor">لینک پشتیبان</div>
+                            </a>
+                        </div>
+                    }
+                }
+
+                @if (Referral.AdminSetting.ShowInfoInLogin)
+                {
+                    string Maile = "mailto:" + Referral.PublicSetting.E_Maile;
+                    string PhoneNumber = "tel:" + Referral.PublicSetting.PhoneNumber;
+
+                    <div id="continue-with-wrapper">
+                        <a target="_blank" id="MaysaCompanyLink" href=@Referral.PublicSetting.WebSite>
+                            <div class="TitleColor">@Referral.PublicSetting.CompanyName</div>
+                        </a>
+                    </div>
+                    <div id="social-wrapper">
+                        <a class='ContactUsIcon' target="_blank" href=@Maile>
+                            <div class="fa fa-envelope"></div>
+                        </a>
+                        <a class='ContactUsIcon' target="_blank" href=@PhoneNumber>
+                            <div class="fa fa-phone"></div>
+                        </a>
+                        <a class='ContactUsIcon' target="_blank" href=@Referral.PublicSetting.WebSite>
+                            <div class="fa fa-globe"></div>
+                        </a>
+                    </div>
+                }
+                else
+                {
+                    <div id="continue-with-wrapper">
+                        <a href="http://maysasoftware.com/" target="_blank" id="MaysaCompanyLink">
+                            <div class="TitleColor">طراحی شده توسط شرکت سامانه گستر مایسا</div>
+                        </a>
+                    </div>
+                    <div id="social-wrapper">
+                        <a href="mailto: maysainfo@maysasoftware.com" class='ContactUsIcon' target="_blank">
+                            <div class="fa fa-envelope"></div>
+                        </a>
+                        <a href="tel:09033923465" class='ContactUsIcon' target="_blank">
+                            <div class="fa fa-phone"></div>
+                        </a>
+                        <a href="http://maysasoftware.com/" class='ContactUsIcon' target="_blank">
+                            <div class="fa fa-globe"></div>
+                        </a>
+                    </div>
+                }
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+</section>

@@ -1,0 +1,210 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.SpecialModels.AghajariOilAndGas.Reservation;
+
+@{  
+    string FromDate = (string)ViewData["FromDate"];
+    string ToDate = (string)ViewData["ToDate"];
+    long Restaurant = (long)ViewData["Restaurant"];
+    long RecordID = (long)ViewData["RecordID"];
+    bool IsSharingFood = (bool)ViewData["IsSharingFood"];
+    int[] DefualtFoodCount = (int[])ViewData["DefualtFoodCount"];
+    string[] SelectedMeal = (string[])ViewData["SelectedMeal"];
+    string[] SelectedMealTitle = (string[])ViewData["SelectedMealTitle"];
+    string[] SelectedDey = (string[])ViewData["SelectedDey"];
+
+    bool IsFinish = false;
+}
+  
+<div class="classic-tabs rtl ">
+    <ul class="nav BackgroundIconColor" id="myTab" role="tablist">
+        <li class="nav-item ">
+            <i class="fas fa-pizza fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">وعده ی غذایی</i>
+        </li>
+    </ul>
+</div> 
+<div class="row">
+    <div class="col-md-12 ">
+        @(Html.Kendo().TabStrip()
+        .Name("MealTab")
+        .Items(tabstrip =>
+        {
+            IsFinish = false;
+            while(!IsFinish)
+            {
+                string  NumberDayOfWeek = CDateTime.GetNumberDayOfWeek(FromDate).ToString();
+                if(Array.IndexOf(SelectedDey,NumberDayOfWeek) > -1 )
+                {
+                    switch (NumberDayOfWeek)
+                    {
+                        case "1": { NumberDayOfWeek = "شنبه";break; }
+                        case "2": { NumberDayOfWeek = "یک";break; }
+                        case "3": { NumberDayOfWeek = "دو";break; }
+                        case "4": { NumberDayOfWeek = "سه";break; }
+                        case "5": { NumberDayOfWeek = "چهار";break; }
+                        case "6": { NumberDayOfWeek = "پنج";break; }
+                        case "7": { NumberDayOfWeek = "جمعه";break; }
+                    }
+                    string SharingFoodID="SharingFood"+ FromDate.Replace("/", "");
+                    string FoodCountReservationFoodID="FoodCountReservationFood"+ FromDate.Replace("/", "");
+                    string RestaurantReservationFoodID="RestaurantReservationFood"+ FromDate.Replace("/", "");
+                    string MealReservationFoodID="MealReservationFood"+ FromDate.Replace("/", "");
+                    string AddMealFoodGridButton="AddMealFoodGridButton" + FromDate.Replace("/", "");
+                    string GridName="MealFoodGrid" + FromDate.Replace("/", "");
+            
+                    string Query = "Declare @از_تاریخ as Nvarchar(255) = N'" + FromDate + "' \n";
+                    Query += "Declare @تا_تاریخ as Nvarchar(255) = N'" + FromDate + "' \n"; 
+                    string ActionData = "function() {return {FromDate:'" + FromDate + "',ToDate:'" + FromDate + "',Meal:0} }"; 
+                    string GridActionData = "function() {return {RecordID:"+RecordID+",Date:'" + FromDate + "',Meal:'" + String.Join(",", SelectedMeal) + "',Restaurant:"+Restaurant+",IsSharingFood:"+IsSharingFood.ToString().ToLower()+",DefualtFoodCount:'"+ String.Join(",", DefualtFoodCount) +"'} }"; 
+
+                    tabstrip.Add().Text(NumberDayOfWeek+"-"+FromDate+" <span style='color: red;margin-right: 4px;' class='k-icon k-font-icon k-i-close'></span>")
+                    .Encoded(false)
+                    .HtmlAttributes(new {@class= "OfficePersonTab", @id ="Tab"+FromDate.Replace("/","") })
+                    .Content(@<text> 
+                            <div class="row "  style="width: 100%; padding-right: 20px; justify-content: space-around; ">
+                                <div style="min-height:0px;">
+                                    <label>
+                                        <span class="margin-r-5">آیا تقسیم غذا صورت گیرد؟  </span>
+                                        @(Html.Kendo().Switch()
+                                        .Name(SharingFoodID)
+                                        .Checked(true)
+                                        .Enabled(true)
+                                        .HtmlAttributes(new {style ="Width:60px;"})
+                                        .Messages(c => c.Checked("").Unchecked(""))
+                                        )
+                                    </label>
+                                </div>
+                                <div style="min-height:0px;">
+                                    <label class="m-active">وعده غذایی</label> 
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name(MealReservationFoodID)
+                                        .Filter(FilterType.Contains)
+                                        .DataValueField("Value")
+                                        .DataTextField("Text")
+                                        .SelectedIndex(0)
+                                        .HtmlAttributes(new {style="width:200px;"})
+                                        .Height(260)
+                                            .DataSource(source =>{
+                                                source.Custom()
+                                                        .ServerFiltering(false)
+                                                        .ServerPaging(false)
+                                                        .PageSize(1000000)
+                                                        .Type("aspnetmvc-ajax")
+                                                        .Transport(transport =>
+                                                        {
+                                                            transport.Read(read => read.Action("GetMeal", "Food"));
+                                                        });
+                                            })
+                                        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                                    )
+                                </div>
+                                <div style="min-height:0px;">
+                                    <label class="m-active">تعداد</label>
+                                        @(Html.Kendo().NumericTextBox()
+                                            .Name(FoodCountReservationFoodID)
+                                            .Format("n0")
+                                            .Value(0)
+                                            .Min(0)
+                                            .HtmlAttributes(new { style = "width:200px;" })
+                                            .SelectOnFocus(true)
+                                        )
+                                </div>
+                                <div style="min-height:0px;">
+                                    <label class="m-active">رستوران</label>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                        .Name(RestaurantReservationFoodID)
+                                        .Filter(FilterType.Contains)
+                                        .DataValueField("Value")
+                                        .DataTextField("Text")
+                                        .SelectedIndex(0)
+                                        .HtmlAttributes(new {style="width:200px;"})
+                                        .Height(260)
+                                            .DataSource(source =>{
+                                                source.Custom()
+                                                        .ServerFiltering(false)
+                                                        .ServerPaging(false)
+                                                        .PageSize(1000000)
+                                                        .Type("aspnetmvc-ajax")
+                                                        .Transport(transport =>
+                                                        {
+                                                            transport.Read(read => read.Action("PersonRestaurant", "Food").Data(ActionData));
+                                                        });
+                                            })
+                                        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                                    )
+                                </div> 
+                                <div class="col-md-3">
+                                    <button id=@AddMealFoodGridButton class="waves-effect  btn btn-link  mr-auto text-primary p-0"
+                                            style="vertical-align:text-top" type="button" onclick="AddMealFoodGrid(this)">
+                                        <i class="fas fa-plus-square ml-2 fa-2x "></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 ">
+                                 @(Html.Kendo().Grid<dynamic>()
+                                    .Name(GridName)
+                                    .Editable(e => e.Mode(GridEditMode.InCell).ConfirmDelete("آیا برای حذف مطمئن هستید؟"))
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(typeof(long), "شناسه").Title("شناسه").Width(70).Visible(false).EditorTemplateName("InlineString");
+                                        columns.Bound(typeof(int), "ردیف").Title("ردیف").Width(70).EditorTemplateName("InlineString");
+                                        columns.Bound(typeof(string), "تاریخ").Title("تاریخ").Width(70).EditorTemplateName("InlineString");
+                                        columns.ForeignKey("GridMealReservationFood", DataConvertor.FillSelectListWithQuery("وعده_غذایی_کاربر")).Title("وعده غذایی").Width(100).EditorTemplateName("InlineGridForeignKey").EditorViewData(new {_SpecialWordFullName = "وعده_غذایی_کاربر", DeclareQuery = "" });
+                                        columns.Bound(typeof(int), "GridMealCountReservationFood").Title("تعداد").Width(70).EditorTemplateName("InlineInteger");
+                                        columns.ForeignKey("GridRestaurantReservationFood", DataConvertor.FillSelectListWithQuery("لیست_کل_رستوران_ها")).Title("رستوران").Width(100).EditorTemplateName("InlineGridForeignKey").EditorViewData(new {_SpecialWordFullName = "لیست_کل_رستوران_ها", DeclareQuery = "" });
+                                        columns.ForeignKey("GridFoodReservationFood", DataConvertor.FillSelectListWithQuery("لیست_کل_غذا")).Title("غذا").Width(100).EditorTemplateName("InlineGridForeignKey").EditorViewData(new {_SpecialWordFullName = "لیست_کل_غذا", DeclareQuery = "" });
+                                        columns.Command(command => command.Destroy().Text("حذف")).Width(80);
+                                    })
+                                    .HtmlAttributes(new { style = "height: 500px; width:100%" })
+                                    .Scrollable()
+                                    .Navigatable()
+                                    .Pageable(pageable => pageable.AlwaysVisible(false).PageSizes(true).Enabled(false).Messages(m => m.ItemsPerPage("تعداد رکورد هر صفحه")))
+                                    .Selectable(selectable => selectable.Type(GridSelectionType.Row).Mode(GridSelectionMode.Single))
+                                    .PersistSelection()
+                                    .Sortable(s => s.AllowUnsort(false))
+                                    .LoaderType(GridLoaderType.Skeleton)
+                                    .AllowCopy(false) 
+                                    .DataSource(dataSource =>dataSource
+                                            .Ajax()
+                                            .Model(model =>
+                                            {
+                                                model.Id("id");
+                                                model.Field("شناسه", typeof(long)).Editable(false);
+                                                model.Field("ردیف", typeof(int)).Editable(false);
+                                                model.Field("تاریخ", typeof(string)).Editable(false);
+                                                model.Field("GridMealReservationFood", typeof(long)).Editable(false);
+                                                model.Field("GridMealCountReservationFood", typeof(long)).Editable(true);
+                                                model.Field("GridRestaurantReservationFood", typeof(long)).Editable(false);
+                                                model.Field("GridFoodReservationFood", typeof(long)).Editable(false);
+                                            })
+                                            .PageSize(1000)
+                                            .Read(action => action.Action("ReadMealLetter", "Food").Data(GridActionData))
+                                            )
+                                    .Events(e=>e.CellClose("LetterMealFoodGrid_CellClose").Remove("LetterMealFoodGrid_Remove")) 
+                                    )
+                                </div>
+                            </div>
+                             </text>);
+
+                }
+
+
+                if (FromDate == ToDate)
+                    IsFinish = true;
+                else
+                    FromDate = CDateTime.AddDay(FromDate, 1);
+            }
+        })
+        .SelectedIndex(0) 
+        )
+    </div>
+</div>
+ 
+
+<script>
+    $("#EditorForm21354").on("click", ".k-link .k-icon", function (e) {
+        LetterRemoveTab(e);
+    })
+</script>

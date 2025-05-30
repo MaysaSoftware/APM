@@ -1,0 +1,82 @@
+﻿* {
+    font-family: IRANSans ;
+    /*font-weight: 600*/
+    font-size: 13px;
+}
+
+body {
+    /*margin: 0;*/
+    font-family: IRANSans ;
+    font-style: normal;
+    font-weight: normal;
+    text-align: right;
+    overflow: hidden;
+}
+
+.container {
+    max-width: 100%;
+} 
+
+.TabColseButton {
+    border-color: transparent;
+    color: #ff0000;
+    background-color: transparent;
+}
+
+.IsConnectedDB {
+    width: 10px;
+    height: 10px;
+    background-color: #00ff0e;
+    position: absolute;
+    border-radius: 10px;
+}
+
+.NotConnectedDB {
+    width: 10px;
+    height: 10px;
+    background-color: #ff0000;
+    position: absolute;
+    border-radius: 10px;
+}
+
+.DataSourceInfo {
+    font-size: 12px;
+    color: #4a4a4a;
+    font-weight: 600;
+    margin: 5px;
+}
+
+.LeftArrowIcon {
+    position: absolute;
+    left: 5px;
+}
+
+#ReportViewerWin {
+    /*overflow:hidden;*/
+}
+
+    #ReportViewerWin .FormItemInput {
+        max-width: 100%;
+        flex: 1;
+        min-width: 100%;
+    }
+
+ 
+
+#CenterLayout {
+    height: 100%;
+    overflow: hidden;
+} 
+
+.margin-r-5{
+margin-right:5px;
+}
+
+.TileLayoutIcon{
+    margin-left:5px;
+    font-size:14px;
+}
+.ColumnFieldComment {
+    color: #2b5b5d;
+    font-size: 10px;
+}

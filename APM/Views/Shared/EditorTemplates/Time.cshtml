@@ -1,0 +1,37 @@
+﻿
+@model object
+
+@{
+    string FieldName = (string)ViewData["FieldName"];
+    string Value = ViewData["FieldValue"] == null ? "" : (ViewData["FieldValue"].ToString());
+    bool ActiveOnKeyDown = ViewData["ActiveOnKeyDown"] == null ? false : (bool)ViewData["ActiveOnKeyDown"];
+    string FieldClass = "TimeInput "+ (ViewData["FieldClass"] == null ? "" : (string)ViewData["FieldClass"]);
+
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("class", FieldClass);
+
+    if ((bool)ViewData["IsRequired"])
+    {
+        Attrs.Add("required", "required");
+        Attrs.Add("validationMessage", "ورود داده الزامی است");
+    }
+}
+
+@(Html.Kendo().TextBox()
+.Name(@FieldName)
+.Enable(!(bool)ViewData["IsReadonly"])
+.HtmlAttributes(Attrs)
+.Value(@Value)
+.Events(events =>
+{
+    if (ActiveOnKeyDown)
+        events.Change("OnKeyDownElement");
+})
+)
+
+
+<span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton">
+    <span class="k-icon k-i-clock k-button-icon"></span>
+</span>

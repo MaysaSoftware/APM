@@ -1,0 +1,154 @@
+﻿@using APM.Models
+@using APM.Models.Tools
+@using APM.Models.Database
+
+@{
+    string MainBackgroundColor = string.IsNullOrEmpty(Referral.PublicSetting.MainColor) ? "#ffffff" : Referral.PublicSetting.MainColor;
+    string IconColor = string.IsNullOrEmpty(Referral.PublicSetting.IconColor) ? "#333" : Referral.PublicSetting.IconColor;
+    string TitleColor = string.IsNullOrEmpty(Referral.PublicSetting.TitleColor) ? "#333" : Referral.PublicSetting.TitleColor;
+    string LoginBackGround = Field.FormatImage(Referral.PublicSetting.LoginBackgroundImage);
+    string HomeBackgroundImage = Field.FormatImage(Referral.PublicSetting.HomeBackgroundImage);
+    string HeightHomeBackground = string.IsNullOrEmpty(Referral.PublicSetting.GeneralMessage) ? "92%" : "87%";
+}
+
+
+<style>
+
+    @*@Referral.PublicSetting.CSS*@
+
+
+
+    .FormItemTitle {
+        color: @TitleColor;
+     }
+
+    .QueryObjectTree {
+        background-color:@MainBackgroundColor;
+    }
+
+    .k-input.k-focus, .k-input:focus, .k-input:focus-within {
+        border-color: @IconColor;
+        background-color: @MainBackgroundColor;
+        box-shadow: 0 0 0 0.05rem @IconColor;
+    }
+    .HeaderEditor {
+        background-color: @IconColor;
+        color: @MainBackgroundColor;
+    }
+    .PopupTabDiv {
+        background-color:@MainBackgroundColor;
+        border-color: @IconColor;
+    }
+    .k-popup-dropdowntree {
+        background-color: @MainBackgroundColor;
+    }
+
+    .TitleColor,label {
+        color: @TitleColor;
+    }
+    section {
+        background-image: url( @LoginBackGround );
+    }
+
+        section::before {
+            /*background: linear-gradient(#000000,*/ @IconColor /*,#000000);*/
+            /*animation: animate 5s linear infinite;*/
+
+        }
+
+        section span:hover {
+            background-color:@IconColor;
+            transition: 0s;
+        }
+
+        section .signin .content h2 {
+            font-size: 2em;
+            color:@IconColor;
+            text-transform: uppercase;
+        }
+
+        section .signin {
+            background: @MainBackgroundColor;
+        }
+
+    .signin .content .form .links a:nth-child(1) {
+        color: @IconColor;
+    }
+
+    .signin .content .form .inputBox button {
+        background: @IconColor;
+        color: @MainBackgroundColor;
+    }
+
+    #HomeMainDiv {
+        background-image: url( @HomeBackgroundImage );
+        height:@HeightHomeBackground;
+    }
+
+    #HomeToolbar, MainRightMenuTree, .k-expander-header {
+        background-color: @MainBackgroundColor;
+        box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 1px 2px rgb(0 0 0 / 10%);
+    }
+
+
+    .k-icon
+    , .k-sprite
+    , .k-icon-button
+    , .k-button-solid-base
+    , .k-icon-button
+    , .k-button .k-split-button-arrow
+    ,.k-button-group {
+        color: @IconColor;
+    }
+
+    .k-treeview-leaf-text, .k-breadcrumb .k-breadcrumb-link, .k-expander-title {
+        color: @TitleColor
+    }
+    .ButtonGroupFormItemTitle .k-button-solid-base {
+        border-color: transparent;
+        color: @IconColor;
+        background-color: transparent;
+    }
+
+    .k-input-md .k-input-inner, .k-picker-md .k-input-inner {
+        background-color: #fff;
+    }
+
+    .k-sprite {
+        font-size: inherit;
+        display: inherit;
+        line-height: 1;
+    }
+    .k-splitter{
+        background-color:@MainBackgroundColor
+    }
+    .marquee {
+        color: @TitleColor;
+    }
+    .UserInfoRoleName {
+        text-decoration-line: underline;
+        font-size: 12px;
+        color: @TitleColor;
+    }
+    .UserInfoUserInfo {
+        font-size: 14px;
+        color: @TitleColor;
+    }
+
+    #appbar {
+        background-color: @MainBackgroundColor;
+        color: @TitleColor;
+    }
+
+    #SysSettingWin, #RoleTypePermission, #SysSettingDetail {
+        background-color: @MainBackgroundColor;
+    }
+
+    .k-treeview-leaf:hover .k-treeview-leaf-text, .k-treeview-leaf:hover .k-sprite, .k-treeview-leaf:hover {
+        color: @MainBackgroundColor;
+        border-color: @TitleColor;
+        background-color: @TitleColor;
+    }
+
+
+</style>

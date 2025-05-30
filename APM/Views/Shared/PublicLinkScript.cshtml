@@ -1,0 +1,271 @@
+﻿@using APM.Models
+@using APM.Models.Tools
+@using APM.Models.Database
+
+@{
+    string MainBackgroundColor = "";
+    string IconColor = "";
+    string TitleColor = "";
+    string LoginBackGround = "";
+    string HomeBackgroundImage = "";
+    string HeightHomeBackground = "";
+
+    if (Referral.PublicSetting != null)
+    {
+        MainBackgroundColor = string.IsNullOrEmpty(Referral.PublicSetting.MainColor) ? "#ffffff" : Referral.PublicSetting.MainColor;
+        IconColor = string.IsNullOrEmpty(Referral.PublicSetting.IconColor) ? "#333" : Referral.PublicSetting.IconColor;
+        TitleColor = string.IsNullOrEmpty(Referral.PublicSetting.TitleColor) ? "#333" : Referral.PublicSetting.TitleColor;
+        LoginBackGround = Field.FormatImage(Referral.PublicSetting.LoginBackgroundImage);
+        HomeBackgroundImage = Field.FormatImage(Referral.PublicSetting.HomeBackgroundImage);
+        HeightHomeBackground = string.IsNullOrEmpty(Referral.PublicSetting.GeneralMessage) ? "92%" : "87%";
+    }
+}
+
+<link href="~/Theme/CSS/DesignMap.css" rel="stylesheet" />
+
+@Styles.Render("~/KendoCSS")
+@Scripts.Render("~/KendoJS")
+@Scripts.Render("~/KendoSettingJS")
+@Styles.Render("~/FontCSS")
+@Styles.Render("~/LayoutCSS")
+@Scripts.Render("~/FocusJS")
+@Styles.Render("~/HomeCSS")
+@Scripts.Render("~/AttachmentJS")
+@Scripts.Render("~/ReportJS")
+@Styles.Render("~/DesktopCSS")
+@Scripts.Render("~/PopupWindowJS")
+@Scripts.Render("~/SessionTimerJS")
+@Styles.Render("~/EditorCSS")
+@Scripts.Render("~/pdfJS")
+@Scripts.Render("~/InputValidtionJS")
+@Scripts.Render("~/ProcessReferralJS")
+@Scripts.Render("~/WebcamJS")
+@Scripts.Render("~/OrgChartJS")
+@Scripts.Render("~/DashboardJS")
+@Styles.Render("~/DashboardCSS")
+@*@Scripts.Render("~/SignalRJS")*@
+@Scripts.Render("~/AghajariOilAndGas_Reservation_Food_JS")
+
+@if (Referral.PublicSetting != null)
+{
+    <style>
+              @Referral.PublicSetting.CSS
+    </style>
+
+    <style>
+
+        .k-animation-container {
+            background-color: transparent;
+        }
+        .k-popover {
+            background-color: @Referral.PublicSetting.MainColor;
+            color: @TitleColor;
+            border-radius: 25px;
+        }
+        .k-popover-header {
+            color: @MainBackgroundColor;
+            background-color: @IconColor;
+            border-radius: 25px 25px 0px 0px;
+        }
+        .GridFilter {
+            display: none;
+            background-color: @Referral.PublicSetting.MainColor;
+            height: 30%;
+            width: 100%;
+            overflow: auto;
+        }
+        .GridFilter .k-filter-preview{
+            display:none;
+        }
+        .SelectedElement{
+            background-color: @Referral.PublicSetting.IconColor;
+            color: @Referral.PublicSetting.MainColor;
+            padding: 0px 10px;
+            border-radius: 20px;
+            margin-bottom: 0px;
+        }
+       .TableButtonText{
+            color:@IconColor;
+        }
+        .k-orgchart-card .k-card-title {
+            font-size: 14px;
+            font-weight: 700;
+        }
+        .k-orgchart-container{
+           float:right;
+        }
+        .k-orgchart {
+            height: 600px;
+        }
+
+         .k-rtl .k-grid td {
+            border-width: 0 1px 1px 0;
+        }
+
+        .k-grid-content tr:last-child > td, .k-grid-content-locked tr:last-child > td {
+            border-bottom-width: 1px;
+        }
+
+        .k-grid .k-detail-row{
+            background-color: @MainBackgroundColor;
+        }
+
+        .k-animation-container {
+            left: 24px;
+        }
+        .k-avatar-image {
+            background-color: @MainBackgroundColor;
+        }
+        .k-tooltip {
+            color: @TitleColor;
+            background-color: @MainBackgroundColor;
+            border: 1px solid @TitleColor;
+        }
+        .FormItemTitle {
+            color: @TitleColor;
+         }
+        .MessageHeader {
+            background-color: @MainBackgroundColor;
+            margin-bottom: 2.5px;
+            box-shadow: 0 1px 1px rgb(0 0 0 / 16%);
+            min-height: 40px;
+        }
+        .Logo_HeaderLayout {
+            background-color: @MainBackgroundColor;
+        }
+        .QueryObjectTree {
+            background-color: @MainBackgroundColor;
+        }
+
+        .k-input.k-focus, .k-input:focus, .k-input:focus-within {
+            border-color: @IconColor;
+            background-color: @MainBackgroundColor;
+            box-shadow: 0 0 0 0.05rem @IconColor;
+        }
+        .HeaderEditor {
+            background-color: @IconColor;
+            color: @MainBackgroundColor;
+        }
+        .PopupTabDiv {
+            background-color:@MainBackgroundColor;
+            border-color: @IconColor;
+        }
+        .k-popup-dropdowntree {
+            background-color: @MainBackgroundColor;
+        }
+        .sign-in-layout {
+            background-image:url(@LoginBackGround);
+        }
+
+        #HomeMainDiv {
+            background-image: url( @HomeBackgroundImage );
+            height:100%;
+        }
+
+        #HomeToolbar, MainRightMenuTree, .k-expander-header {
+            background-color: @MainBackgroundColor;
+            box-shadow: inset 0 1px 0 rgb(255 255 255 / 20%), 0 1px 2px rgb(0 0 0 / 10%);
+        }
+
+
+        .k-icon, .k-sprite, .k-icon-button, .k-button-solid-base, .k-icon-button, .k-button .k-split-button-arrow, .k-button-group, .fa {
+            color: @IconColor;
+        }
+
+        .k-treeview{
+            font-size:13px;
+        }
+        .k-treeview-leaf-text {
+            font-size: 14px;
+        }
+        .k-treeview-leaf-text, .k-breadcrumb .k-breadcrumb-link, .k-expander-title {
+            color: @TitleColor
+        }
+        .ButtonGroupFormItemTitle .k-button-solid-base {
+            border-color: transparent;
+            color: @IconColor;
+            background-color: transparent;
+        }
+
+        .k-input-md .k-input-inner, .k-picker-md .k-input-inner {
+            background-color: #fff;
+        }
+
+        .k-sprite {
+            font-size: inherit;
+            display: inherit;
+            line-height: 1;
+        }
+        .k-splitter{
+            background-color:@MainBackgroundColor
+        }
+        .marquee {
+            color: @TitleColor;
+        }
+        .UserInfoRoleName {
+            font-size: 12px;
+            color: @TitleColor;
+        }
+        .UserInfoUserInfo {
+            font-size: 14px;
+            color: @TitleColor;
+            font-weight: 800;
+        }
+
+        .Button-100 {
+            width: 100%;
+        }
+
+        .Button-Them-Style {
+            background-color: @IconColor;
+            color:@MainBackgroundColor;
+        }
+
+        #appbar {
+            background-color: @MainBackgroundColor;
+            color: @TitleColor;
+            margin-bottom:2.5px;
+        }
+
+        #SysSettingWin, #RoleTypePermission, #SysSettingDetail {
+            background-color: @MainBackgroundColor;
+        }
+
+        .k-treeview-leaf:hover .k-treeview-leaf-text, .k-treeview-leaf:hover .k-sprite, .k-treeview-leaf:hover {
+            color: @MainBackgroundColor;
+            border-color: @TitleColor;
+            background-color: @TitleColor;
+        }
+
+
+        .PrimaryKey {
+            color: #ecda00;
+            padding-left: 5px;
+        }
+        .CommentTitle{
+            color: @TitleColor;
+        }
+        .DetailTitle {
+            color: @TitleColor;
+        }
+        .TextColor{
+            color: @TitleColor;
+        }
+        .IconColor{
+            color:@IconColor;
+        }
+        .IconBackgroundColor {
+            color: @MainBackgroundColor;
+        }
+        .BackgroundColor{
+            background-color : @MainBackgroundColor;
+        }
+        .BackgroundIconColor {
+            background-color: @IconColor;
+        }
+
+    </style>
+    <script>
+                @Referral.PublicSetting.JS
+    </script>
+}

@@ -1,0 +1,99 @@
+﻿@using System.Data;
+@using APM.Models.Tools;
+@{
+    List<string> ImportDataFileNameList = (List<string>)Session["ImportDataFileNameList"];
+    List<DataTable> ImportDataList = (List<DataTable>)Session["ImportDataList"];
+    string DataKey =(string) ViewData["DataKey"];
+    string ParentID = (string)ViewData["ParentID"];
+    string ButtonName = DataKey + "_" + ParentID;
+} 
+
+@(Html.Kendo().TabStrip()
+          .Name("tabstrip")
+          .Animation(animation =>animation.Open(effect =>effect.Fade(FadeDirection.In)))
+          .HtmlAttributes(new {style= "height: 88vh;" })
+          .Items(tabstrip =>
+          {
+              if(ImportDataFileNameList!=null)
+                  for (int index = 0; index < ImportDataFileNameList.Count; index++)
+                  {
+                      string GridName = "ImportDataGrid_" + ButtonName + "_"+ Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string SaveButtonID = "SaveButtonID_" + ButtonName+"_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string SearchButton = "SearchButton_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string SearchInput = "SearchInput_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string SearchGridToolBar = "SearchGridToolBar_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string ResultRunExtanded = "ResultRunExtanded_" + ButtonName + "_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string CheckedID = "CheckedID_" + ButtonName + "_" + Tools.SafeTitle(ImportDataFileNameList[index]);
+                      string Message = (string)ViewData["ImportDataMessage"+Tools.SafeTitle(ImportDataFileNameList[index])];
+
+                      tabstrip.Add().Text(ImportDataFileNameList[index])
+                          .Selected(index==0?true:false)
+                          .Content(
+                          //"<div class='FormSearchInput'>" +
+                          //"<input class='k-input k-textbox k-input-solid k-input-md k-rounded-md' style='width:230px;background-color:white;left:-27px;' placeholder='جستجو' id='" + @SearchInput + "' onkeydown='return SearchInputKeyDown(event)' />" +
+                          //"<span id='" + @SearchButton + "' onclick='SearchButton(this)' class='k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton' style='left: 3px; top: 1px; height: 36px;'>" +
+                          //    "<span class='k-icon k-i-search k-button-icon'></span></ span ></ div > "+
+                          @"<input type=""checkbox"" id="""+ CheckedID + @""" "+(Message == "" ?"": "checked") +" hidden />"+
+                          "<P style='color:red;'>" + @Message + "</p>" +
+                          @Html.Kendo().ToolBar().Name(SearchGridToolBar).HtmlAttributes(new { @class = " GridToolbar" })
+                          .Items(items =>
+                          {
+                              items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                          .Buttons(buttons =>
+                          {
+                              buttons.Add().HtmlAttributes(new { title = "تایید", @class = "SearchButton" }).Id(SaveButtonID).Text(@"<span class="" k-icon k-i-track-changes-accept-all""></span><span class="" AcceptButtonLabel""></span>").Click("SaveImportDateSelectedRow");
+                              buttons.Add().HtmlAttributes(new { @class = "SearchButton" }).Text(@"<span id=" + @ResultRunExtanded + ">0</span>");
+                          });
+                              items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                          .Buttons(buttons =>
+                          {
+                              buttons.Add().HtmlAttributes(new { title = "تنظیم ستون ها", @class = "AutoFitButton" }).Id("AutoFit" + GridName).Text(@"<span class="" k-icon k-i-columns""></span><span class="" AutoFitButtonLabel""></span>").Click("SearchMainGridAutoFitForce");
+                          });
+                          }).ToHtmlString()+
+                          @Html.Kendo().Grid<dynamic>()
+                                    .Name(GridName)
+                                    .Editable(e => e.Mode(GridEditMode.PopUp))
+                                    .Columns(columns =>
+                                    {
+                                        columns.Select().Width(50).Column.Title = "انتخاب";
+                                        columns.Bound("_ShowError").Title("خطا").ClientTemplate("<div id='error_#=data.id#' style='font-size: 12px;'></div>").Hidden(true);
+                                        foreach (DataColumn _Column in ImportDataList[index].Columns)
+                                        {
+                                            columns.Bound(typeof(string), Tools.SafeTitle(_Column.ColumnName)).Title(_Column.ColumnName);
+                                        }
+                                    })
+                                    .HtmlAttributes(new { style = "height: 88%; width:100%" })
+                                    .Scrollable()
+                                    .Resizable(r => r.Columns(true))
+                                    .Navigatable()
+                                    .PersistSelection()
+                                    .Sortable()
+                                    .LoaderType(GridLoaderType.Skeleton)
+                                    .AllowCopy(false)
+                                    .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+                                    .DataSource(dataSource =>
+                                    dataSource
+                                    .Ajax()
+                                    .Model(model =>
+                                    {
+                                        model.Id("id");
+                                        foreach (DataColumn _Column in ImportDataList[index].Columns)
+                                        {
+                                            model.Field(Tools.SafeTitle(_Column.ColumnName), typeof(string));
+                                        }
+                                    })
+                                    .Read(action => action.Action("Read", "ImportData", new { FileName = ImportDataFileNameList[index] }))
+                                    .Events(e => e.Change("MainGridChange"))
+                                    )
+
+                                    //.Events(events =>
+                                    //{
+                                    //    events.DataBound("MainGridPreviewSetting");
+                                    //    events.Edit("MainGridEdit");
+                                    //}
+                                    //)
+                                    .ToHtmlString()
+                  );
+                  }
+          })
+    )

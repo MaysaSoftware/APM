@@ -1,0 +1,13 @@
+﻿@model object 
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .Filter(FilterType.Contains)
+    .DataValueField("Value")
+    .DataTextField("Text")
+    .Height(260)
+    .DataSource(source => source.Read(read => read.Action("ReadValuesWithSpecialWord", 
+                                                          "Desktop", 
+                                                          new{ _SpecialWordFullName = ViewData["_SpecialWordFullName"], DeclareQuery = ViewData["DeclareQuery"] }
+                                                          ))) 
+    .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+)

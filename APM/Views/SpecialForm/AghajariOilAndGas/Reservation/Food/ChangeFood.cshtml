@@ -1,0 +1,101 @@
+﻿@using APM.Models.Tools;
+@using APM.Models;
+@using System.Data;
+
+@{ 
+    long RecordID = 0;
+    DataTable ReserveData = new DataTable();
+    if (ViewData["RecordID"] != null)
+    {
+        RecordID = long.Parse(ViewData["RecordID"].ToString());
+        ReserveData = Referral.DBData.SelectDataTable("Select * From نفرات_رزرو_غذا Where شناسه = " + RecordID.ToString());
+    }
+    string NowshamsiDate = @CDateTime.GetNowshamsiDate();
+}
+<input type="text" hidden id="RecordID" value=@RecordID />
+<input type="text" hidden id="DateReservationFood" value=@ReserveData.Rows[0]["تاریخ_رزرو"].ToString() />
+
+<div class="card rtl text-right BackgroundColor">
+    <div class="classic-tabs rtl ">
+        <ul class="nav BackgroundIconColor" id="myTab" role="tablist">
+            <li class="nav-item ">
+                <i class="fas fa-business-time fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">تغییر غذا</i>
+            </li>
+        </ul>
+    </div>
+
+    @Html.AntiForgeryToken()
+    <div id="ReservationFoodForm" class="card-body">
+        @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+        <div class="row">
+
+            <div class="col-sm-3 px-3">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="m-active">رستوران <span class="RequiredStar">*</span></label>
+                    @{ string RestaurantActionData = "function() {return {FromDate:'" + NowshamsiDate + "',ToDate:'" + NowshamsiDate + "',Meal:0} }"; }
+                    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("PersonRestaurant")
+                        .Filter(FilterType.Contains)
+                        .DataValueField("Value")
+                        .DataTextField("Text")
+                        .SelectedIndex(0)
+                        .Value(RecordID > 0 ? ReserveData.Rows[0]["رستوران"].ToString() : "0")
+                        .Height(260)
+                        .DataSource(source =>{
+                            source.Custom()
+                                    .ServerFiltering(false)
+                                    .ServerPaging(false)
+                                    .PageSize(1000000)
+                                    .Type("aspnetmvc-ajax")
+                                    .Transport(transport =>
+                                    {
+                                        transport.Read(read => read.Action("PersonRestaurant", "Food").Data(RestaurantActionData));
+                                    });
+                        })
+                        .Events(e=>e.Change("ChangePersonRestaurant"))
+                        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                    )
+                </div>
+            </div>
+
+            <div class="col-sm-3 px-3">
+                <div class="md-form FormItemInput my-3 input-group" style="min-height:0px;">
+                    <label class="m-active">غذا <span class="RequiredStar">*</span></label>
+                    @{ string FoodActionData = "function() {return {FromDate:'" + NowshamsiDate + "',Restaurant:" + (RecordID > 0 ? ReserveData.Rows[0]["رستوران"].ToString() : "0") + ",Meal:" + (RecordID > 0 ? ReserveData.Rows[0]["وعده_غذایی"].ToString() : "0") + "} }"; }
+                    @(Html.Kendo().DropDownListFor(m => m)
+                        .Name("PersonFood")
+                        .Filter(FilterType.Contains)
+                        .DataValueField("Value")
+                        .DataTextField("Text")
+                        .SelectedIndex(0)
+                        .Value(RecordID > 0 ? ReserveData.Rows[0]["غذا"].ToString() : "0")
+                        .Height(260)
+                        .DataSource(source =>{
+                            source.Custom()
+                                    .ServerFiltering(false)
+                                    .ServerPaging(false)
+                                    .PageSize(1000000)
+                                    .Type("aspnetmvc-ajax")
+                                    .Transport(transport =>
+                                    {
+                                        transport.Read(read => read.Action("ChangePersonFood", "Food").Data(FoodActionData));
+                                    });
+                        })
+                        .FooterTemplate("تعداد نتایج : <strong>#: instance.dataSource.total()-1 #</strong>")
+                    )
+                </div>
+            </div>
+
+        </div>
+        <div class="row" style="margin-top: 20px; margin-right: 20px;">
+            <div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style="border-radius: 60px; border-width: 0px; background-color: transparent; ">
+                @(Html.Kendo().Button()
+                    .Name("SaveChangePersonFood")
+                    .HtmlAttributes(new { @class = "k-button-solid-primary SaveButton" })
+                    .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">ثبت</span>")
+                    .Events(e => e.Click("SaveChangePersonFood"))
+                )
+            </div>
+        </div>
+    </div>
+ </div>

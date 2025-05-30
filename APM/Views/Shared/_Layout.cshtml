@@ -1,0 +1,56 @@
+﻿@using APM.Models
+<!DOCTYPE html>
+<html> 
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>@ViewBag.Title</title>
+    <link rel="icon" type="image/png" href="~/Theme/Image/@Referral.CustomerName.ToString()/favicon.ico" />
+
+    @*@Scripts.Render("~/bundles/modernizr")*@
+    @*@Scripts.Render("~/bundles/jquery")*@
+    @Styles.Render("~/KendoCSS")
+    @Scripts.Render("~/KendoJS")
+    @Styles.Render("~/FontCSS")
+    @Styles.Render("~/LayoutCSS")
+    @Scripts.Render("~/FocusJS") 
+
+    @if (Referral.PublicSetting != null)
+    {
+        <style>
+
+          @Referral.PublicSetting.CSS
+        </style>
+        <script>
+
+            @Referral.PublicSetting.JS
+        </script>
+    }
+
+</head>
+<body class="k-rtl">
+
+    <div class="modal fade LawsDalert" role="dialog" style="z-index:10000000">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content" style="background-color:#ffcccc">
+                <div class="modal-header">
+                    قوانین
+                </div>
+                <div class="modal-body">
+                    @Referral.PublicSetting.Laws
+                </div>
+            </div>
+        </div>
+    </div>
+    @RenderBody()
+    @*<script type="text/javascript">
+
+            //Disable Back Button In All Browsers.
+            function DisableBackButtonAllBrowsers() {window.history.forward()};
+            DisableBackButtonAllBrowsers();
+            window.onload = DisableBackButtonAllBrowsers;
+                    window.onpageshow = function (evts) { if (evts.persisted) DisableBackButtonAllBrowsers(); };
+            window.onunload = function () { void (0) };
+        </script>*@
+</body>
+</html>

@@ -1,0 +1,19 @@
+﻿ 
+@Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["ReportFolderDataKey"] }, { "FieldParameterList", @ViewData["FieldParameterList"] }, { "DataKey", @ViewData["DataKey"] }, { "ParentID", @ViewData["ParentID"] }, { "ProcessStep", "0" } })
+
+<div class="k-edit-buttons k-actions-end LeftSection">
+
+    @(Html.Kendo().Button()
+        .Name("CancelReportButton")
+        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">انصراف</span>")
+        .Events(e=>e.Click("CancelReport"))
+    )
+
+    @(Html.Kendo().Button()
+        .Name("RunReportButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">اجرا</span>")
+        .Events(e=>e.Click("RunReport"))
+    )
+</div>

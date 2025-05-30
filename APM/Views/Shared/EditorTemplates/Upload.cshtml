@@ -1,0 +1,69 @@
+﻿@using APM.Models.Database;
+@using APM.Models.APMObject;
+
+@{
+    CoreObject coreObject = CoreObject.Find(long.Parse(ViewData["DataKey"].ToString()));
+    bool IsTemporary = false;
+    if ((coreObject.Entity == APM.Models.Tools.CoreDefine.Entities.فرم_ورود_اطلاعات && ViewData["ParentID"].ToString() == "0" && coreObject.ParentID != 0) || ViewData["InnerID"].ToString() == "0")
+    {
+        IsTemporary = true;
+    }
+    string ImageSrc = APM.Models.Attachment.GetFileByte(IsTemporary ? ViewData["DataKey"].ToString() : ViewData["RecordID"].ToString(), ViewData["InnerID"].ToString(), ViewData["FileFullName"].ToString(), IsTemporary);
+    TableAttachment TableAttachment = (TableAttachment)ViewData["TableAttachment"];
+    PermissionTableAttachment Permission = (PermissionTableAttachment)ViewData["PermissionTableAttachment"];
+    object ActionData = new { _DataKey = ViewData["DataKey"].ToString(), _RecordID = ViewData["RecordID"].ToString(), _InnerID = ViewData["InnerID"].ToString(), _ParentID = ViewData["ParentID"].ToString(), FileName = ViewData["FileName"] };
+    string UploadID = "FileUpload_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string ImageID = "ImageUpload_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string ButtonGroup = "ButtonGroup_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string DeleteButton = "Delete_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string ScannerButton = "Scanner_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string CameraButton = "Camera_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string DownloadButton = "Download_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    string WebcamDiv = "WebcamDiv_" + ViewData["DataKey"].ToString() + "_" + ViewData["ParentID"].ToString() + "_" + ViewData["RecordID"].ToString() + "_" + ViewData["InnerID"].ToString() + "_" + TableAttachment.CoreObjectID;
+    bool IsEnable = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+    IsEnable = IsEnable ? false : Permission.CanUpload;
+    string FieldName = ViewData["FileName"].ToString() + "_" + ViewData["DataKey"].ToString();
+}
+
+<div class="CommentTitle" style="margin-top: -16px; margin-bottom: 15px;">
+    حداکثر حجم فایل : <b style="font-size:9px">@TableAttachment.MaxFileSize</b> kb
+    <br />
+    پسوند فایل باید : <b style="font-size:9px"> @string.Join(" , ", TableAttachment.AllowedExtensions.Skip(1)) </b>
+</div>
+
+<div class="ButtonGroupFormItemTitle">
+    @if (IsEnable)
+    {
+        <button class='k-button k-button-md T-G-k-button DeleteAtt' onclick='DeleteAtt_Click(this)' id=@DeleteButton><span class='k-icon k-i-trash'></span></button>
+        <button class='k-button k-button-md T-G-k-button ScannerAtt' onclick='ScannerAtt_Click(this)' id=@ScannerButton><span class='k-icon fa fa-scanner-image'></span></button>
+        <button class='k-button k-button-md T-G-k-button CameraAtt' onclick='CameraAtt_Click(this)' id=@CameraButton><span class='k-icon fa fa-camera-web'></span></button>
+    }
+    @if (Permission.CanDownload)
+    {
+        <button class='k-button k-button-md T-G-k-button' onclick='DownloadAtt_Click(this)' id=@DownloadButton><span class='k-icon k-i-download'></span></button>
+    }
+</div>
+
+
+<input type="text" id=@FieldName name=@FieldName style="display: none;" class=@(ImageID)>
+<div class="UploadFile_img" id=@WebcamDiv style="display:none;"></div>
+<div class="@("col-sm-12 "+(TableAttachment.AttachmentUploadSize== APM.Models.Tools.CoreDefine.AttachmentUploadSize.کوچک?"Small_UploadFile":""))" style="position:static;padding:0px">
+    <img class="col-sm-2 UploadFile_img" id=@ImageID src=@ImageSrc />
+    <div class="col-sm-10 UploadFile">
+
+        @(Html.Kendo().Upload()
+        .Name("files")
+        .Multiple(false)
+        .HtmlAttributes(new {id= @UploadID   })
+        .Async(a => a.Save("Templates_Save", "Attachment", ActionData).AutoUpload(true))
+        .Events(e=>e.Upload("StartUploadFile").Complete("CompleteUploadFile"))
+        .Enable(IsEnable)
+        .Validation(validation =>
+        {
+            validation.AllowedExtensions(TableAttachment.AllowedExtensions);
+            validation.MaxFileSize(TableAttachment.MaxFileSize*1024);
+            validation.MinFileSize(TableAttachment.MinFileSize);
+        })
+        )
+    </div>
+</div>

@@ -1,0 +1,421 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+@{ 
+    string ShamsiDate = CDateTime.GetNowshamsiDate();
+
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+
+    Attrs.Add("autocomplete", "off");
+    Attrs.Add("class", "TimeInput ");
+}
+@if (ViewData["ShowInNewWindow"] != null)
+{
+    if ((bool)ViewData["ShowInNewWindow"])
+    {
+        Layout = "~/Views/SysSetting/Layout.cshtml";
+    }
+}
+ 
+
+@(Html.Kendo().Dialog()
+    .Name("ScriptCoreDialog")
+    .Content(
+            "<div id='EditorFormDivScriptCoreDialog'>" +
+            "<div class='FormItemInput col-sm-12'  >" +
+            "<div class='FormItemTitle'>از تاریخ</div>"+
+            "<input data-jdp autocomplete='off' id='ScriptCoreFromDate' name ='ScriptCoreFromDate' data-role='textbox' aria-disabled='false' class='k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers' style='width: 100%;' onfocusout='DatePickers_onfocusout(this)' value=" + ShamsiDate + ">" +
+            "<span tabindex='-1' class='k-input-button k-icon-button k-button-md k-button-solid AppendButton' onclick='CalenderClick(ScriptCoreFromDate)'><span class='k-icon k-i-calendar k-button-icon'></span></span>" +
+            "</div>" +
+            "<div class='FormItemInput col-sm-12'  >" +
+            "<div class='FormItemTitle'>از ساعت</div>"+
+            @Html.Kendo().TextBox()
+            .Name("ScriptCoreFromTime")
+            .HtmlAttributes(Attrs)
+            .Value("01:00:00")
+            .ToHtmlString()+
+            "</div>"+
+            "<div class='FormItemInput col-sm-12'  >" +
+            "<div class='FormItemTitle'>تا تاریخ</div>"+
+            "<input data-jdp autocomplete='off' id='ScriptCoreToDate' name ='ScriptCoreToDate' data-role='textbox' aria-disabled='false' class='k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers' style='width: 100%;' onfocusout='DatePickers_onfocusout(this)' value=" + ShamsiDate + ">" +
+            "<span tabindex='-1' class='k-input-button k-icon-button k-button-md k-button-solid AppendButton' onclick='CalenderClick(ScriptCoreToDate)'><span class='k-icon k-i-calendar k-button-icon'></span></span>" +
+            "</div>" +
+            "<div class='FormItemInput col-sm-12'  >" +
+            "<div class='FormItemTitle'>تا ساعت</div>"+
+            @Html.Kendo().TextBox()
+            .Name("ScriptCoreToTime")
+            .Value("23:00:00")
+            .HtmlAttributes(Attrs)
+            .ToHtmlString()+
+            "</div>"+
+            "</div>"
+    )
+    .Width(400)
+    .Modal(true)
+    .Actions(actions =>
+    {
+        actions.Add().Text("اجرا").Action("CreateScriptCore").Primary(true);
+        actions.Add().Text("انصراف");
+    })
+    .Visible(false)
+)
+
+
+
+@(Html.Kendo().Dialog()
+    .Name("UploadFileScriptCoreDialog")
+    .Title("بارگذاری")
+    .Content(Html.Kendo().Upload()
+                         .Name("UploadFileScriptCore")
+                         .Multiple(true) 
+                         .ShowFileList(false)
+                         .Async(a => a.Save("UploadFileScriptCore", "Attachment", new { FileName = "FileScriptCore" }).AutoUpload(true))
+                         .Events(e => e.Upload("UploadFileScriptCore")).ToHtmlString())
+    .Width(400)
+    .Modal(true)
+    .Actions(actions =>
+    {
+        actions.Add().Text("انصراف");
+    })
+    .Visible(false)
+)
+
+
+<div id="MainSysSettingTreeForm">
+    <div class="FormItemInput1" style="float:inherit; min-height:10px">
+        <input id="SysSettingTreeFilter" class="k-input k-textbox k-input-solid k-input-md k-rounded-md " style="width: 100%;" autocomplete="off" />
+        <span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton">
+            <span class="k-icon k-i-search k-button-icon"></span>
+        </span>
+    </div>
+
+    <div style="padding:10px">
+        <button onclick="ReloadSysSetting()" class='k-button k-button-md C-G-k-button'><span class='k-icon k-i-refresh'></span></button>
+        <button onclick="CollapseAllNodes('SysSettingTree')" class='k-button k-button-md C-G-k-button'><span class='k-icon k-i-caret-double-alt-up'></span></button>
+        <button onclick="ExpandAllNodes('SysSettingTree')" class='k-button k-button-md C-G-k-button'><span class='k-icon k-i-caret-double-alt-down'></span></button>
+    </div>
+
+
+
+    @(Html.Kendo().TreeView()
+    .Name("SysSettingTree")
+    .DataSpriteCssClassField("sprite")
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.پایگاه_داده)).Text("پایگاه داده").Id("DataSource").HtmlAttributes(new { @class = "DataSource" }).Encoded(true).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.پایگاه_داده), "", "DataSource"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.عبارت_ویژه)).Text("عبارت ویژه").Encoded(false).Id("SpecialPhrase").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.عبارت_ویژه), "", "SpecialPhrase"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.فرم_ورود_اطلاعات)).Text("فرم").Encoded(false).Id("InformationEntryForm").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فرم_ورود_اطلاعات), "", "InformationEntryForm"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.فرآیند)).Text("فرآیند").Encoded(false).Id("Process").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فرآیند), "", "Process"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.گزارش)).Text("گزارش").Encoded(false).Id("Report").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.گزارش), "", "Report"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.داشبورد)).Text("داشبورد").Encoded(false).Id("Dashboard").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.داشبورد), "", "Dashboard"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.فایل_عمومی)).Text("فایل عمومی").Encoded(false).Id("PublicFile").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.فایل_عمومی), "", "PublicFile"));
+        //items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.ارتباط_با_وبسایت)).Text("ارتباط با وب سایت").Encoded(false).Id("ConnectWebsite").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.ارتباط_با_وبسایت), "", "PublicFile"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.وب_سرویس)).Text("وب سرویس").Encoded(false).Id("WebService").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.وب_سرویس), "", "WebService"));
+        //items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.تنظیمات_پرداخت)).Text("درگاه پرداخت").Encoded(false).Id("PaymentSetting").HtmlAttributes(new { @class = "PublicClass" });
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.رویداد_عمومی)).Text("رویداد").Encoded(false).Id("PublicJob").HtmlAttributes(new { @class = "PublicClass" }).Items(subItems => subItems.CoreObjectSettingTreeFiller(CoreObject.FindChilds(0, CoreDefine.Entities.رویداد_عمومی), "", "PublicJob"));
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.تنظیمات_عمومی)).Text("عمومی").Encoded(false).Id("PublicSetting").HtmlAttributes(new { @class = "SystemSetting" });
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.تنظیمات_مدیر_سیستم)).Text("تنظیمات مدیر سیستم").Encoded(false).Id("AdminSetting").HtmlAttributes(new { @class = "SystemSetting" });
+        items.Add().SpriteCssClasses(Icon.IconName(CoreDefine.Entities.تنظیمات_مدیر_سیستم)).Text("تنظیمات هسته نرم افزار").Encoded(false).Id("APMCoreSetting").HtmlAttributes(new { @class = "APMCoreSetting" });
+        items.Add().SpriteCssClasses("").Text("رویداد سیستم").Encoded(false).Id("SystemLogEvents").HtmlAttributes(new { @class = "SystemSetting" }).Items(subItem =>
+        {
+            subItem.Add().SpriteCssClasses("k-icon k-i-logout").Id("UserLogin").Text("ورود به سیستم");
+            subItem.Add().SpriteCssClasses("k-icon k-i-table-properties").Id("EventEditAll").Text("ویرایش کل");
+            subItem.Add().SpriteCssClasses("k-icon k-i-table-add").Id("EventInsertAll").Text("درج کل");
+            subItem.Add().SpriteCssClasses("k-icon k-i-replace-single").Id("EventDeleteAll").Text("بازیابی سطر حذف شده");
+            subItem.Add().SpriteCssClasses(" fa fa-download").Id("EventDownloadTable").Text("کل بارگیری");
+            subItem.Add().SpriteCssClasses("k-icon k-i-eye").Id("EventViewTable").Text("مشاهده فرم");
+        });
+
+    })
+    .LoadOnDemand(true)
+    .DragAndDrop(true)
+    .Events(e=> {
+        e.DragStart("SysSettingTree_DragStart");
+        e.DragEnd("SysSettingTree_DragEnd");
+    })
+)
+</div>
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingFieldMenu")
+    .Target("#SysSettingTree")
+    .Filter(".ShowFieldEvent .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu"))
+)
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingFieldMenu")
+    .Target("#SysSettingTree")
+    .Filter(".Field .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("fa fa-key").Text(@"کلید اصلی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-star").Text(@"پیشفرض").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu"))
+)
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingMenu")
+    .Target("#SysSettingTree")
+    .Filter(".Table .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-export").Text(@"خروجی اسکریپت").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-gears").Text(@"عملیات").Encoded(false).Items(SubItem =>
+        {
+            SubItem.Add().SpriteCssClasses("k-icon k-i-import").Text(@"بارگذاری داده").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-export").Text(@"بارگیری داده").Encoded(false);
+            SubItem.Add().Separator(true);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-replace-single").Text(@"بازیابی سطر حذف شده").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-table-properties").Text(@"رویداد ویرایش").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-table-add").Text(@"رویداد درج").Encoded(false);
+            SubItem.Add().SpriteCssClasses("fa fa-download").Text(@"رویداد بارگیری").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"رویداد مشاهده").Encoded(false);
+        });
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu").Open("OpenMenu_SysSettingMenu"))
+)
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettinInformationEntryFormgMenu")
+    .Target("#SysSettingTree")
+    .Filter(".TableFunction .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-star").Text(@"پیشفرض").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-export").Text(@"بازسازی").Encoded(false);
+        items.Add().Separator(true); 
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu").Open("OpenMenu_SysSettingMenu"))
+)
+
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettinInformationEntryFormgMenu")
+    .Target("#SysSettingTree")
+    .Filter(".InformationEntryForm .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-star").Text(@"پیشفرض").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-export").Text(@"بازسازی فیلد").Encoded(false);
+        items.Add().Separator(true); 
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu").Open("OpenMenu_SysSettingMenu"))
+)
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingComputationalFieldMenu")
+    .Target("#SysSettingTree")
+    .Filter(".PublicClass .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-star").Text(@"پیشفرض").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"کپی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"جایگذاری").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu"))
+)
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingComputationalFieldMenu")
+    .Target("#SysSettingTree")
+    .Filter(".SystemSetting .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu"))
+)
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("APMCoreSettingMenu")
+    .Target("#SysSettingTree")
+    .Filter(".APMCoreSetting .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-export").Text(@"خروجی اسکریپت براساس شناسه").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-export").Text(@"خروجی اسکریپت براساس بازه زمانی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"بروز رسانی").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-subreport").Text(@"ایجاد نسخه پشتیبان").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu"))
+)
+
+
+
+@(Html.Kendo().ContextMenu()
+    .Name("SysSettingMenu")
+    .Target("#SysSettingTree")
+    .Filter(".DataSource .k-in")
+    .Animation(animation =>
+    {
+        animation.Open(open =>
+        {
+            open.Fade(FadeDirection.In);
+            open.Duration(500);
+        });
+    })
+    .Items(items =>
+    {
+        items.Add().SpriteCssClasses("k-icon k-i-plus").Text(@"جدید").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-folder-add").Text(@"پوشه جدید").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-eye").Text(@"مشاهده").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-gears").Text(@"عملیات").Encoded(false).Items(SubItem =>
+        {
+            SubItem.Add().SpriteCssClasses("k-icon k-i-globe-unlink").Text(@"بررسی برقراری ارتباط").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-globe-link").Text(@"ایجاد ارتباط").Encoded(false);
+            SubItem.Add().Separator(true);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-arrow-rotate-ccw").Text(@"بازسازی").Encoded(false);
+            SubItem.Add().SpriteCssClasses("k-icon k-i-subreport").Text(@"ایجاد نسخه پشتیبان").Encoded(false);
+        });
+        items.Add().SpriteCssClasses("k-icon k-i-pencil").Text(@"ویرایش").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-edit-tools").Text(@"تغییر نام").Encoded(false);
+        items.Add().Separator(true);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف از هسته نرم افزار").Encoded(false);
+        items.Add().SpriteCssClasses("k-icon k-i-x").Text(@"حذف از سرور").Encoded(false);
+    })
+    .Events(e=>e.Select("Select_SysSettingMenu").Open("OpenMenu_SysSettingMenu"))
+)
+
+@Styles.Render("~/DesktopCSS")

@@ -1,0 +1,44 @@
+﻿@using APM.Models; 
+@using APM.Models.Tools;
+@using System.Data;
+
+@{
+    DataTable NotificationData = Desktop.GetNotificationData();
+}
+
+@if (NotificationData != null)
+{
+    foreach (DataRow row in NotificationData.Rows)
+    {
+        string DivID = @row["شناسه"] + "_" + @row["فرآیند"] + "_" + @row["مرحله_فرآیند"] + "_" + @row["فرم_ورود_اطلاعات"]+"_"+ @row["رکورد"] + "_" + @row["جدول"]+"_" +@row["شناسه_مافوق"];
+        int DiffDateCount=  CDateTime.GetPersianDaysDiffDate(CDateTime.GetNowshamsiDate(), row["تاریخ_مهلت_پاسخگویی"].ToString());
+
+        <div id=@DivID class="notification-item" style="padding: 5px 16px 15px 16px; border-bottom: 1px solid rgba(0,0,0,.08);" onclick="ShowProcessReferralNotification(this)">
+            <span class="TimeDateCounter">@row["تاریخ_ثبت"]</span>   <span class="TimeDateCounter">@row["ساعت_ثبت"]</span>
+            @if (DiffDateCount <= 2)
+            {
+                <div class="new-count TimeDateFont" style="display: inline; left: 0px; float: left; background-color: red; color: white; border-radius: 5px; padding: 0px 5px;">@row["تاریخ_مهلت_پاسخگویی"]</div>
+            }
+            else if (DiffDateCount <= 6 && DiffDateCount >= 3)
+            {
+                <div class="new-count TimeDateFont" style="display: inline; left: 0px; float: left; background-color: #ffeb00; color: #460606; border-radius: 5px; padding: 0px 5px; ">@row["تاریخ_مهلت_پاسخگویی"]</div>
+            }
+            else if (DiffDateCount >= 7)
+            {
+                <div class="new-count TimeDateFont" style="display: inline; left: 0px; float: left; background-color: #1b8240; color: #460606; border-radius: 5px; padding: 0px 5px; ">@row["تاریخ_مهلت_پاسخگویی"]</div>
+            }
+            <br />
+
+            <div class="user-photo" style="background-image: url(@Session["PersonnelPhoto" + row["ثبت_کننده"]].ToString()); margin:0px 16px 0px 8px; right: 0px;right: 0px;float: right;"></div>
+            <div style="display: block;">
+                <span style=" display: flex;">@row["نام_ثبت_کننده"]</span>
+                <span style="display: flex; font-size: 12px; color: \#8F8F8F">واحد: @row["عنوان_سمت_سازمانی_ثبت_کننده"]</span>
+                <div style=" display: flex;">عنوان : <span style="font-weight:600;">@row["دستور_ارجاع"]</span></div>
+            </div>
+            @*<div class="customer-name">
+                <div style="font-size: 16px;">فرآیند : @row["فرآیند"]</div>
+                <div style="font-size: 12px; color: \#8F8F8F"> @row["مرحله_فرآیند"]</div>
+            </div>*@
+        </div>
+    }
+}

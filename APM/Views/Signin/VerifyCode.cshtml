@@ -1,0 +1,29 @@
+﻿ 
+<div  id="VerifyCodeForm" class="form"  style="display:none">
+    <i class="TitleColor">کد ارسال شده را وارد نمایید </i>  
+    @(Html.Kendo().TextBox()
+        .Name("VerifyCode_PhoneText")
+        .HtmlAttributes(new { placeholder= "کد ارسال شده",  @class = "FormItemInput", autocomplete = "off" ,required= true })
+        ) 
+                
+    <div class="inputBox">
+        <button onclick="CheckCode()">بررسی کد</button>
+    </div>  
+    <i class="TitleColor">رمز جدید </i>   
+        @(Html.Kendo().TextBox()
+            .Name("VerifyCode_NewPassword")
+            .HtmlAttributes(new { placeholder="رمز جدید", @class = "FormItemInput", autocomplete = "off" ,required= true }).Enable(false)
+            ) 
+    <i class="TitleColor">تکرار رمز جدید</i>  
+
+        @(Html.Kendo().TextBox()
+            .Name("VerifyCode_RepeatNewPassword")
+            .HtmlAttributes(new { placeholder="تکرار رمز جدید", @class = "InputText k-space-right k-rtl FormItemInput", autocomplete = "off" ,required= true }).Enable(false)
+            ) 
+    <div class="inputBox">
+        <button onclick="Save()">ذخیره</button>
+    </div>   
+</div> 
+
+
+

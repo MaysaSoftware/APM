@@ -1,0 +1,199 @@
+﻿@font-face {
+    font-family: 'B Badr';
+    src: url('BFonts/BBadr.eot?#') format('eot'), url('BFonts/BBadr.woff') format('woff'), url('BFonts/BBadr.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Baran';
+    src: url('BFonts/BBaran.eot?#') format('eot'), url('BFonts/BBaran.woff') format('woff'), url('BFonts/BBaran.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Bardiya';
+    src: url('BFonts/BBardiya.eot?#') format('eot'), url('BFonts/BBardiya.woff') format('woff'), url('BFonts/BBardiya.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Compset';
+    src: url('BFonts/BCompset.eot?#') format('eot'), url('BFonts/BCompset.woff') format('woff'), url('BFonts/BCompset.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Davat';
+    src: url('BFonts/BDavat.eot?#') format('eot'), url('BFonts/BDavat.woff') format('woff'), url('BFonts/BDavat.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Elham';
+    src: url('BFonts/BElham.eot?#') format('eot'), url('BFonts/BElham.woff') format('woff'), url('BFonts/BElham.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Esfehan';
+    src: url('BFonts/BEsfehan.eot?#') format('eot'), url('BFonts/BEsfehan.woff') format('woff'), url('BFonts/BEsfehan.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Fantezy';
+    src: url('BFonts/BFantezy.eot?#') format('eot'), url('BFonts/BFantezy.woff') format('woff'), url('BFonts/BFantezy.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Farnaz';
+    src: url('BFonts/BFarnaz.eot?#') format('eot'), url('BFonts/BFarnaz.woff') format('woff'), url('BFonts/BFarnaz.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Ferdosi';
+    src: url('BFonts/BFerdosi.eot?#') format('eot'), url('BFonts/BFerdosi.woff') format('woff'), url('BFonts/BFerdosi.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Hamid';
+    src: url('BFonts/BHamid.eot?#') format('eot'), url('BFonts/BHamid.woff') format('woff'), url('BFonts/BHamid.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Helal';
+    src: url('BFonts/BHelal.eot?#') format('eot'), url('BFonts/BHelal.woff') format('woff'), url('BFonts/BHelal.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Homa';
+    src: url('BFonts/BHoma.eot?#') format('eot'), url('BFonts/BHoma.woff') format('woff'), url('BFonts/BHoma.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Jadid';
+    src: url('BFonts/BJadid.eot?#') format('eot'), url('BFonts/BJadid.woff') format('woff'), url('BFonts/BJadid.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Jalal';
+    src: url('BFonts/BJalal.eot?#') format('eot'), url('BFonts/BJalal.woff') format('woff'), url('BFonts/BJalal.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Koodak';
+    src: url('BFonts/BKoodak.eot?#') format('eot'), url('BFonts/BKoodak.woff') format('woff'), url('BFonts/BKoodak.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Kourosh';
+    src: url('BFonts/BKourosh.eot?#') format('eot'), url('BFonts/BKourosh.woff') format('woff'), url('BFonts/BKourosh.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Lotus';
+    src: url('BFonts/BLotus.eot?#') format('eot'), url('BFonts/BLotus.woff') format('woff'), url('BFonts/BLotus.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Mahsa';
+    src: url('BFonts/BMahsa.eot?#') format('eot'), url('BFonts/BMahsa.woff') format('woff'), url('BFonts/BMahsa.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Mehr';
+    src: url('BFonts/BMehr.eot?#') format('eot'), url('BFonts/BMehr.woff') format('woff'), url('BFonts/BMehr.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Mitra';
+    src: url('BFonts/BMitra.eot?#') format('eot'), url('BFonts/BMitra.woff') format('woff'), url('BFonts/BMitra.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Morvarid';
+    src: url('BFonts/BMorvarid.eot?#') format('eot'), url('BFonts/BMorvarid.woff') format('woff'), url('BFonts/BMorvarid.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Narm';
+    src: url('BFonts/BNarm.eot?#') format('eot'), url('BFonts/BNarm.woff') format('woff'), url('BFonts/BNarm.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Nasim';
+    src: url('BFonts/BNasim.eot?#') format('eot'), url('BFonts/BNasim.woff') format('woff'), url('BFonts/BNasim.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Nazanin';
+    src: url('BFonts/BNazanin.eot?#') format('eot'), url('BFonts/BNazanin.woff') format('woff'), url('BFonts/BNazanin.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Roya';
+    src: url('BFonts/BRoya.eot?#') format('eot'), url('BFonts/BRoya.woff') format('woff'), url('BFonts/BRoya.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Setareh';
+    src: url('BFonts/BSetareh.eot?#') format('eot'), url('BFonts/BSetareh.woff') format('woff'), url('BFonts/BSetareh.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Shiraz';
+    src: url('BFonts/BShiraz.eot?#') format('eot'), url('BFonts/BShiraz.woff') format('woff'), url('BFonts/BShiraz.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Sina';
+    src: url('BFonts/BSina.eot?#') format('eot'), url('BFonts/BSina.woff') format('woff'), url('BFonts/BSina.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Tabassom';
+    src: url('BFonts/BTabassom.eot?#') format('eot'), url('BFonts/BTabassom.woff') format('woff'), url('BFonts/BTabassom.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Tehran';
+    src: url('BFonts/BTehran.eot?#') format('eot'), url('BFonts/BTehran.woff') format('woff'), url('BFonts/BTehran.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Titr';
+    src: url('BFonts/BTitr.eot?#') format('eot'), url('BFonts/BTitr.woff') format('woff'), url('BFonts/BTitr.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Titr TG E';
+    src: url('BFonts/BTitrTGE.eot?#') format('eot'), url('BFonts/BTitrTGE.woff') format('woff'), url('BFonts/BTitrTGE.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Traffic';
+    src: url('BFonts/BTraffic.eot?#') format('eot'), url('BFonts/BTraffic.woff') format('woff'), url('BFonts/BTraffic.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Vahid';
+    src: url('BFonts/BVahid.eot?#') format('eot'), url('BFonts/BVahid.woff') format('woff'), url('BFonts/BVahid.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Yagut';
+    src: url('BFonts/BYagut.eot?#') format('eot'), url('BFonts/BYagut.woff') format('woff'), url('BFonts/BYagut.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Yas';
+    src: url('BFonts/BYas.eot?#') format('eot'), url('BFonts/BYas.woff') format('woff'), url('BFonts/BYas.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Yekan';
+    src: url('BFonts/BYekan.eot?#') format('eot'), url('BFonts/BYekan.woff') format('woff'), url('BFonts/BYekan.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Zar';
+    src: url('BFonts/BZar.eot?#') format('eot'), url('BFonts/BZar.woff') format('woff'), url('BFonts/BZar.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'B Ziba';
+    src: url('BFonts/BZiba.eot?#') format('eot'), url('BFonts/BZiba.woff') format('woff'), url('BFonts/BZiba.ttf') format('truetype');
+}

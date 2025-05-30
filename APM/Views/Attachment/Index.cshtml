@@ -1,0 +1,151 @@
+﻿
+@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.Tools;
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    string RecordID = (string)ViewData["RecordID"];
+    string InnerID = (string)ViewData["InnerID"];
+    string ParentID = (string)ViewData["ParentID"];
+    string ActionData = "function() {return {_DataKey: '" + DataKey + "', _RecordID:" + RecordID + ",_InnerID:" + InnerID + ",_ParentID:" + ParentID + "} }";
+    string FileManagerName = "FileManager" + DataKey + "_" + ParentID + "_" + InnerID;
+    string ScanButton = "ScanButton_" + DataKey + "_" + ParentID + "_" + InnerID;
+    string ReloadButton = "ReloadButton_" + DataKey + "_" + ParentID + "_" + InnerID;
+    bool ISReadOnly = ViewData["ISReadOnly"] == null ? false : (bool)ViewData["ISReadOnly"];
+
+    PermissionTable PermissionTable = new PermissionTable(long.Parse(RecordID), Referral.UserAccount.Permition);
+    CoreObject DataKeyObject = CoreObject.Find(long.Parse(DataKey));
+    bool ShowDetailAttachment = true;
+    double Height = 500;
+    if (DataKeyObject.Entity == CoreDefine.Entities.جدول)
+    {
+        PermissionTable.CanInsertAttachment = true;
+        PermissionTable.CanUpdateAttachment = true;
+        PermissionTable.CanDeleteAttachment = true;
+        PermissionTable.CanDownloadAttachment = true;
+    }
+    else if (DataKeyObject.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
+    {
+        InformationEntryForm informationEntryForm = new InformationEntryForm(DataKeyObject);
+        ShowDetailAttachment = informationEntryForm.ShowDetailAttachment;
+        Height = informationEntryForm.HieghtAttachment;
+    }
+    else if (DataKeyObject.Entity == CoreDefine.Entities.فایل_عمومی && Referral.UserAccount.IsAdmin)
+    {
+        PermissionTable.CanInsertAttachment = true;
+        PermissionTable.CanUpdateAttachment = true;
+        PermissionTable.CanDeleteAttachment = true;
+        PermissionTable.CanDownloadAttachment = true;
+    }
+
+    else if (DataKeyObject.Entity == CoreDefine.Entities.فایل_عمومی && !Referral.UserAccount.IsAdmin)
+    {
+        PermissionTable.CanDownloadAttachment = true;
+    }
+
+}
+
+
+@if (!ShowDetailAttachment)
+{
+    <style>
+        .k-filemanager-navigation {
+            display: none;
+        }
+
+        .k-filemanager-preview {
+            display: none;
+            width:0px;
+        }
+    </style>
+}
+
+
+@(Html.Kendo().Window()
+    .Name("PdfViewerWindow")
+    .Title("Pdf Preview")
+    .Visible(false)
+    .Content(@<text>
+        <div style="overflow-y:scroll">
+              <div id="pdfViewer"></div>
+        </div>
+    </text>)
+    .Draggable()
+    .Resizable()
+    .Actions(actions => actions.Pin().Minimize().Maximize().Close())
+)
+
+@(Html.Kendo().FileManager()
+    .Name(FileManagerName)
+    .Height(Height)
+    .Breadcrumb(ShowDetailAttachment)
+    .DataSource(ds =>
+    {
+        ds.Read(operation => operation
+        .Type(HttpVerbs.Post)
+        .Action("Read", "Attachment")
+        .Data(ActionData)
+        );
+        ds.Destroy(operation => operation
+            .Type(HttpVerbs.Post)
+            .Action("Destroy", "Attachment")
+        );
+        ds.Create(operation => operation
+            .Type(HttpVerbs.Post)
+            .Action("Create", "Attachment")
+            .Data(ActionData)
+        );
+        ds.Update(operation => operation
+            .Type(HttpVerbs.Post)
+            .Action("Update", "Attachment")
+            .Data(ActionData)
+        );
+    })
+    .UploadUrl("Upload", "Attachment", new { _DataKey = DataKey, _RecordID = RecordID, _InnerID = InnerID, _ParentID = ParentID })
+
+    .Toolbar(tb => tb.Items(items =>
+    {
+        items.Add("name").ShowText("ضمیمه").Type("text");
+        if (PermissionTable.CanInsertAttachment && ShowDetailAttachment && !ISReadOnly) items.Add("createFolder");
+        if (PermissionTable.CanInsertAttachment && !ISReadOnly) items.Add("upload");
+
+        items.Add("reload").Icon("reload").Click("ReloadButton_FileManager").Type("button").Id(@ReloadButton);
+        if (PermissionTable.CanInsertAttachment && ShowDetailAttachment && !ISReadOnly) items.Add("scan").Icon("print").Click("ScanButton_FileManager").Type("button").Id(@ScanButton);
+
+        if (ShowDetailAttachment)
+        {
+            items.Add("sortDirection");
+            items.Add("sortField");
+            items.Add("changeView");
+            items.Add("spacer");
+            items.Add("details");
+            items.Add("search");
+        }
+    }))
+    .ContextMenu(context => context.Items(items =>
+    {
+        if(!ISReadOnly)
+        {
+            if(PermissionTable.CanUpdateAttachment) items.Add("rename");
+            if(PermissionTable.CanDeleteAttachment) items.Add("delete");
+            if(PermissionTable.CanDownloadAttachment) items.Add("download").Command("DownloadCommand").Text("دریافت").SpriteCssClass("k-icon k-i-download");
+            if(PermissionTable.CanUpdate) items.Add("UpdateImage").Command("UpdateImageCommand").Text("ویرایش").SpriteCssClass("k-icon k-i-file-wrench");
+        }
+    }))
+    .Draggable(true)
+    .Events(events => events
+        .Open("onOpenfilemanager")
+        .Select("onSelectfilemanager")
+    )
+)
+
+
+<script>
+    $(document).ready(function () {
+        ConfigFileManager(@FileManagerName);
+        DownloadCommand();
+    })
+
+</script>
+

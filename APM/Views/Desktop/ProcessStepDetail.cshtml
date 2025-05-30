@@ -1,0 +1,50 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@Styles.Render("~/DesktopCSS")
+@Styles.Render("~/EditorCSS")
+
+@{
+    string DataKey = (string)ViewData["DataKey"];
+    string ParentID = (string)ViewData["ParentID"];
+    long ProcessID = (long)ViewData["ProcessID"];
+    string GridName = "ProcessStepGrid_" + DataKey + "_" + ParentID + "_" + ProcessID;
+    string GridToolBarName = "ProcessStepGridToolBar_" + DataKey + "_" + ParentID + "_" + ProcessID;
+    string ReloadButtonName = "ReloadButtonName_" + DataKey + "_" + ParentID + "_" + ProcessID;
+    string ActionData = "function() {return {_DataKey: '" + DataKey + "', _ParentID:"+ParentID+",_ProcessID:"+ProcessID+"} }";
+}
+ 
+@(Html.Kendo().Grid<dynamic>()
+    .Name(GridName)
+    .Editable(e => e.Mode(GridEditMode.PopUp))
+    .Columns(columns =>columns.ProcessStepSetting())
+    .HtmlAttributes(new { style = "height: 100%; width:100%" })
+    .Scrollable()
+    .Resizable(r => r.Columns(true))
+    .Navigatable()
+    .Pageable(pageable => pageable.PageSizes(true).Messages(m=>m.ItemsPerPage("تعداد رکورد هر صفحه")))
+    .ToolBar(toolBar => toolBar.Template( 
+                        Html.Kendo().ToolBar().Name(@GridToolBarName).HtmlAttributes(new { @class = " GridToolbar" })
+                        .Items(items => { 
+                            items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+                            .Buttons(buttons =>
+                            {
+                                buttons.Add().HtmlAttributes(new { title = "بروز رسانی", @class = "RefreshButton" }).Id(@ReloadButtonName).Text(@"<span class=""k-icon k-i-reload""></span>بروز رسانی").Click("ProcessStepReload");
+                            }); 
+                        }).ToHtmlString()
+    ))
+    .PersistSelection()
+    .Sortable()
+    .LoaderType(GridLoaderType.Skeleton) 
+    .AllowCopy(false)
+    .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+    .DataSource(dataSource =>
+                    dataSource
+                    .Ajax()
+                    .PageSize(100)
+                    .Model(model =>{model.Id("شناسه");})
+                    .Read(action => action.Action("ProcessStepRead", "Desktop").Data(ActionData))
+                ) 
+ 
+)

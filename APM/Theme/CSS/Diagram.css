@@ -1,0 +1,32 @@
+﻿.D-Side { 
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    box-shadow: rgba(149, 157, 165, 0.2) 0px 8px 24px;
+}
+
+#DLeftLayout .div {
+    display: block;
+}
+
+#DRightLayout .IconTools { 
+    font-size: 18px; 
+}
+.D-B-Tools {
+    margin: 8px;
+}
+
+#DMasterLayout {
+    height: 90vh;
+    border-width: 0;
+    overflow: hidden;
+    width: 100%;
+}
+
+
+.BpmnToolbar {
+    padding: 2px 15px;
+}
+.BpmnToolbar:hover {
+    color:#dcdbdb;
+    background-color:rgba(149, 157, 165, 0.2);
+}

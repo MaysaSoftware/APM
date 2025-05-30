@@ -1,0 +1,17 @@
+﻿
+@model object
+
+@{
+    string FieldName = (string)ViewData["FieldName"];
+    string Value = ViewData["FieldValue"] == null ? "0" : (ViewData["FieldValue"].ToString());
+}
+
+@(Html.Kendo().ColorPicker()
+    .Name(@FieldName)
+    .Input(true)
+    .Preview(true)
+    .Value(@Value)
+    .Buttons(false)
+    .Enable(!(bool)ViewData["IsReadonly"])
+    .Views(new string[] {"gradient"}) 
+)

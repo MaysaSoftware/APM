@@ -1,0 +1,80 @@
+﻿@if ((bool)ViewData["ShowInNewWindow"])
+{
+    Layout = "~/Views/SysSetting/Layout.cshtml";
+
+    <div id="ShowInNewWindowID" hidden></div>
+}
+
+<div id="SysSettingID" hidden>@ViewData["SysSettingID"]</div>
+@if (ViewData["FormComment"] != null)
+{
+    <p style="width: 100%; color: #c66c02;">*** @ViewData["FormComment"].ToString() </p>
+}
+
+@Scripts.Render("~/InputValidtionJS")
+<div id="SysSettingForm">
+    @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml")
+</div>
+
+<div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv">
+
+    @(Html.Kendo().Button()
+        .Name("CanselSysSettingDetailsButton")
+        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">انصراف</span>")
+        .Events(e=>e.Click("CanselSysSettingDetails"))
+    )
+
+    @if (ViewData["SysSettingType"] != null)
+    {
+        switch ((string)ViewData["SysSettingType"])
+        {
+            case "DataSource":
+                {
+
+                    @(Html.Kendo().Button()
+                        .Name("DataSourceCreateConnectionButton")
+                        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                        .Content(@"<span class=""k-icon k-i-globe-link k-button-icon""></span><span class=""k-button-text"">ایجاد ارتباط</span>")
+                        .Events(e=>e.Click("DataSourceCreateConnectionClick"))
+                    )
+
+                    @(Html.Kendo().Button()
+                        .Name("DataSourceConnectionTestButton")
+                        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                        .Content(@"<span class=""k-icon k-i-globe-unlink k-button-icon""></span><span class=""k-button-text"">بررسی برقراری ارتباط</span>")
+                        .Events(e=>e.Click("DataSourceTestConnectionClick"))
+                    )
+                    break;
+                }
+            case "Report":
+                @(Html.Kendo().Button()
+                        .Name("ReportDesign")
+                        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                        .Content(@"<span class=""k-icon k-i-graph k-button-icon""></span><span class=""k-button-text"">طراحی گزارش</span>")
+                        .Events(e=>e.Click("ReportDesignClick"))
+                    )
+                break; 
+            case "PaymentSetting":
+                @(Html.Kendo().Button()
+                        .Name("PaymentTestButton")
+                        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">تست درگاه پرداخت</span>")
+                        .Events(e=>e.Click("PaymentTestClick"))
+                    )
+                break;
+        }
+    }
+
+    @(Html.Kendo().Button()
+        .Name("SaveSysSettingDetailsButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">ذخیره</span>")
+        .Events(e=>e.Click("SaveSysSettingDetails"))
+    )
+</div>
+
+
+@Styles.Render("~/DesktopCSS")
+
+ 

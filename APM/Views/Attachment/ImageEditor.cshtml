@@ -1,0 +1,524 @@
+﻿
+@using APM.Models;
+@using APM.Models.Database;
+@using APM.Models.Tools;
+@{
+    Layout = null;
+}
+
+@*@Html.Partial("/Views/Shared/ImageEditor/LinkScript.cshtml")*@
+
+
+<link rel="stylesheet" href="~/Theme/CSS/ImageEditor/bootstrap.min.css?@(DateTime.Now.Ticks.ToString())">
+<link rel="stylesheet" href="~/Theme/CSS/ImageEditor/cropper.css?@(DateTime.Now.Ticks.ToString())">
+<link rel="stylesheet" href="~/Theme/CSS/ImageEditor/main.css?@(DateTime.Now.Ticks.ToString())">
+<script src="~/Theme/Script/ImageEditor/bootstrap.bundle.min.js?@(DateTime.Now.Ticks.ToString())"></script>
+<script src="~/Theme/Script/ImageEditor/cropper.js?@(DateTime.Now.Ticks.ToString())"></script>
+<script src="~/Theme/Script/ImageEditor/main.js?@(DateTime.Now.Ticks.ToString())"></script>
+
+<!-- Content -->
+<div class="container">
+    <div class="row">
+        <div class="col-md-9">
+            <!-- <h3>Demo:</h3> -->
+            <div class="img-container">
+                <img id="imagePreview" src="#" alt="Picture">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <!-- <h3>Preview:</h3> -->
+            <div class="docs-preview clearfix">
+                <div class="img-preview preview-lg"></div>
+                <div class="img-preview preview-md"></div>
+                <div class="img-preview preview-sm"></div>
+                <div class="img-preview preview-xs"></div>
+            </div>
+            <!-- <h3>Data:</h3> -->
+            <div class="docs-data">
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataX">X</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataX" placeholder="x">
+                    <span class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </span>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataY">Y</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataY" placeholder="y">
+                    <span class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </span>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataWidth">عرض</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataWidth" placeholder="width">
+                    <span class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </span>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataHeight">طول</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataHeight" placeholder="height">
+                    <span class="input-group-append">
+                        <span class="input-group-text">px</span>
+                    </span>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataRotate">چرخش</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataRotate" placeholder="rotate">
+                    <span class="input-group-append">
+                        <span class="input-group-text">deg</span>
+                    </span>
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataScaleX">افقی</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataScaleX" placeholder="scaleX">
+                </div>
+                <div class="input-group input-group-sm">
+                    <span class="input-group-prepend">
+                        <label class="input-group-text" for="dataScaleY">عمودی</label>
+                    </span>
+                    <input type="text" class="form-control" id="dataScaleY" placeholder="scaleY">
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row" id="actions">
+        <div class="col-md-9 docs-buttons">
+            <!-- <h3>Toolbar:</h3> -->
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="move" title="حرکت">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حرکت">
+                        <span class="fa fa-arrows"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="setDragMode" data-option="crop" title="برش">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="برش">
+                        <span class="fa fa-crop"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="zoom" data-option="0.1" title="بزرگنمایی">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="بزرگنمایی">
+                        <span class="fa fa-search-plus"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="zoom" data-option="-0.1" title="کوچکنمایی">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="کوچکنمایی">
+                        <span class="fa fa-search-minus"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="move" data-option="-10" data-second-option="0" title="حرکت به سمت چپ">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حرکت به سمت چپ">
+                        <span class="fa fa-arrow-left"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="move" data-option="10" data-second-option="0" title="حرکت به سمت راست">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حرکت به سمت راست">
+                        <span class="fa fa-arrow-right"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="move" data-option="0" data-second-option="-10" title="حرکت به سمت بالا">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حرکت به سمت بالا">
+                        <span class="fa fa-arrow-up"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="move" data-option="0" data-second-option="10" title="حرکت به سمت پایین">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حرکت به سمت پایین">
+                        <span class="fa fa-arrow-down"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="rotate" data-option="-45" title="چرخش 45 درجه به چپ">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="چرخش 45 درجه به چپ">
+                        <span class="fa fa-rotate-left"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="rotate" data-option="45" title="چرخش 45 درجه به راست">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="چرخش 45 درجه به راست">
+                        <span class="fa fa-rotate-right"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="rotate" data-option="-1" title="چرخش 1 درجه به چپ">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="چرخش 1 درجه به چپ">
+                        <span class="fa fa-rotate-left"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="rotate" data-option="1" title="چرخش 1 درجه به راست">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="چرخش 1 درجه به راست">
+                        <span class="fa fa-rotate-right"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="scaleX" data-option="-1" title="تغییر جهت افقی">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="تغییر جهت افقی">
+                        <span class="fa fa-arrows-h"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="scaleY" data-option="-1" title="تغییر جهت عمودی">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="تغییر جهت عمودی">
+                        <span class="fa fa-arrows-v"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group">
+                <button type="button" class="btn btn-primary" data-method="crop" title="ادامه برش">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="ادامه برش">
+                        <span class="fa fa-check"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="clear" title="توقف برش">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="توقف برش">
+                        <span class="fa fa-times"></span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="btn-group btn-group-crop">
+                <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;maxWidth&quot;: 1024, &quot;maxHeight&quot;: 600 }" title="پیش نمایش">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="پیش نمایش">
+                        <span class="fa fa-eye"></span>
+                    </span>
+                </button>
+                <button type="button" id="AcceptChanges" class="btn btn-success" title="ثبت موقت">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="ثبت موقت">
+                        <span class="fa fa-check"></span>
+                    </span>
+                </button>
+                <button type="button" id="FinalSave" class="btn btn-success" title="ذخیره">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="ذخیره">
+                        <span class="fa fa-save"></span>
+                    </span>
+                </button>
+            </div>
+
+            <div class="btn-group" style="visibility: hidden;">
+                <button type="button" class="btn btn-primary" data-method="disable" title="Disable">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.disable()">
+                        <span class="fa fa-lock"></span>
+                    </span>
+                </button>
+                <button type="button" class="btn btn-primary" data-method="enable" title="Enable">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.enable()">
+                        <span class="fa fa-unlock"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group" style="visibility: hidden;">
+                <button type="button" class="btn btn-primary" data-method="reset" title="Reset">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.reset()">
+                        <span class="fa fa-sync-alt"></span>
+                    </span>
+                </button>
+                <label class="btn btn-primary btn-upload" for="inputImage" title="Upload image file">
+                    <input type="file" class="sr-only" id="inputImage" name="file" accept="image/*">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="Import image with Blob URLs">
+                        <span class="fa fa-upload"></span>
+                    </span>
+                </label>
+                <button type="button" class="btn btn-primary" data-method="destroy" title="Destroy">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.destroy()">
+                        <span class="fa fa-power-off"></span>
+                    </span>
+                </button>
+            </div>
+            <div class="btn-group btn-group-crop" style="visibility: hidden;">
+                <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;maxWidth&quot;: 4096, &quot;maxHeight&quot;: 4096 }">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getCroppedCanvas({ maxWidth: 4096, maxHeight: 4096 })">
+                        Get Cropped Canvas
+                    </span>
+                </button>
+                <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;width&quot;: 160, &quot;height&quot;: 90 }">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getCroppedCanvas({ width: 160, height: 90 })">
+                        160&times;90
+                    </span>
+                </button>
+                <button type="button" class="btn btn-success" data-method="getCroppedCanvas" data-option="{ &quot;width&quot;: 320, &quot;height&quot;: 180 }">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getCroppedCanvas({ width: 320, height: 180 })">
+                        320&times;180
+                    </span>
+                </button>
+            </div>
+            <!-- Show the cropped image in modal -->
+            <div class="modal fade docs-cropped" id="getCroppedCanvasModal" role="dialog" aria-hidden="true" aria-labelledby="getCroppedCanvasTitle" tabindex="-1">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="getCroppedCanvasTitle">Cropped</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body"></div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <a class="btn btn-primary" id="download" href="javascript:void(0);" download="cropped.jpg">Download</a>
+                        </div>
+                    </div>
+                </div>
+            </div><!-- /.modal -->
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="getData" data-option data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getData()">
+                    Get Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="setData" data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setData(data)">
+                    Set Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="getContainerData" data-option data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getContainerData()">
+                    Get Container Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="getImageData" data-option data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getImageData()">
+                    Get Image Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="getCanvasData" data-option data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getCanvasData()">
+                    Get Canvas Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="setCanvasData" data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setCanvasData(data)">
+                    Set Canvas Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="getCropBoxData" data-option data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.getCropBoxData()">
+                    Get Crop Box Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="setCropBoxData" data-target="#putData">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.setCropBoxData(data)">
+                    Set Crop Box Data
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="moveTo" data-option="0">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.moveTo(0)">
+                    Move to [0,0]
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="zoomTo" data-option="1">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.zoomTo(1)">
+                    Zoom to 100%
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="rotateTo" data-option="180">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.rotateTo(180)">
+                    Rotate 180°
+                </span>
+            </button>
+            <button type="button" class="btn btn-secondary" style="visibility: hidden;" data-method="scale" data-option="-2" data-second-option="-1">
+                <span class="docs-tooltip" data-toggle="tooltip" title="cropper.scale(-2, -1)">
+                    Scale (-2, -1)
+                </span>
+            </button>
+        </div><!-- /.docs-buttons -->
+        <div class="col-md-3 docs-toggles">
+            <!-- <h3>Toggles:</h3> -->
+            <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="aspectRatio1" name="aspectRatio" value="1.7777777777777777">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="نسبت: 16 / 9">
+                        16:9
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="aspectRatio2" name="aspectRatio" value="1.3333333333333333">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="نسبت: 4 / 3">
+                        4:3
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="aspectRatio3" name="aspectRatio" value="1">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="نسبت: 1 / 1">
+                        1:1
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="aspectRatio4" name="aspectRatio" value="0.6666666666666666">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="نسبت: 2 / 3">
+                        2:3
+                    </span>
+                </label>
+                <label class="btn btn-primary active">
+                    <input type="radio" class="sr-only" id="aspectRatio5" name="aspectRatio" value="NaN">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="نسبت: آزاد">
+                        <span class="fa fa-crop"></span>
+                    </span>
+                </label>
+            </div>
+            <div class="btn-group d-flex flex-nowrap" data-toggle="buttons">
+                <label class="btn btn-primary active">
+                    <input type="radio" class="sr-only" id="viewMode0" name="viewMode" value="0" checked>
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حالت نمایشی اول">
+                        1
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="viewMode1" name="viewMode" value="1">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حالت نمایشی دوم">
+                        2
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="viewMode2" name="viewMode" value="2">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حالت نمایشی سوم">
+                        3
+                    </span>
+                </label>
+                <label class="btn btn-primary">
+                    <input type="radio" class="sr-only" id="viewMode3" name="viewMode" value="3">
+                    <span class="docs-tooltip" data-toggle="tooltip" title="حالت نمایشی چهارم">
+                        4
+                    </span>
+                </label>
+            </div>
+            <div class="dropdown dropup docs-options">
+                <button type="button" class="btn btn-primary btn-block dropdown-toggle" id="toggleOptions" data-toggle="dropdown" aria-expanded="true">
+                    تنظیمات
+                    <span class="caret"></span>
+                </button>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="toggleOptions">
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="responsive" type="checkbox" name="responsive" checked>
+                            <label class="form-check-label" for="responsive">واکنشگرا</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="restore" type="checkbox" name="restore" checked>
+                            <label class="form-check-label" for="restore">اعاده کردن</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="checkCrossOrigin" type="checkbox" name="checkCrossOrigin" checked>
+                            <label class="form-check-label" for="checkCrossOrigin">بررسی منشا متقابل</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="checkOrientation" type="checkbox" name="checkOrientation" checked>
+                            <label class="form-check-label" for="checkOrientation">بررسی جهت</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="modal" type="checkbox" name="modal" checked>
+                            <label class="form-check-label" for="modal">مودال</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="guides" type="checkbox" name="guides" checked>
+                            <label class="form-check-label" for="guides">راهنمایی ها</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="center" type="checkbox" name="center" checked>
+                            <label class="form-check-label" for="center">نقطه کانونی</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="highlight" type="checkbox" name="highlight" checked>
+                            <label class="form-check-label" for="highlight">برجسته</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="background" type="checkbox" name="background" checked>
+                            <label class="form-check-label" for="background">پس زمینه</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="autoCrop" type="checkbox" name="autoCrop">
+                            <label class="form-check-label" for="autoCrop">شروع خودکار برش</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="movable" type="checkbox" name="movable" checked>
+                            <label class="form-check-label" for="movable">متحرک</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="rotatable" type="checkbox" name="rotatable" checked>
+                            <label class="form-check-label" for="rotatable">قابل چرخش</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="scalable" type="checkbox" name="scalable" checked>
+                            <label class="form-check-label" for="scalable">قابل جهت دهی</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="zoomable" type="checkbox" name="zoomable" checked>
+                            <label class="form-check-label" for="zoomable">قابل بزرگنمایی</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="zoomOnTouch" type="checkbox" name="zoomOnTouch" checked>
+                            <label class="form-check-label" for="zoomOnTouch">بزرگنمایی هنگام لمس</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="zoomOnWheel" type="checkbox" name="zoomOnWheel" checked>
+                            <label class="form-check-label" for="zoomOnWheel">بزرگنمایی با اسکرول ماوس</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="cropBoxMovable" type="checkbox" name="cropBoxMovable" checked>
+                            <label class="form-check-label" for="cropBoxMovable">متحرک بودن ناحیه برش</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="cropBoxResizable" type="checkbox" name="cropBoxResizable" checked>
+                            <label class="form-check-label" for="cropBoxResizable">قابل چرخش بودن ناحیه برش</label>
+                        </div>
+                    </li>
+                    <li class="dropdown-item">
+                        <div class="form-check">
+                            <input class="form-check-input" id="toggleDragModeOnDblclick" type="checkbox" name="toggleDragModeOnDblclick" checked>
+                            <label class="form-check-label" for="toggleDragModeOnDblclick">تغییر وضعیت با دابل کلیک</label>
+                        </div>
+                    </li>
+                </ul>
+            </div><!-- /.dropdown -->
+        </div><!-- /.docs-toggles -->
+    </div>
+</div>

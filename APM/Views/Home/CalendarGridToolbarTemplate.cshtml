@@ -1,0 +1,20 @@
+﻿@(Html.Kendo().ToolBar()
+.Name("CalendarGridToolbar")
+.HtmlAttributes(new { @class = "GridToolbar" })
+.Items(items =>
+{
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().HtmlAttributes(new { title = "جدید", @class = "CreateButton" }).Text(@"<span class=""k-icon k-i-plus""></span><span class=""CreateButtonLabel""></span>").Click("CalendarGridCreateRow"); 
+    }
+    );
+
+    items.Add().Type(Kendo.Mvc.UI.CommandType.ButtonGroup)
+    .Buttons(buttons =>
+    {
+        buttons.Add().HtmlAttributes(new { title = "بروزرسانی", @class = "RefreshButton" }).Text(@"<span class=""k-icon k-i-reload""></span><span class=""RefreshButtonLabel""></span>").Click("CalendarGridReload");
+        buttons.Add().HtmlAttributes(new { title = "اکسل", @class = "ExcelButton" }).Text(@"<span class=""k-icon k-i-excel""></span><span class=""ExcelButtonLabel""></span>").Click("CalendarGridExcel");
+    }
+    );
+}))

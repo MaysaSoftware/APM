@@ -1,0 +1,342 @@
+﻿<div id="CalendarForm">
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">از تاریخ<span class="RequiredStar">*</span> </p>
+    <input data-jdp
+           autocomplete="off"
+           id="C-FromDate"
+           name="C-FromDate"
+           required="required"
+           validationmessage="ورود داده الزامی است"
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers "
+           onload="AddListenerCalendar(this)"
+           style="width: 100%;">
+    <span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton">
+       <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+</div>
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">تا تاریخ<span class="RequiredStar">*</span> </p>
+    <input data-jdp
+           autocomplete="off"
+           id="C-ToDate"
+           name="C-ToDate"
+           required="required"
+           validationmessage="ورود داده الزامی است"
+           data-role="textbox"
+           aria-disabled="false"
+           class="k-input k-textbox k-input-solid k-input-md k-rounded-md DatePickers "
+           onload="AddListenerCalendar(this)"
+           style="width: 100%;">
+    <span tabindex="-1" class="k-input-button k-button k-icon-button k-button-md k-button-solid k-button-solid-base AppendButton">
+        <span class="k-icon k-i-calendar k-button-icon"></span>
+    </span>
+
+</div>
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">از ساعت<span class="RequiredStar"> </span> </p>
+    @(Html.Kendo().TextBox().Name("C-FromTime").HtmlAttributes(new {@class= "TimeInput" }))
+</div>
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">تا ساعت<span class="RequiredStar"> </span> </p>
+    @(Html.Kendo().TextBox().Name("C-ToTime").HtmlAttributes(new { @class = "TimeInput" }))
+</div>
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">عنوان <span class="RequiredStar">*</span> </p>
+    @(Html.Kendo().TextBox()
+        .Name("C-Title")
+        )
+</div>
+
+@{
+    string Value = ViewData["FieldValue"] == null ? "0" : ((string)ViewData["FieldValue"]);
+    List<SelectListItem> AlarmTypeCombo = new List<SelectListItem>() {
+            new SelectListItem() {Text = "هیچکدام", Value = ""},
+            new SelectListItem() {Text = "سیستمی", Value = "سیستمی"},
+            new SelectListItem() {Text = "پیامک", Value = "پیامک"},
+            new SelectListItem() {Text = "ایمیل", Value = "ایمیل"}
+    };
+}
+
+<div class="FormItemInput">
+    <p class="FormItemTitle">هشدار <span class="RequiredStar">*</span> </p>
+    @(Html.Kendo().ComboBox()
+    .Name("AlarmType")
+    .Filter("contains")
+    .Placeholder("انتخاب نمایید")
+    .DataTextField("Text")
+    .DataValueField("Value") 
+    .BindTo(AlarmTypeCombo)
+    .Template(@"<div class='dropdown-country-wrap'><span class='#:Value#'  style='font-size:16px'></span><span style='font-size:12px'>#:Text#</span></div>")
+    .Suggest(true)
+    .HtmlAttributes(new { style="width:100%;" })
+    )
+</div>
+
+<div class="FormItemInput WideInput">
+    <p class="FormItemTitle">تکرار<span class="RequiredStar"> </span> </p>
+    @(Html.Kendo().ButtonGroup()
+        .Name("CalendarRepeatButton")
+        .Items(t =>
+        {
+            t.Add().Text("هرگز");
+            t.Add().Text("روزانه");
+            t.Add().Text("هفتگی");
+            t.Add().Text("ماهیانه");
+            t.Add().Text("سالیانه");
+        })
+        .Index(0)
+    .Events(e => e.Select("CalendarRepeatButton"))
+    )
+</div>
+
+<div class="FormItemInput WideInput ">
+    <div class="FormItemInput CalendarDaily">
+        <p class="FormItemTitle">تکرار هر<span class="RequiredStar"> </span> </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("DailyCount")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(0)
+        .Max(31)
+        .Value(1)
+        )
+        <span>روز</span>
+    </div>
+
+</div>
+
+<div class="FormItemInput WideInput ">
+    <div class="FormItemInput WideInput CalendarWeekly">
+        <p class="FormItemTitle">تکرار هر<span class="RequiredStar"> </span> </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("WeeklyCount")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(0)
+        .Max(45)
+        .Value(1)
+        )
+        <span>هفته</span>
+    </div>
+    <div class="FormItemInput CalendarWeekly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("CalendarRepeatWeeklyButton")
+            .Selection("multiple")
+            .Items(t =>
+            {
+                t.Add().Text("شنبه");
+                t.Add().Text("یک شنبه");
+                t.Add().Text("دو شنبه");
+                t.Add().Text("سه شنبه");
+                t.Add().Text("چهار شنبه");
+                t.Add().Text("پنج شنبه");
+                t.Add().Text("جمعه");
+            })
+        )
+    </div>
+
+
+</div>
+
+<div class="FormItemInput WideInput ">
+    <div class="FormItemInput WideInput CalendarMonthly">
+        <p class="FormItemTitle">تکرار هر </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("MonthlyCount")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(1)
+        .Max(12)
+        .Value(1)
+        )
+        <span>ماه</span>
+    </div>
+    <div class="FormItemInput CalendarMonthly">
+        <p class="FormItemTitle">فعال کردن </p>
+        @(Html.Kendo().Switch()
+            .Name("CheckedWeekOfMonth")
+            .Checked(false)
+            .Messages(c => c.Checked("هفته").Unchecked("روز"))
+            .Events(e=>e.Change("CalendarCheckedWeekly"))
+        )
+    </div>
+
+    <div class="FormItemInput WideInput CalendarMonthly">
+        <p class="FormItemTitle">تکرار در روز </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("M-DayOfMonth")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(1)
+        .Max(31)
+        .Value(29)
+        )
+    </div>
+    <div class="FormItemInput WideInput CalendarMonthly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("C-R-WeekOfMonthButton")
+            .Selection("multiple")
+            .Enable(false)
+            .Items(t =>
+            {
+                t.Add().Text("هفته اول");
+                t.Add().Text("هفته دوم");
+                t.Add().Text("هفته سوم");
+                t.Add().Text("هفته چهارم");
+            })
+        )
+    </div>
+    <div class="FormItemInput WideInput CalendarMonthly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("C-R-DaysOfWeekOfMonthButton")
+            .Selection("multiple")
+            .Enable(false)
+            .Items(t =>
+            {
+                t.Add().Text("شنبه");
+                t.Add().Text("یک شنبه");
+                t.Add().Text("دو شنبه");
+                t.Add().Text("سه شنبه");
+                t.Add().Text("چهار شنبه");
+                t.Add().Text("پنج شنبه");
+                t.Add().Text("جمعه");
+            })
+        )
+    </div>
+
+
+</div>
+
+<div class="FormItemInput WideInput ">
+    <div class="FormItemInput WideInput CalendarYearly">
+        <p class="FormItemTitle">تکرار هر </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("YearlCount")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(1)
+        .Max(12)
+        .Value(1)
+        )
+        <span>سال</span>
+    </div>
+
+    <div class="FormItemInput WideInput CalendarYearly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("C-R-MonthOfYearButton")
+            .Selection("multiple")
+            .Items(t =>
+            {
+                t.Add().Text("فروردین");
+                t.Add().Text("اردیبهشت");
+                t.Add().Text("خرداد");
+                t.Add().Text("تیر");
+                t.Add().Text("مرداد");
+                t.Add().Text("شهریور");
+                t.Add().Text("مهر");
+                t.Add().Text("آبان");
+                t.Add().Text("آذر");
+                t.Add().Text("دی");
+                t.Add().Text("بهمن");
+                t.Add().Text("اسفند");
+            })
+        )
+    </div>
+
+    <div class="FormItemInput CalendarYearly">
+        <p class="FormItemTitle">فعال کردن </p>
+        @(Html.Kendo().SwitchFor(model => model)
+            .Name("CheckedMonthOfYear")
+            .Checked(false)
+            .Messages(c => c.Checked("هفته").Unchecked("ماه"))
+            .Events(e=>e.Change("CalendarCheckedMonthly"))
+        )
+    </div>
+
+
+    <div class="FormItemInput WideInput CalendarYearly">
+        <p class="FormItemTitle">تکرار در روز </p>
+        @(Html.Kendo().IntegerTextBox()
+        .Name("DayOfMonthOfYear")
+        .HtmlAttributes(new {style= "width: 100px" })
+        .Min(1)
+        .Max(31)
+        .Value(29)
+        )
+    </div>
+
+    <div class="FormItemInput WideInput CalendarYearly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("C-R-WeekOfMonthOfYearButton")
+            .Selection("multiple")
+            .Enable(false)
+            .Items(t =>
+            {
+                t.Add().Text("هفته اول");
+                t.Add().Text("هفته دوم");
+                t.Add().Text("هفته سوم");
+                t.Add().Text("هفته چهارم");
+            })
+        )
+    </div>
+    <div class="FormItemInput WideInput CalendarYearly">
+        <p class="FormItemTitle"> </p>
+        @(Html.Kendo().ButtonGroup()
+            .Name("C-R-DayOfWeekOfMonthOfYearButton")
+            .Selection("multiple")
+            .Enable(false)
+            .Items(t =>
+            {
+                t.Add().Text("شنبه");
+                t.Add().Text("یک شنبه");
+                t.Add().Text("دو شنبه");
+                t.Add().Text("سه شنبه");
+                t.Add().Text("چهار شنبه");
+                t.Add().Text("پنج شنبه");
+                t.Add().Text("جمعه");
+            })
+        )
+    </div> 
+</div>
+
+@{
+    Dictionary<string, object> Attrs = new Dictionary<string, object>();
+    Attrs.Add("style", "width: 100%;border-color: #c9c8c8; border-radius: 3px; ");
+    Attrs.Add("class", "k-textbox");
+}
+
+
+<div class="FormItemInput WideInput">
+    <p class="FormItemTitle">شرح فعالیت<span class="RequiredStar"> </span> </p>
+    @(Html.Kendo().TextArea()
+            .Name("C-Description")
+            .Resize(TextAreaResize.Vertical)
+            .HtmlAttributes(Attrs)
+        )
+</div>
+
+
+<div class="k-edit-buttons k-actions-end LeftSection WideInput">
+
+    @(Html.Kendo().Button()
+        .Name("CalendarCancelButton")
+        .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+        .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">انصراف</span>")
+        .Events(e => e.Click("CalendarCancelButton"))
+    )
+    @(Html.Kendo().Button()
+        .Name("CalendarSaveButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary" })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">ذخیره</span>")
+        .Events(e => e.Click("CalendarSaveButton"))
+    )
+</div>
+    
+</div>

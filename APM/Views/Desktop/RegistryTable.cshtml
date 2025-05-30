@@ -1,0 +1,75 @@
+﻿@using APM.Models;
+@using APM.Models.Tools;
+@using APM.Models.Database;
+
+@Styles.Render("~/DesktopCSS")
+@Styles.Render("~/EditorCSS")
+
+@{ 
+    CoreDefine.RegistryTable RegistryTable = (CoreDefine.RegistryTable)ViewData["RegistryTable"];
+    string ActionData = "function() {return {_UserAccountID:0,_FromDate:'',_ToDate:'',_TableName: '" + ViewData["TableName"].ToString() + "',_RegistryTable:'"+ RegistryTable + "',_DataKey:'"+ @ViewData["DataKey"] + "',_RecordID:'"+ @ViewData["RowID"] + "'} }";
+    string GridName = "MainGridRegistery";
+    string ClassMainContent = (RegistryTable == CoreDefine.RegistryTable.Delete || RegistryTable == CoreDefine.RegistryTable.Insert) ? "col-sm-8" : "col-sm-12";
+}
+
+ 
+<div id="HeaderContent" style=" width: 100%; margin-bottom: -50px;">
+    @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["SearchRegistryTableFolder"] }, { "FieldParameterList", @ViewData["SearchFieldParameterList"] }, { "DataKey", @ViewData["DataKey"] }, { "ParentID", @ViewData["ParentID"] }, { "ProcessStep", "0" }, { "ShowAttachment", false } })
+    @(Html.Kendo().Button()
+        .Name("SearchRegistryTableButton")
+        .HtmlAttributes(new {@class= "k-button-solid-primary",style= "top: -56px;right: 30px; " })
+        .Content(@"<span class=""k-icon k-i-check k-button-icon""></span><span class=""k-button-text"">اجرا</span>")
+        .Events(e=>e.Click("SearchRegistryTable"))
+    )
+
+    @if(RegistryTable==CoreDefine.RegistryTable.Delete){
+        @(Html.Kendo().Button()
+            .Name("RestoreDeletedRecordButton")
+            .HtmlAttributes(new {@class= "k-button-solid-cancel", style= "top: -56px;right: 30px; " })
+            .Content(@"<span class=""k-icon k-i-replace-single k-button-icon""></span><span class=""k-button-text"">باز گرداندن رکورد</span>")
+            .Events(e=>e.Click("RestoreDeletedRecord"))
+        )
+    }
+</div>
+ 
+<div id="MainContent" class=@ClassMainContent  style="height: 80%;   display: inline-block;"> 
+    @(Html.Kendo().Grid<dynamic>()
+    .Name(GridName)
+    .Editable(e => e.Mode(GridEditMode.PopUp))
+    .Columns(columns =>columns.SettingRegistry(RegistryTable))
+    .HtmlAttributes(new { style = "height: 100%; width:100%" })
+    .Scrollable()
+    .Resizable(r => r.Columns(true))
+    .Navigatable()
+    .Pageable(pageable => pageable.PageSizes(true).Messages(m=>m.ItemsPerPage("تعداد رکورد هر صفحه")))
+    .Selectable(selectable => selectable.Mode(GridSelectionMode.Single).Type(GridSelectionType.Row))
+    .PersistSelection()
+    .Sortable()
+    .LoaderType(GridLoaderType.Skeleton)
+    .AllowCopy(false)
+    .Filterable(filterable => filterable.Mode(GridFilterMode.Menu).Extra(false))
+    .DataSource(dataSource =>
+                    dataSource
+                    .Ajax()
+                    .PageSize(100)
+                    .Model(model => model.SettingRegistry(RegistryTable))
+                    .Read(action => action.Action("ReadRegistry", "Desktop").Data(ActionData))
+                    .Events(e => e.Change("MainGridRegisteryChange"))
+                )
+
+    .Events(events =>
+    {
+        events.Change("MainGridRegisteryChange").DataBound("MainGridPreviewSetting");
+        events.Edit("MainGridEdit");
+    }
+    )
+    )
+
+</div>
+@if(RegistryTable==CoreDefine.RegistryTable.Delete|| RegistryTable == CoreDefine.RegistryTable.Insert)
+{
+    <div id="LeftContent" class="FullScreen col-sm-4"  style=" overflow-y: scroll; height: 63%; display: inline-block;  float: left;">
+        @Html.Partial("/Views/Shared/InputForm/TInputData.cshtml", new ViewDataDictionary { { "FolderDataKey", @ViewData["RegistryTableFolder"] }, { "FieldParameterList", @ViewData["FieldParameterList"] }, { "DataKey", @ViewData["DataKey"] }, { "ParentID", @ViewData["ParentID"] }, { "ProcessStep", "0" },{ "ShowAttachment",false } })
+    </div>
+}
+ 

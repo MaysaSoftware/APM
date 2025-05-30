@@ -1,0 +1,47 @@
+﻿@using APM.Models;
+@{
+    string Value = ViewData["FieldValue"] == null ? "0" : (ViewData["FieldValue"].ToString()); 
+}
+
+<div id="BPMNModelXml" hidden>
+    @Value
+</div>
+
+<div id="BPMNModelXmlID" hidden>
+ @long.Parse(Session["_SysSettingID" + Referral.UserAccount.UsersID].ToString())
+</div>
+
+<canvas id="BPMNOutput" hidden />
+
+@(Html.Kendo().Splitter()
+.Name("DMasterLayout")
+.Orientation(SplitterOrientation.Vertical)
+.HtmlAttributes(new { @class = "D-Side" })
+.Panes(verticalPanes =>{
+
+        verticalPanes.Add()
+            .HtmlAttributes(new { @class = "D-Side", id = "DRightLayout" })
+            .Collapsible(false)
+            .Resizable(false)
+            .Size("50px")
+            .Content(@<div>
+                        <button class="k-button k-button-md C-G-k-button D-B-Tools" onclick="EditBPMNModel()" ><span class="k-icon k-i-pencil IconTools"></span> </button>
+                        <button class="k-button k-button-md C-G-k-button D-B-Tools" onclick="PrintBPMNModel()"><span class="k-icon k-i-print IconTools"></span> </button>
+                        <a id="js-download-diagram" class="k-button k-button-md C-G-k-button D-B-Tools" onclick="DownloadBPMNModel()"><span class="k-icon k-i-download IconTools"></span> </a>
+                        <a id="js-download-svg" class="k-button k-button-md C-G-k-button D-B-Tools" onclick="DownloadSVGBPMNModel()"><span class="k-icon k-i-file IconTools"></span> </a>
+                        <a id="js-download-png" class="k-button k-button-md C-G-k-button D-B-Tools" onclick="DownloadImageBPMNModel()"><span class="k-icon k-i-image-export IconTools"></span> </a>
+                      </div>);
+
+        verticalPanes.Add()
+        .HtmlAttributes(new { @class = "D-Side", id = "DCenterLayout" })
+        .Content(@<div>
+                    <div class="canvas">
+                        <div id="BPMNViewer_Canvas"></div>
+                    </div>
+                    <script>
+                        ImportXml("BPMNViewer_Canvas");
+                    </script>
+                  </div>);
+
+  })
+)

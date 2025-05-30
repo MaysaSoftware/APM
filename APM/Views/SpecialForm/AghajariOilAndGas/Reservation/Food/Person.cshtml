@@ -1,0 +1,55 @@
+﻿ @using APM.Models.Tools;  
+@using APM.Models;
+@using System.Data;
+
+@{  
+    List<SelectListItem> meals = new List<SelectListItem>();
+    foreach (DataRow row in Referral.DBData.SelectDataTable("SELECT  [وعده_غذایی].[شناسه],[وعده_غذایی].[عنوان],isnull([وعده_غذایی].[وعده_مافوق],0)  " +
+        "FROM [وعده_غذایی] " +
+        "left join [کاربر_وعده_غذایی] on [وعده_غذایی].شناسه = [کاربر_وعده_غذایی].وعده_غذایی  " +
+        "left join   نقش_كاربر_وعده_غذایی on   [وعده_غذایی].شناسه =  نقش_كاربر_وعده_غذایی.وعده_غذایی " +
+        "where  وضعیت_وعده_غذایی = 1 and  [کاربر_وعده_غذایی].کاربر = " + Referral.UserAccount.UsersID + " OR نقش_كاربر_وعده_غذایی.نقش_کاربر = " + Referral.UserAccount.RoleTypeID + " group by [وعده_غذایی].[شناسه]" +
+        ",[وعده_غذایی].[عنوان] ,[وعده_غذایی].[وعده_مافوق] Order by وعده_غذایی.شناسه ").Rows)
+    {
+        meals.Add(new SelectListItem() { Value=row[0].ToString(),Text=row[1].ToString() });
+    }
+} 
+
+<input type="text" hidden id="NowDateReservationFood" value=@CDateTime.GetNowshamsiDate() />
+
+
+<div class="card rtl text-right BackgroundColor">
+    <!--Header-->
+    <div class="classic-tabs rtl ">
+        <ul class="nav BackgroundIconColor" id="myTab" role="tablist">  
+            <li class="nav-item "> 
+                    <i class="fas fa-cookie-bite fa-2x pb-2 IconBackgroundColor" aria-hidden="true"></i><i class="margin-r-5 IconBackgroundColor">درخواست شخصی</i> 
+            </li> 
+        </ul>
+    </div>
+
+    <!--Header-->
+    <form id="add" class="needs-validation" novalidate="novalidate"> 
+        <div class="card-body">
+            @Html.ValidationSummary(true, "", new { @class = "text-danger" }) 
+            @Html.Partial("/Views/SpecialForm/AghajariOilAndGas/Reservation/Food/Shared/MealDetail.cshtml")
+
+            <div class="k-edit-buttons k-actions-end LeftSection EditorButtonDiv" style="border-radius: 60px; border-width: 0px; background-color: transparent; ">
+
+                @(Html.Kendo().Button()
+                            .Name("CancelButton1113_0_0")
+                            .HtmlAttributes(new {@class= "k-button-solid-cancel" })
+                            .Content(@"<span class=""k-icon k-i-cancel k-button-icon""></span><span class=""k-button-text"">بستن</span>")
+                            .Events(e=>e.Click("CancelFormEditor"))
+                        )
+                @(Html.Kendo().Button()
+                            .Name("SaveReservationFood")
+                            .HtmlAttributes(new {@class= "k-button-solid-primary SaveButton" })
+                            .Content(@"<span class=""fas fa-save fa-lg""></span><span class=""k-button-text"">ثبت درخواست</span>")
+                            .Events(e=>e.Click("SaveReservationFood"))
+                        )
+
+            </div>
+        </div>
+    </form>
+</div>
