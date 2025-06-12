@@ -66,7 +66,8 @@ namespace TaxApi.Controllers
                  ", لیست_تاریخ.تاریخ_میلادی as تاریخ_صدور_میلادی" +
                  ", فاکتور.مبلغ_پرداختی_نقدی" +
                  ", فاکتور.مبلغ_پرداختی_نسیه" +
-                 //", صورتحساب.شناسه_یکتای_ثبت_قرارداد_فروشنده" +
+                 ", فاکتور.ماهیت_فاکتور" +
+                 ", (select شناسه_یکتای_ثبت_قرارداد_در_سامانه_مودیان from قرارداد where قرارداد.شناسه = فاکتور.قرارداد) as شناسه_یکتای_ثبت_قرارداد_در_سامانه_مودیان" +
                  ", فاکتور.مجموع_مبلغ_قبل_از_كسر_تخفیف" +
                  ", فاکتور.مجموع_تخفیفات" +
                  ", فاکتور.مجموع_مبلغ_پس_از_كسر_تخفیف" +
@@ -99,10 +100,9 @@ namespace TaxApi.Controllers
                 if (invoiceHeaderDto.Ins > 1)
                     invoiceHeaderDto.Irtaxid = record.Field("شماره_منحصر_بفرد_مالیاتی", "").ToString();
                 if (invoiceHeaderDto.Ins != 3)
-                {
-                    invoiceHeaderDto.Inty = 1;
-                    invoiceHeaderDto.Inp = 1;
-
+                {  
+                    invoiceHeaderDto.Inty = 1; 
+                    invoiceHeaderDto.Inp = int.Parse(record.Field("ماهیت_فاکتور", 0).ToString());
                     if (invoiceHeaderDto.Inty == 1)
                         invoiceHeaderDto.Tob = int.Parse(record.Field("نوع_مشتری", 0).ToString());
 
@@ -115,8 +115,8 @@ namespace TaxApi.Controllers
                     if (!string.IsNullOrEmpty(record.Field("کد_پستی", "").ToString()))
                         invoiceHeaderDto.Bpc = record.Field("کد_پستی", "").ToString();
 
-                    if (!string.IsNullOrEmpty(record.Field("شناسه_یکتای_ثبت_قرارداد_فروشنده", "").ToString()))
-                        invoiceHeaderDto.Crn = record.Field("شناسه_یکتای_ثبت_قرارداد_فروشنده", "").ToString();
+                    if (!string.IsNullOrEmpty(record.Field("شناسه_یکتای_ثبت_قرارداد_در_سامانه_مودیان", "").ToString()) && invoiceHeaderDto.Inp == 4)
+                        invoiceHeaderDto.Crn = record.Field("شناسه_یکتای_ثبت_قرارداد_در_سامانه_مودیان", "").ToString();
 
                     invoiceHeaderDto.Tprdis = decimal.Parse(record.Field("مجموع_مبلغ_قبل_از_كسر_تخفیف", 0).ToString());
                     invoiceHeaderDto.Tdis = decimal.Parse(record.Field("مجموع_تخفیفات", 0).ToString());

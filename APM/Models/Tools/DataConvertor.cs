@@ -1,4 +1,5 @@
-﻿using APM.Models.Database;
+﻿
+using APM.Models.Database;
 using APM.Models.APMObject;
 using Syncfusion.XlsIO;
 using System;
@@ -11,6 +12,8 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
+using System.Threading.Tasks;
+using APM.Models.Tools;
 
 namespace APM.Models.Tools
 {
@@ -25,11 +28,11 @@ namespace APM.Models.Tools
             switch (Form.Entity)
             {
                 case CoreDefine.Entities.فرم_ورود_اطلاعات:
-                {
-                    InformationEntryForm informationEntryForm = new InformationEntryForm(Form);
-                    TableID = informationEntryForm.RelatedTable;
-                    break;
-                }
+                    {
+                        InformationEntryForm informationEntryForm = new InformationEntryForm(Form);
+                        TableID = informationEntryForm.RelatedTable;
+                        break;
+                    }
             }
 
             List<CoreObject> ReportParameterList = CoreObject.FindChilds(CoreDefine.Entities.پارامتر_گزارش);
@@ -37,22 +40,22 @@ namespace APM.Models.Tools
             {
                 ReportParameter Parameter = new ReportParameter(ParameterCore);
                 PermissionBase permissionBase = new PermissionBase(ParameterCore.ParentID, Referral.UserAccount.Permition);
-                if (Parameter.RelatedTable==TableID && permissionBase.IsAllow)
+                if (Parameter.RelatedTable == TableID && permissionBase.IsAllow)
                     Output.Add(Parameter);
             }
 
             return Output;
-        } 
+        }
 
-        public static List<Field> InformationEntryFormReady(InformationEntryForm _InformationEntryForm ,bool JsutRebuildField=false)
+        public static List<Field> InformationEntryFormReady(InformationEntryForm _InformationEntryForm, bool JsutRebuildField = false)
         {
             List<Field> Output = null;
-            if(!JsutRebuildField)
+            if (!JsutRebuildField)
             {
                 List<CoreObject> FieldCore = CoreObject.FindChilds(_InformationEntryForm.CoreObjectID, CoreDefine.Entities.فیلد);
-                if(FieldCore.Count>0)
+                if (FieldCore.Count > 0)
                 {
-                    Output=new List<Field>();
+                    Output = new List<Field>();
                     foreach (CoreObject FieldCoreItem in FieldCore)
                     {
                         Output.Add(new Field(FieldCoreItem));
@@ -67,53 +70,53 @@ namespace APM.Models.Tools
                 CoreObject TableObject = CoreObject.Find(_InformationEntryForm.RelatedTable);
                 CoreObject ExternalFieldObject = CoreObject.Find(_InformationEntryForm.ExternalField);
                 Table Table = new Table(TableObject);
-                string IdentityField = Table.IDField().FieldName; 
-                string DeclareQuery=string.Empty; 
-                string Query = _InformationEntryForm.Query.Trim() == "" ? DefaultQueryForTable(_InformationEntryForm.RelatedTable, _InformationEntryForm.ShowRecordCountDefault) :"Select Top 0\n"+  _InformationEntryForm.Query;
+                string IdentityField = Table.IDField().FieldName;
+                string DeclareQuery = string.Empty;
+                string Query = _InformationEntryForm.Query.Trim() == "" ? DefaultQueryForTable(_InformationEntryForm.RelatedTable, _InformationEntryForm.ShowRecordCountDefault) : "Select Top 0\n" + _InformationEntryForm.Query;
                 Query = Tools.ConvertToSQLQuery(Query);
-                 
-                if(_InformationEntryForm.ExternalField > 0 && _InformationEntryForm.ParentID > 0)
+
+                if (_InformationEntryForm.ExternalField > 0 && _InformationEntryForm.ParentID > 0)
                 {
                     if (_InformationEntryForm.Query == "")
                         Query += " WHERE " + TableObject.FullName + "." + ExternalFieldObject.FullName + "=@" + IdentityField;
                     else
                     {
                         int LastIndexOf_FROM = Query.ToUpper().LastIndexOf("FROM");
-                        string SubStrQuery = Query.Substring(LastIndexOf_FROM, (Query.Length - 1- LastIndexOf_FROM));
+                        string SubStrQuery = Query.Substring(LastIndexOf_FROM, (Query.Length - 1 - LastIndexOf_FROM));
                         if (SubStrQuery.ToUpper().IndexOf("WHERE") == -1)
                             Query += " WHERE " + TableObject.FullName + "." + ExternalFieldObject.FullName + "=@" + IdentityField;
                     }
                 }
                 else
                 {
-                    Query += string.IsNullOrEmpty(_InformationEntryForm.ConditionQuery)?"": "\nWhere " + Tools.ConvertToSQLQuery(_InformationEntryForm.ConditionQuery);
-                    Query += string.IsNullOrEmpty(_InformationEntryForm.GroupByQuery) ?"": "\nGroup By " + Tools.ConvertToSQLQuery(_InformationEntryForm.GroupByQuery);
-                    Query += string.IsNullOrEmpty(_InformationEntryForm.OrderQuery) ?"": "\nOrder By " + Tools.ConvertToSQLQuery(_InformationEntryForm.OrderQuery);
+                    Query += string.IsNullOrEmpty(_InformationEntryForm.ConditionQuery) ? "" : "\nWhere " + Tools.ConvertToSQLQuery(_InformationEntryForm.ConditionQuery);
+                    Query += string.IsNullOrEmpty(_InformationEntryForm.GroupByQuery) ? "" : "\nGroup By " + Tools.ConvertToSQLQuery(_InformationEntryForm.GroupByQuery);
+                    Query += string.IsNullOrEmpty(_InformationEntryForm.OrderQuery) ? "" : "\nOrder By " + Tools.ConvertToSQLQuery(_InformationEntryForm.OrderQuery);
                 }
-                 
-                if(IdentityField != "")
+
+                if (IdentityField != "")
                 {
                     List<CoreObject> FieldList = CoreObject.FindChilds(_InformationEntryForm.RelatedTable, CoreDefine.Entities.فیلد);
-                    foreach(CoreObject FieldCore in FieldList)
+                    foreach (CoreObject FieldCore in FieldList)
                     {
                         Field Field = new Field(FieldCore);
-                        switch(Field.FieldType)
+                        switch (Field.FieldType)
                         {
                             case CoreDefine.InputTypes.ComboBox:
                             case CoreDefine.InputTypes.NationalCode:
                             case CoreDefine.InputTypes.ShortText:
-                                { 
+                                {
                                     DeclareQuery += "Declare @" + Field.FieldName + " AS NVARCHAR(400)=N''" + Tools.NewLine;
                                     break;
                                 }
                             case CoreDefine.InputTypes.Number:
                             case CoreDefine.InputTypes.RelatedTable:
-                                { 
+                                {
                                     DeclareQuery += "Declare @" + Field.FieldName + " AS  Bigint = 0" + Tools.NewLine;
                                     break;
-                                } 
+                                }
                             case CoreDefine.InputTypes.SingleSelectList:
-                                { 
+                                {
                                     DeclareQuery += "Declare @" + Field.FieldName + " AS NVARCHAR(400)= N''" + Tools.NewLine;
                                     break;
                                 }
@@ -123,10 +126,10 @@ namespace APM.Models.Tools
                 }
 
                 DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(CoreObject.Find(_InformationEntryForm.RelatedTable).ParentID));
-                DataTable DataTable = SelectDataTable(DataSourceInfo, DeclareQuery+Tools.NewLine+ Query, Table.FullName);
+                DataTable DataTable = SelectDataTable(DataSourceInfo, DeclareQuery + Tools.NewLine + Query, Table.FullName);
                 Output = GetTranslatedFields(_InformationEntryForm.CoreObjectID, DataTable, JsutRebuildField);
 
-                if(!JsutRebuildField)
+                if (!JsutRebuildField)
                 {
                     Desktop.CachedTable[_InformationEntryForm.CoreObjectID.ToString()] = DataTable;
                     //FillSelectList(Output); 
@@ -135,7 +138,7 @@ namespace APM.Models.Tools
 
             return Output;
         }
-        
+
         public static List<Field> TableFormReady(long _Form)
         {
             List<Field> Output = null;
@@ -143,7 +146,7 @@ namespace APM.Models.Tools
             if (_Form != 0)
             {
                 CoreObject TableObject = CoreObject.Find(_Form);
-                string Query = DefaultQueryForTable(TableObject.CoreObjectID, 1); 
+                string Query = DefaultQueryForTable(TableObject.CoreObjectID, 1);
                 Table Table = new Table(TableObject);
 
                 DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(TableObject.ParentID));
@@ -162,7 +165,7 @@ namespace APM.Models.Tools
 
             if (_Form != 0)
             {
-                SearchForm SearchForm =new SearchForm( CoreObject.Find(_Form)); 
+                SearchForm SearchForm = new SearchForm(CoreObject.Find(_Form));
                 DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(CoreObject.Find(SearchForm.RelatedTable).ParentID));
                 List<CoreObject> ParentFieldList = new List<CoreObject>();
                 string[] FormInputName = (string[])HttpContext.Current.Session["SearchFormButtonClick_FormInputName"];
@@ -219,11 +222,11 @@ namespace APM.Models.Tools
 
 
                 HttpContext.Current.Session["SearchFormButtonClick_Query"] = Query;
-                Query += "\n"+SearchForm.Query;
-                string Where = SearchForm.ConditionQuery!=""? Tools.ConvertToSQLQuery(SearchForm.ConditionQuery):" 1=1 ";
-                Query += Where.IndexOf("WHERE") > -1 ? Where : " WHERE " +  Where; 
+                Query += "\n" + SearchForm.Query;
+                string Where = SearchForm.ConditionQuery != "" ? Tools.ConvertToSQLQuery(SearchForm.ConditionQuery) : " 1=1 ";
+                Query += Where.IndexOf("WHERE") > -1 ? Where : " WHERE " + Where;
                 Query += SearchForm.CommonConditionQuery == "" ? "" : " And " + Where;
-                Query += SearchForm.GroupByQuery != "" ? "\nGroup By" + Tools.ConvertToSQLQuery(SearchForm.GroupByQuery)  : "" ;
+                Query += SearchForm.GroupByQuery != "" ? "\nGroup By" + Tools.ConvertToSQLQuery(SearchForm.GroupByQuery) : "";
                 DataTable DataTable = SelectDataTable(DataSourceInfo, Query);
                 Desktop.CachedTable[_Form.ToString()] = DataTable;
                 long RegisterCounter = RegisterCount(CoreObject.Find(SearchForm.RelatedTable).FullName, DataSourceInfo.ServerName, DataSourceInfo.DataBase);
@@ -235,11 +238,11 @@ namespace APM.Models.Tools
             return Output;
         }
 
-        public static string DefaultQueryForTable(long TableID,long RowCount)
+        public static string DefaultQueryForTable(long TableID, long RowCount)
         {
             CoreObject TableObject = CoreObject.Find(TableID);
             Table Table = new Table(TableObject);
-            string Query = "SELECT TOP "+ RowCount + Tools.NewLine;
+            string Query = "SELECT TOP " + RowCount + Tools.NewLine;
 
             List<CoreObject> AttachmentListCore = CoreObject.FindChilds(TableID, CoreDefine.Entities.ضمیمه_جدول);
             List<CoreObject> FieldObject = CoreObject.FindChilds(TableID, CoreDefine.Entities.فیلد);
@@ -247,8 +250,8 @@ namespace APM.Models.Tools
             foreach (CoreObject Field in AttachmentListCore)
             {
                 TableAttachment tableAttachment = new TableAttachment(Field);
-                if(tableAttachment.ShowDefault)
-                Query += "{} AS [" + Tools.SafeTitle(Field.FullName.Replace("-", "_").Replace("/", "_")) + "]\n,";
+                if (tableAttachment.ShowDefault)
+                    Query += "{} AS [" + Tools.SafeTitle(Field.FullName.Replace("-", "_").Replace("/", "_")) + "]\n,";
             }
 
             foreach (CoreObject Field in FieldObject)
@@ -263,30 +266,30 @@ namespace APM.Models.Tools
                 if (computationalField.FieldType == CoreDefine.InputTypes.Image)
                     Query += "{} as [" + Field.FullName + "]\n,";
                 else
-                Query += "(" + computationalField.Query.Replace("@", Table.FullName+".") + ") AS [" + Field.FullName + "]\n,";
+                    Query += "(" + computationalField.Query.Replace("@", Table.FullName + ".") + ") AS [" + Field.FullName + "]\n,";
             }
 
             Query = Query.Substring(0, Query.Length - 1);
-            Query += " FROM [" + Table.TABLESCHEMA + "].["+ Table.FullName + "]";
+            Query += " FROM [" + Table.TABLESCHEMA + "].[" + Table.FullName + "]";
 
             return Query;
         }
 
-        public static DataTable SelectDataTable(DataSourceInfo DataSourceInfo, string Query,string TableName="")
-        { 
+        public static DataTable SelectDataTable(DataSourceInfo DataSourceInfo, string Query, string TableName = "")
+        {
             DataTable DataTable = new DataTable();
-            switch(DataSourceInfo.DataSourceType)
+            switch (DataSourceInfo.DataSourceType)
             {
                 case CoreDefine.DataSourceType.SQLSERVER:
                     {
                         Query = Tools.CheckQuery(Query);
 
-                        if(Referral.DBData.ConnectionData.Source== DataSourceInfo.ServerName && Referral.DBData.ConnectionData.DataBase == DataSourceInfo.DataBase)
+                        if (Referral.DBData.ConnectionData.Source == DataSourceInfo.ServerName && Referral.DBData.ConnectionData.DataBase == DataSourceInfo.DataBase)
                             DataTable = Referral.DBData.SelectDataTable(Query);
                         else
                         {
                             SQLDataBase DataBase = new SQLDataBase(DataSourceInfo.ServerName, DataSourceInfo.DataBase, DataSourceInfo.Password, DataSourceInfo.UserName, SQLDataBase.SQLVersions.SQL2008);
-                            DataTable = DataBase.SelectDataTable(Query); 
+                            DataTable = DataBase.SelectDataTable(Query);
                         }
                         break;
                     }
@@ -331,7 +334,7 @@ namespace APM.Models.Tools
             CoreObject FormCore = CoreObject.Find(_FormID);
             List<Field> Output = new List<Field>();
 
-            if(FormData==null)
+            if (FormData == null)
                 return Output;
 
             string[] ColumnNames = FormData.Columns.Cast<DataColumn>().Select(x => x.ColumnName).ToArray();
@@ -343,27 +346,27 @@ namespace APM.Models.Tools
             switch (FormCore.Entity)
             {
                 case CoreDefine.Entities.جدول:
-                {
-                    TableFields = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.فیلد));
-                    TableComputationalField = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.فیلد_محاسباتی));
-                    TableAttachmentField = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.ضمیمه_جدول));
+                    {
+                        TableFields = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.فیلد));
+                        TableComputationalField = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.فیلد_محاسباتی));
+                        TableAttachmentField = new List<CoreObject>(CoreObject.FindChilds(_FormID, CoreDefine.Entities.ضمیمه_جدول));
                         break;
-                }
+                    }
                 case CoreDefine.Entities.فرم_ورود_اطلاعات:
-                {
-                    InformationEntryForm informationEntryForm = new InformationEntryForm(FormCore);
-                    TableFields = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.فیلد)); 
-                    TableComputationalField = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.فیلد_محاسباتی));
-                    TableAttachmentField = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.ضمیمه_جدول));
-                    break;
-                }
+                    {
+                        InformationEntryForm informationEntryForm = new InformationEntryForm(FormCore);
+                        TableFields = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.فیلد));
+                        TableComputationalField = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.فیلد_محاسباتی));
+                        TableAttachmentField = new List<CoreObject>(CoreObject.FindChilds(informationEntryForm.RelatedTable, CoreDefine.Entities.ضمیمه_جدول));
+                        break;
+                    }
                 case CoreDefine.Entities.فرم_جستجو:
                     {
                         SearchForm searchForm = new SearchForm(FormCore);
                         if (Desktop.DataTable[searchForm.RelatedTable.ToString()] == null)
                             Desktop.StartupSetting(searchForm.RelatedTable.ToString());
                         else
-                        { 
+                        {
                             TableFields = new List<CoreObject>(CoreObject.FindChilds(searchForm.RelatedTable, CoreDefine.Entities.فیلد));
                             TableComputationalField = new List<CoreObject>(CoreObject.FindChilds(searchForm.RelatedTable, CoreDefine.Entities.فیلد_محاسباتی));
                             TableAttachmentField = new List<CoreObject>(CoreObject.FindChilds(searchForm.RelatedTable, CoreDefine.Entities.ضمیمه_جدول));
@@ -375,15 +378,15 @@ namespace APM.Models.Tools
             foreach (string _ColumnName in ColumnNames)
             {
                 Field _Field = new Field();
-                if (TableFields!=null)
-                { 
+                if (TableFields != null)
+                {
                     int FieldIndex = TableFields.FindIndex(x => x.FullName.ToUpper() == _ColumnName.ToUpper());
 
                     if (FieldIndex > -1)
                         _Field = new Field(TableFields[FieldIndex]);
                     else
                     {
-                         FieldIndex = TableComputationalField.FindIndex(x => x.FullName.ToUpper() == _ColumnName.ToUpper());
+                        FieldIndex = TableComputationalField.FindIndex(x => x.FullName.ToUpper() == _ColumnName.ToUpper());
                         if (FieldIndex > -1)
                         {
                             ComputationalField computationalField = new ComputationalField(TableComputationalField[FieldIndex]);
@@ -391,7 +394,7 @@ namespace APM.Models.Tools
                             _Field.IsVirtual = true;
                             _Field.ShowInForm = computationalField.ShowInForm;
                             _Field.FieldType = computationalField.FieldType;
-                            _Field.IsDefaultView=computationalField.IsDefaultView;
+                            _Field.IsDefaultView = computationalField.IsDefaultView;
                             _Field.IsWide = computationalField.IsWide;
                             _Field.SpecialValue = computationalField.Query;
                             _Field.DigitsAfterDecimal = computationalField.DigitsAfterDecimal;
@@ -402,14 +405,14 @@ namespace APM.Models.Tools
                         }
                         else
                         {
-                            FieldIndex = TableAttachmentField.FindIndex(x => x.FullName.ToUpper() == _ColumnName.ToUpper()); 
-                            if(FieldIndex > -1)
-                            { 
-                                TableAttachment tableAttachment= new TableAttachment(TableAttachmentField[FieldIndex]);
+                            FieldIndex = TableAttachmentField.FindIndex(x => x.FullName.ToUpper() == _ColumnName.ToUpper());
+                            if (FieldIndex > -1)
+                            {
+                                TableAttachment tableAttachment = new TableAttachment(TableAttachmentField[FieldIndex]);
                                 _Field.CoreObjectID = TableAttachmentField[FieldIndex].CoreObjectID;
                                 _Field.FieldType = CoreDefine.InputTypes.Image;
                                 _Field.IsVirtual = false;
-                                _Field.IsTableAttachemnt=true;
+                                _Field.IsTableAttachemnt = true;
                                 _Field.IsDefaultView = tableAttachment.ShowDefault;
                                 _Field.ColumnWidth = tableAttachment.ColumnWidth;
                             }
@@ -429,15 +432,15 @@ namespace APM.Models.Tools
                     }
                 }
                 else
-                { 
+                {
                     _Field.FieldName = _ColumnName;
                 }
 
 
                 PermissionBase _PermissionField = new PermissionBase(_Field.CoreObjectID, Referral.UserAccount.Permition);
-                if (_PermissionField.IsAllow || HasPermission  || DataKey_ShowWithOutPermissionConfig || _Field.IsVirtual)
+                if (_PermissionField.IsAllow || HasPermission || DataKey_ShowWithOutPermissionConfig || _Field.IsVirtual)
                     Output.Add(_Field);
-            }              
+            }
             return Output;
         }
 
@@ -446,15 +449,15 @@ namespace APM.Models.Tools
             List<SelectListItem> Output = new List<SelectListItem>();
 
             Output.Add(new SelectListItem() { Value = "0", Text = " ", Selected = true });
-            if(table!=null)
-            foreach (DataRow row in table.Rows)
-            {
-                Output.Add(new SelectListItem()
+            if (table != null)
+                foreach (DataRow row in table.Rows)
                 {
-                    Value = row[0].ToString(),
-                    Text = row[1].ToString()
-                });
-            }
+                    Output.Add(new SelectListItem()
+                    {
+                        Value = row[0].ToString(),
+                        Text = row[1].ToString()
+                    });
+                }
 
             return new SelectList(Output, "Value", "Text", 0);
         }
@@ -516,31 +519,31 @@ namespace APM.Models.Tools
 
         public static void FillCoreList(string Entitiy, string ParentID)
         {
-            string CounterCacheName = "CachedCounter"+Entitiy + ParentID;
-            int Counter = RegisterCount("CoreObject",Referral.DBData.ConnectionData.Source,Referral.DBData.ConnectionData.DataBase);
+            string CounterCacheName = "CachedCounter" + Entitiy + ParentID;
+            int Counter = RegisterCount("CoreObject", Referral.DBData.ConnectionData.Source, Referral.DBData.ConnectionData.DataBase);
 
-            if (HttpContext.Current.Session["CachedListOfCoreList"+Entitiy+ParentID] == null || ((HttpContext.Current.Session[CounterCacheName] == null ? 0 : (int)HttpContext.Current.Session[CounterCacheName]) != Counter))
-            { 
-                string Query = "SELECT CoreObjectID,replace(FullName,N'_',N' ') FROM CoreObject where Entity=N'"+ Entitiy + "' And ParentID = "+ParentID;
+            if (HttpContext.Current.Session["CachedListOfCoreList" + Entitiy + ParentID] == null || ((HttpContext.Current.Session[CounterCacheName] == null ? 0 : (int)HttpContext.Current.Session[CounterCacheName]) != Counter))
+            {
+                string Query = "SELECT CoreObjectID,replace(FullName,N'_',N' ') FROM CoreObject where Entity=N'" + Entitiy + "' And ParentID = " + ParentID;
                 DataTable DataOutput = Referral.DBData.SelectDataTable(Query);
                 SelectList ListData = ToSelectList(DataOutput);
                 HttpContext.Current.Session["CachedListOfCoreList" + Entitiy + ParentID] = ListData;
                 HttpContext.Current.Session[CounterCacheName] = Counter;
             }
         }
- 
+
         public static void FillAutoCompleteList(List<Field> Fields)
         {
             foreach (Field Item in Fields)
-            { 
-                if(Item !=null)
+            {
+                if (Item != null)
                 {
                     DataTable DataOutput = new DataTable();
                     CoreObject FieldObject = CoreObject.Find(Item.CoreObjectID);
                     CoreObject TableObject = CoreObject.Find(FieldObject.ParentID);
-                    if(TableObject.Entity== CoreDefine.Entities.فرم_ورود_اطلاعات)
+                    if (TableObject.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
                     {
-                        InformationEntryForm informationEntryForm = new InformationEntryForm(TableObject); 
+                        InformationEntryForm informationEntryForm = new InformationEntryForm(TableObject);
                         TableObject = CoreObject.Find(informationEntryForm.RelatedTable);
                     }
                     DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(TableObject.ParentID));
@@ -582,9 +585,9 @@ namespace APM.Models.Tools
                     SelectList ListData = ToSelectTextAutoCompleteList(DataOutput);
                     HttpContext.Current.Session[Item.SystemName()] = ListData;
                 }
- 
+
             }
-        } 
+        }
         public static void FillSelectList(List<Field> Fields)
         {
             try
@@ -593,7 +596,7 @@ namespace APM.Models.Tools
                 {
                     if (Item != null)
                     {
-                        switch(Item.FieldType)
+                        switch (Item.FieldType)
                         {
                             case CoreDefine.InputTypes.MultiSelectFromRelatedTable:
                             case CoreDefine.InputTypes.RelatedTable:
@@ -695,52 +698,52 @@ namespace APM.Models.Tools
                                     HttpContext.Current.Session[Item.SystemName()] = ToSelectList(Item.ComboValues());
                                     break;
                                 }
-                        } 
+                        }
                     }
 
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
 
             }
-        } 
+        }
         public static SelectList FillSelectList(Field Item)
-        { 
+        {
             if (Item != null)
             {
-                switch(Item.FieldType)
+                switch (Item.FieldType)
                 {
                     case CoreDefine.InputTypes.MultiSelectFromRelatedTable:
                     case CoreDefine.InputTypes.RelatedTable:
                         {
                             if (Item.RelatedTable == 0 && Item.ViewCommand != "")
-                            { 
+                            {
                                 DataTable DataOutput = Referral.DBData.SelectDataTable(Item.ViewCommand);
-                                return ToSelectList(DataOutput);  
+                                return ToSelectList(DataOutput);
                             }
                             else
                             {
 
                                 DataTable DataOutput = new DataTable();
                                 CoreObject TableObject = CoreObject.Find(Item.RelatedTable);
-                                DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(TableObject.ParentID)); 
+                                DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(TableObject.ParentID));
 
                                 switch (DataSourceInfo.DataSourceType)
                                 {
                                     case CoreDefine.DataSourceType.SQLSERVER:
                                         {
                                             if (DataSourceInfo.ServerName == Referral.DBData.ConnectionData.Source && DataSourceInfo.DataBase == Referral.DBData.ConnectionData.DataBase)
-                                            { 
+                                            {
                                                 DataOutput = Referral.DBData.SelectDataTable(Tools.CheckQuery(GetRelatedTableQuery(Item)));
-                                                return ToSelectList(DataOutput);  
+                                                return ToSelectList(DataOutput);
                                             }
                                             else
                                             {
                                                 SQLDataBase DataBase = new SQLDataBase(DataSourceInfo.ServerName, DataSourceInfo.DataBase, DataSourceInfo.Password, DataSourceInfo.UserName, SQLDataBase.SQLVersions.SQL2008);
-                                                DataOutput = DataBase.SelectDataTable(Tools.CheckQuery(GetRelatedTableQuery(Item))); 
-                                                return ToSelectList(DataOutput); 
-                                            } 
+                                                DataOutput = DataBase.SelectDataTable(Tools.CheckQuery(GetRelatedTableQuery(Item)));
+                                                return ToSelectList(DataOutput);
+                                            }
                                         }
                                     case CoreDefine.DataSourceType.MySql:
                                         {
@@ -774,16 +777,16 @@ namespace APM.Models.Tools
                     case CoreDefine.InputTypes.MultiSelectFromComboBox:
                     case CoreDefine.InputTypes.ComboBox:
                         {
-                            return ToSelectList(Item.ComboValues()); 
+                            return ToSelectList(Item.ComboValues());
                         }
-                } 
+                }
             }
             DataTable dataTable = null;
             return ToSelectList(dataTable);
-        } 
+        }
 
         public static string GetRelatedTableQuery(Field Field)
-        { 
+        {
             List<CoreObject> DefaultFieldName = CoreObject.DefaultChild(Field.RelatedTable);
             Table Table = new Table(CoreObject.Find(Field.RelatedTable));
 
@@ -792,19 +795,19 @@ namespace APM.Models.Tools
             foreach (CoreObject CoreFieldItem in DefaultFieldName)
             {
                 Field FieldItem = new Field(CoreFieldItem);
-                if(FieldItem.FieldType== CoreDefine.InputTypes.RelatedTable) 
+                if (FieldItem.FieldType == CoreDefine.InputTypes.RelatedTable)
                     Query += CheckExternalField(FieldItem, Table.FullName) + "+N' '+ ";
-                else if (FieldItem.FieldName != "عکس") 
-                    Query += "IsNull(CAST("+ Table.FullName + "." + FieldItem.FieldName + " as nvarchar(400)),N'')+N' '+ "; 
+                else if (FieldItem.FieldName != "عکس")
+                    Query += "IsNull(CAST(" + Table.FullName + "." + FieldItem.FieldName + " as nvarchar(400)),N'')+N' '+ ";
             }
 
             Query = Query.Replace("+N' - '+ +N' - '+", "+N' - '+");
             Query = Query.Substring(0, Query.Length - 7);
-             
-            Query += " From " + Table.TABLESCHEMA+"."+ Table.FullName;
+
+            Query += " From " + Table.TABLESCHEMA + "." + Table.FullName;
 
             if (!string.IsNullOrEmpty(Field.ViewCommand))
-                if(Field.ViewCommand.Replace(" ","").ToUpper().IndexOf("WHERE")>-1 || Field.ViewCommand.Replace(" ", "").IndexOf("در.صورتی.که") >-1)
+                if (Field.ViewCommand.Replace(" ", "").ToUpper().IndexOf("WHERE") > -1 || Field.ViewCommand.Replace(" ", "").IndexOf("در.صورتی.که") > -1)
                     Query += " " + Field.ViewCommand;
                 else
                     Query += " WHERE " + Field.ViewCommand;
@@ -812,7 +815,7 @@ namespace APM.Models.Tools
             return Query;
         }
         public static string GetRelatedTableQueryForDashboard(Field Field)
-        { 
+        {
             List<CoreObject> DefaultFieldName = CoreObject.DefaultChild(Field.RelatedTable);
             CoreObject FieldTableCore = CoreObject.Find(CoreObject.Find(Field.CoreObjectID).ParentID);
             Table Table = new Table(CoreObject.Find(Field.RelatedTable));
@@ -821,24 +824,24 @@ namespace APM.Models.Tools
             foreach (CoreObject CoreFieldItem in DefaultFieldName)
             {
                 Field FieldItem = new Field(CoreFieldItem);
-                if(FieldItem.FieldType== CoreDefine.InputTypes.RelatedTable) 
+                if (FieldItem.FieldType == CoreDefine.InputTypes.RelatedTable)
                     Query += CheckExternalField(FieldItem, Table.FullName) + "+N' '+ ";
-                else if (FieldItem.FieldName != "عکس") 
-                    Query += "CAST([" + Table.FullName +"].["+ FieldItem.FieldName + "] as nvarchar(400))+N' '+ "; 
+                else if (FieldItem.FieldName != "عکس")
+                    Query += "CAST([" + Table.FullName + "].[" + FieldItem.FieldName + "] as nvarchar(400))+N' '+ ";
             }
 
             Query = Query.Replace("+N' - '+ +N' - '+", "+N' - '+");
             Query = Query.Substring(0, Query.Length - 7);
-             
+
             Query += " From " + Table.FullName;
 
-            Query += " Where [" + Table.FullName+"].["+ TableIDField+"] = ["+ FieldTableCore.FullName+"].["+ Field.FieldName+"]";
+            Query += " Where [" + Table.FullName + "].[" + TableIDField + "] = [" + FieldTableCore.FullName + "].[" + Field.FieldName + "]";
 
-            return Query+")";
-        } 
+            return Query + ")";
+        }
         public static void FillRelatedTableReportParameter(ReportParameter Parameter)
-        {  
-            if(Parameter.RelatedTable ==0 && Parameter.ViewCommand!="")
+        {
+            if (Parameter.RelatedTable == 0 && Parameter.ViewCommand != "")
             {
                 string DataCacheName = "CachedListOf" + Convert.ToBase64String(Encoding.Unicode.GetBytes((Parameter.ViewCommand + Parameter.FullName)));
                 string CounterCacheName = "CachedCounter";
@@ -866,8 +869,8 @@ namespace APM.Models.Tools
                 string DataCacheName = "CachedListOf" + RelatedTableInfo.FullName + Convert.ToBase64String(Encoding.Unicode.GetBytes((Parameter.ViewCommand + Parameter.FullName)));
                 string CounterCacheName = "CachedCounter" + RelatedTableInfo.FullName;
 
-                DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(RelatedTableInfo.ParentID)); 
-                int Counter = RegisterCount(RelatedTableInfo.FullName,DataSourceInfo.ServerName,DataSourceInfo.DataBase);
+                DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(RelatedTableInfo.ParentID));
+                int Counter = RegisterCount(RelatedTableInfo.FullName, DataSourceInfo.ServerName, DataSourceInfo.DataBase);
 
                 if ((HttpContext.Current.Session[DataCacheName] == null) || ((HttpContext.Current.Session[CounterCacheName] == null ? 0 : (int)HttpContext.Current.Session[CounterCacheName]) != Counter))
                 {
@@ -897,7 +900,7 @@ namespace APM.Models.Tools
                         Query += " WHERE " + Parameter.ViewCommand;
 
 
-                    DataTable DataOutput = SelectDataTable(DataSourceInfo, Query, RelatedTableInfo.FullName) ;
+                    DataTable DataOutput = SelectDataTable(DataSourceInfo, Query, RelatedTableInfo.FullName);
                     SelectList ListData = ToSelectList(DataOutput);
                     HttpContext.Current.Session[Parameter.SystemName()] = ListData;
                     HttpContext.Current.Session["HasImage" + Parameter.SystemName()] = HasImage;
@@ -910,31 +913,31 @@ namespace APM.Models.Tools
                     HttpContext.Current.Session[Parameter.SystemName()] = HttpContext.Current.Session[DataCacheName];
                 }
             }
-                         
-        } 
- 
-        public static string CheckExternalField(Field _Field,string TableName)
-        { 
+
+        }
+
+        public static string CheckExternalField(Field _Field, string TableName)
+        {
             string ResultValue = "";
             if (_Field.FieldType == CoreDefine.InputTypes.RelatedTable)
             {
                 List<CoreObject> DefaultFieldName = CoreObject.DefaultChild(_Field.RelatedTable);
                 CoreObject ChildTableName = CoreObject.Find(_Field.RelatedTable);
-                Table table=new Table(ChildTableName);
+                Table table = new Table(ChildTableName);
                 foreach (CoreObject CoreFieldItem in DefaultFieldName)
                 {
                     Field FieldItem = new Field(CoreFieldItem);
                     if (DefaultFieldName.Count > 1)
                         ResultValue += "+N' - '+";
                     if (FieldItem.FieldName != "عکس")
-                        ResultValue += "isnull((Select " + CheckExternalField(FieldItem, ChildTableName.FullName) + " From " + table.TABLESCHEMA+"."+ ChildTableName.FullName + " Where " + ChildTableName.FullName + ".شناسه = "+ TableName+"." + _Field.FieldName + "),N'')";
+                        ResultValue += "isnull((Select " + CheckExternalField(FieldItem, ChildTableName.FullName) + " From " + table.TABLESCHEMA + "." + ChildTableName.FullName + " Where " + ChildTableName.FullName + ".شناسه = " + TableName + "." + _Field.FieldName + "),N'')";
 
                 }
             }
             else if (_Field.FieldType == CoreDefine.InputTypes.Number)
                 ResultValue = " Cast( " + TableName + "." + _Field.FieldName + " as nvarchar(4000)) ";
             else
-            ResultValue = "isnull( Cast( " +TableName + "." + _Field.FieldName + " as nvarchar(4000)),N'') ";
+                ResultValue = "isnull( Cast( " + TableName + "." + _Field.FieldName + " as nvarchar(4000)),N'') ";
             return ResultValue;
         }
 
@@ -946,22 +949,22 @@ namespace APM.Models.Tools
                 {
 
                     case CoreDefine.InputTypes.RelatedTable:
-                        if(_DataTable != null)
-                        for (int j = 0; j < _DataTable.Rows.Count; j++)
-                        {
-                            if (_DataTable.Rows[j][i] == DBNull.Value)
-                                _DataTable.Rows[j][i] = 0;
-                        }
+                        if (_DataTable != null)
+                            for (int j = 0; j < _DataTable.Rows.Count; j++)
+                            {
+                                if (_DataTable.Rows[j][i] == DBNull.Value)
+                                    _DataTable.Rows[j][i] = 0;
+                            }
                         break;
 
                     case CoreDefine.InputTypes.SingleSelectList:
                         if (_DataTable != null)
-                        for (int j = 0; j < _DataTable.Rows.Count; j++)
-                        {
-                            if (_DataTable.Rows[j][i] == DBNull.Value)
-                                _DataTable.Rows[j][i] = "";
-                        }
-                        break; 
+                            for (int j = 0; j < _DataTable.Rows.Count; j++)
+                            {
+                                if (_DataTable.Rows[j][i] == DBNull.Value)
+                                    _DataTable.Rows[j][i] = "";
+                            }
+                        break;
 
                     default:
                         break;
@@ -971,16 +974,16 @@ namespace APM.Models.Tools
         }
 
         public static int RegisterCount()
-        { 
+        {
             return (int)Referral.DBRegistry.SelectField("Select(Select COUNT(1) From Delete_APMRegistry) + (Select COUNT(1) From Update_APMRegistry) + (Select COUNT(1) From Insert_APMRegistry)", null);
         }
-        public static int RegisterCount(string TableName,string ServerName,string DatabaseName)
-        { 
+        public static int RegisterCount(string TableName, string ServerName, string DatabaseName)
+        {
             try
             {
                 return (int)Referral.DBRegistry.SelectField("Select(Select COUNT(1) From Delete_APMRegistry Where TableName = " + Tools.N(TableName) + " And ServerName=" + Tools.N(ServerName) + " And DatabaseName=" + Tools.N(DatabaseName) + " ) + (Select COUNT(1) From Update_APMRegistry Where TableName = " + Tools.N(TableName) + "  And ServerName=" + Tools.N(ServerName) + " And DatabaseName=" + Tools.N(DatabaseName) + " ) + (Select COUNT(1) From Insert_APMRegistry Where TableName = " + Tools.N(TableName) + " And ServerName=" + Tools.N(ServerName) + " And DatabaseName=" + Tools.N(DatabaseName) + ")", null);
             }
-            catch(Exception ex)
+            catch (Exception)
             {
                 return 0;
             }
@@ -992,7 +995,7 @@ namespace APM.Models.Tools
         }
         public static string NationalPlaque(string _value)
         {
-            string _char ="128";
+            string _char = "128";
             _value = ArabicToPersion(_value);
             if (_value.Length == 8)
                 _value = _value.Substring(0, 2) + _char[0] + _value.Substring(2, 1) + _char[0] + _value.Substring(3, 3) + _char[0] + _value.Substring(6, 2);
@@ -1000,12 +1003,12 @@ namespace APM.Models.Tools
             return _value;
         }
 
-        private const int Keysize = 256; 
+        private const int Keysize = 256;
         private const int DerivationIterations = 1000;
 
         public static string Encrypt(string plainText, string passPhrase)
         {
- 
+
             var saltStringBytes = Generate256BitsOfRandomEntropy();
             var ivStringBytes = Generate256BitsOfRandomEntropy();
             var plainTextBytes = Encoding.UTF8.GetBytes(plainText);
@@ -1040,10 +1043,10 @@ namespace APM.Models.Tools
         }
 
         public static string Decrypt(string cipherText, string passPhrase)
-        { 
-            var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(cipherText); 
-            var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(Keysize / 8).ToArray(); 
-            var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(Keysize / 8).Take(Keysize / 8).ToArray(); 
+        {
+            var cipherTextBytesWithSaltAndIv = Convert.FromBase64String(cipherText);
+            var saltStringBytes = cipherTextBytesWithSaltAndIv.Take(Keysize / 8).ToArray();
+            var ivStringBytes = cipherTextBytesWithSaltAndIv.Skip(Keysize / 8).Take(Keysize / 8).ToArray();
             var cipherTextBytes = cipherTextBytesWithSaltAndIv.Skip((Keysize / 8) * 2).Take(cipherTextBytesWithSaltAndIv.Length - ((Keysize / 8) * 2)).ToArray();
 
             using (var password = new Rfc2898DeriveBytes(passPhrase, saltStringBytes, DerivationIterations))
@@ -1135,10 +1138,10 @@ namespace APM.Models.Tools
                 {
                     try
                     {
-                        if(ColumnsNameData!="")
+                        if (ColumnsNameData != "")
                         {
                             int idx = ColumnsNameData.IndexOf(":");
-                            if(idx>-1)
+                            if (idx > -1)
                             {
                                 string ColumnsNameString = ColumnsNameData.Substring(0, idx - 1).Replace("\"", "");
                                 if (!ColumnsName.Contains(ColumnsNameString))
@@ -1165,10 +1168,10 @@ namespace APM.Models.Tools
                 {
                     try
                     {
-                        if(rowData!="")
-                        { 
+                        if (rowData != "")
+                        {
                             int index = rowData.IndexOf(":");
-                            if(index>-1)
+                            if (index > -1)
                             {
                                 string RowColumns = rowData.Substring(0, index - 1).Replace("\"", "");
                                 string RowDataString = rowData.Substring(index + 1).Replace("\"", "");
@@ -1187,16 +1190,16 @@ namespace APM.Models.Tools
         }
 
 
-        public static SelectList FillSelectListWithQuery(string SpecialWordFullName, string DeclareQuery="")
+        public static SelectList FillSelectListWithQuery(string SpecialWordFullName, string DeclareQuery = "")
         {
             List<SelectListItem> Output = new List<SelectListItem>();
             Output.Add(new SelectListItem() { Value = "0", Text = " ", Selected = true });
-             
-            if(SpecialWordFullName!=null)
+
+            if (SpecialWordFullName != null)
             {
                 CoreObject SpecialWordCore = CoreObject.Find(CoreDefine.Entities.عبارت_ویژه, SpecialWordFullName);
                 SpecialPhrase SpecialPhrase = new SpecialPhrase(SpecialWordCore);
-                DeclareQuery = DeclareQuery == null ? "" : DeclareQuery; 
+                DeclareQuery = DeclareQuery == null ? "" : DeclareQuery;
                 CoreObject SpecialPhraseCore = CoreObject.Find(CoreDefine.Entities.عبارت_ویژه, SpecialWordFullName);
                 SpecialPhrase specialPhrase = new SpecialPhrase(SpecialPhraseCore);
                 SelectList ListData = null;
@@ -1209,11 +1212,37 @@ namespace APM.Models.Tools
                     ListData = ToSelectList(DataBase.SelectDataTable(Tools.CheckQuery(DeclareQuery + "\n" + specialPhrase.Query)));
                 }
                 return ListData;
-            }  
+            }
+            return (SelectList)new SelectList(Output, "Value", "Text", 0);
+        }
+
+        public async static Task<SelectList> FillSelectListWithQueryAsync(string SpecialWordFullName, string DeclareQuery = "")
+        {
+            List<SelectListItem> Output = new List<SelectListItem>();
+            Output.Add(new SelectListItem() { Value = "0", Text = " ", Selected = true });
+
+            if (SpecialWordFullName != null)
+            {
+                CoreObject SpecialWordCore = CoreObject.Find(CoreDefine.Entities.عبارت_ویژه, SpecialWordFullName);
+                SpecialPhrase SpecialPhrase = new SpecialPhrase(SpecialWordCore);
+                DeclareQuery = DeclareQuery == null ? "" : DeclareQuery;
+                CoreObject SpecialPhraseCore = CoreObject.Find(CoreDefine.Entities.عبارت_ویژه, SpecialWordFullName);
+                SpecialPhrase specialPhrase = new SpecialPhrase(SpecialPhraseCore);
+                SelectList ListData = null;
+                if (SpecialPhrase.DataSourceID == Referral.MasterDatabaseID)
+                    ListData = ToSelectList(await Referral.DBData.SelectDataTableAsync(Tools.CheckQuery(DeclareQuery + "\n" + specialPhrase.Query)));
+                else
+                {
+                    DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(SpecialPhrase.DataSourceID));
+                    SQLDataBase DataBase = new SQLDataBase(DataSourceInfo.ServerName, DataSourceInfo.DataBase, DataSourceInfo.Password, DataSourceInfo.UserName, SQLDataBase.SQLVersions.SQL2008);
+                    ListData = ToSelectList(await DataBase.SelectDataTableAsync(Tools.CheckQuery(DeclareQuery + "\n" + specialPhrase.Query)));
+                }
+                return ListData;
+            }
             return (SelectList)new SelectList(Output, "Value", "Text", 0);
         }
 
 
 
     }
-}
+} 

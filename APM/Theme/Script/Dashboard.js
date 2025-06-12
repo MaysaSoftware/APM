@@ -409,8 +409,8 @@ function LoadFirstSubDashboard(e) {
                 var PageIndex = 1;
                 setInterval(function () {
                     var grid = $("#" + e.id.replace("ChartTypes", "Chart")).data("kendoGrid");
-                    grid.dataSource.page();
-                    if (grid != undefined) { 
+                    if (grid != undefined) {
+                        grid.dataSource.page();
                         PageCount = $("#" + e.id.replace("ChartTypes", "Chart") + " .k-dropdown-list option").length;
                         if (PageIndex >= PageCount)
                             PageIndex = 0;

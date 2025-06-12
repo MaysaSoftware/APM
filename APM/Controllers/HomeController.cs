@@ -102,7 +102,7 @@ namespace APM.Controllers
 
         public JsonResult SaveShowRecordTable(long DataKey, long RecordID)
         {
-            Log.LogFunction("HomeController.SaveShowRecordTable");
+            //Log.LogFunction("HomeController.SaveShowRecordTable");
             CoreObject core = CoreObject.Find(DataKey);
             if (core.Entity == CoreDefine.Entities.فرم_ورود_اطلاعات)
             {
@@ -111,8 +111,8 @@ namespace APM.Controllers
             }
 
             DataSourceInfo DataSourceInfo = new DataSourceInfo(CoreObject.Find(core.ParentID));
-            Referral.DBRegistry.Insert("View_APMRegistry", new string[] { "UserAccountID", "RegistryDate", "RegistryTime", "TableName", "CoreObjectID", "IP", "ServerName", "DatabaseName", "PCName", "Version", "Source", "BrowserType", "BrowserVersion", "RecordID" }, new object[] { Referral.UserAccount.UsersID, CDateTime.GetNowshamsiDate(), CDateTime.GetNowTime(), core.FullName, core.CoreObjectID, Referral.UserAccount.IP, DataSourceInfo.ServerName, DataSourceInfo.DataBase, Referral.UserAccount.PCName, Referral.AppVersion, "Web", Referral.UserAccount.BrowserType, Referral.UserAccount.BrowserVersion , RecordID });
-            Log.LogFunction("HomeController.SaveShowRecordTable",false);
+            //Referral.DBRegistry.Insert("View_APMRegistry", new string[] { "UserAccountID", "RegistryDate", "RegistryTime", "TableName", "CoreObjectID", "IP", "ServerName", "DatabaseName", "PCName", "Version", "Source", "BrowserType", "BrowserVersion", "RecordID" }, new object[] { Referral.UserAccount.UsersID, CDateTime.GetNowshamsiDate(), CDateTime.GetNowTime(), core.FullName, core.CoreObjectID, Referral.UserAccount.IP, DataSourceInfo.ServerName, DataSourceInfo.DataBase, Referral.UserAccount.PCName, Referral.AppVersion, "Web", Referral.UserAccount.BrowserType, Referral.UserAccount.BrowserVersion , RecordID });
+            //Log.LogFunction("HomeController.SaveShowRecordTable",false);
             return Json("");
         }
 

@@ -27,7 +27,7 @@ namespace APM.Models
             {
                 Referral.UserAccount = _UserAccount;
                 _Allowed = true;
-                Referral.DBRegistry.Insert("Login_APMRegistry", new string[] { "UserAccountID", "LoginDate", "LoginTime", "UnsuccessfulLogin", "IsActive", "IP", "PCName", "Version", "BrowserType", "BrowserVersion" }, new object[] { _UserAccount.UsersID, _UserAccount.LoginDate, _UserAccount.LoginTime, HttpContext.Current.Session["UnsuccessfulLogin"], 1, _UserAccount.IP, _UserAccount.PCName, Referral.AppVersion, _UserAccount.BrowserType, _UserAccount.BrowserVersion });
+                //Referral.DBRegistry.Insert("Login_APMRegistry", new string[] { "UserAccountID", "LoginDate", "LoginTime", "UnsuccessfulLogin", "IsActive", "IP", "PCName", "Version", "BrowserType", "BrowserVersion" }, new object[] { _UserAccount.UsersID, _UserAccount.LoginDate, _UserAccount.LoginTime, HttpContext.Current.Session["UnsuccessfulLogin"], 1, _UserAccount.IP, _UserAccount.PCName, Referral.AppVersion, _UserAccount.BrowserType, _UserAccount.BrowserVersion });
             }
             else
                 if(_Message=="")
@@ -38,7 +38,7 @@ namespace APM.Models
 
         public static bool ConnectToDB()
         {
-            Log.LogFunction("Login.ConnectToDB", true);
+            Log.LogFunction("Login.ConnectToDB", true); 
             string DBUser = "sa";
             string DBPassword = "maysasys";
             string Source = ".";
@@ -126,6 +126,11 @@ namespace APM.Models
                         //////Source = "172.21.21.85";
                         //DBUser = "sa";
                         //DBPassword = "Pp@#$123654@#$";
+
+                        //Source = "mssql.maysaservice.ir"; 
+                        //DBUser = "sa";
+                        //DBPassword = "Kabinet95##";
+
                         DataBaseName = "NisocWelfareService";
 
 
@@ -208,7 +213,8 @@ namespace APM.Models
                         //Source = "192.168.100.28";
                         //DBUser = "sa";
                         //DBPassword = "$h0$Ht@r1403";
-                        DataBaseName = "ShpcRepairs";
+                        //DataBaseName = "ShpcRepairs";
+                        DataBaseName = "ShpcProductionControl";
 
                         break;
                     }

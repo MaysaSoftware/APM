@@ -96,7 +96,7 @@ namespace APM.Models
             }
 
             DataSourceInfo = new DataSourceInfo(CoreObject.Find(Table.ParentID));
-            Referral.DBRegistry.Insert("View_APMRegistry", new string[] { "UserAccountID", "RegistryDate", "RegistryTime", "TableName", "CoreObjectID", "IP", "ServerName", "DatabaseName", "PCName", "Version", "Source", "BrowserType", "BrowserVersion" }, new object[] { Referral.UserAccount.UsersID, CDateTime.GetNowshamsiDate(), CDateTime.GetNowTime(), Table.FullName, Table.CoreObjectID, Referral.UserAccount.IP, DataSourceInfo.ServerName, DataSourceInfo.DataBase, Referral.UserAccount.PCName, Referral.AppVersion, "Web", Referral.UserAccount.BrowserType, Referral.UserAccount.BrowserVersion });
+            //Referral.DBRegistry.Insert("View_APMRegistry", new string[] { "UserAccountID", "RegistryDate", "RegistryTime", "TableName", "CoreObjectID", "IP", "ServerName", "DatabaseName", "PCName", "Version", "Source", "BrowserType", "BrowserVersion" }, new object[] { Referral.UserAccount.UsersID, CDateTime.GetNowshamsiDate(), CDateTime.GetNowTime(), Table.FullName, Table.CoreObjectID, Referral.UserAccount.IP, DataSourceInfo.ServerName, DataSourceInfo.DataBase, Referral.UserAccount.PCName, Referral.AppVersion, "Web", Referral.UserAccount.BrowserType, Referral.UserAccount.BrowserVersion });
         }
 
         public static void StartupSettingTableDataFields(long _TableID)
@@ -2126,11 +2126,11 @@ namespace APM.Models
                 case CoreDefine.DataSourceType.SQLSERVER:
                     {
                         if(Referral.DBData.ConnectionData.DBConnection.Database == DataSourceInfo.DataBase && Referral.DBData.ConnectionData.DBConnection.DataSource== DataSourceInfo.ServerName)
-                            Id=Referral.DBData.Insert(DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray(), DataTable[_DataKey].CoreObjectID);
+                            Id=  Referral.DBData.Insert(DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray(), DataTable[_DataKey].CoreObjectID);
                         else
                         {
                             SQLDataBase DataBase = new SQLDataBase(DataSourceInfo.ServerName, DataSourceInfo.DataBase, DataSourceInfo.Password, DataSourceInfo.UserName, SQLDataBase.SQLVersions.SQL2008);
-                            Id = DataBase.Insert(DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray(), DataTable[_DataKey].CoreObjectID); 
+                            Id =  DataBase.Insert(DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray(), DataTable[_DataKey].CoreObjectID); 
                         }
                         break;
                     }
@@ -2224,7 +2224,7 @@ namespace APM.Models
                 case CoreDefine.DataSourceType.SQLSERVER:
                     {
                         SQLDataBase DataBase = new SQLDataBase(DataSourceInfo.ServerName, DataSourceInfo.DataBase, DataSourceInfo.Password, DataSourceInfo.UserName, SQLDataBase.SQLVersions.SQL2008);
-                        UpdateResult = DataBase.UpdateRow(RowID, TableCore.CoreObjectID, TableCore.FullName, FieldNames.ToArray(), Values.ToArray());
+                        UpdateResult =  DataBase.UpdateRow(RowID, TableCore.CoreObjectID, TableCore.FullName, FieldNames.ToArray(), Values.ToArray());
                         break;
                     }
                 case CoreDefine.DataSourceType.MySql:
@@ -2263,7 +2263,7 @@ namespace APM.Models
 
         }
 
-        public static bool Update(string _DataKey, string _FormCollection)
+        public static bool UpdateAsync(string _DataKey, string _FormCollection)
         {
             bool Output = true;
 
@@ -2289,7 +2289,7 @@ namespace APM.Models
                 }
             }
 
-            bool UpdateResult = Referral.DBData.UpdateRow(RowID, long.Parse(_DataKey), DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray());
+            bool UpdateResult =  Referral.DBData.UpdateRow(RowID, long.Parse(_DataKey), DataTable[_DataKey].FullName, FieldNames.ToArray(), Values.ToArray());
             //Attachment.SaveAttachment(DataTable[_DataKey].CoreObjectID, RowID);
             return Output;
         }
@@ -2578,7 +2578,7 @@ namespace APM.Models
                         else
                         {
                             FieldValue=null;
-                            if (RecordData.Columns.IndexOf(Item.FieldName) > -1 || RecordData.Columns.Count>0)
+                            if (RecordData.Columns.IndexOf(Item.FieldName) > -1 || RecordData.Columns.Count==0)
                             {
                                 FieldValue = RecordID > 0 ? (Item.FieldName == PrimeryKey ? RecordID : RecordData.Rows[0][Item.FieldName]) : Tools.Tools.GetDefaultValue(Item.DefaultValue);
                                 FieldValue = (RecordID == 0 && ParentID > 0 && Item.CoreObjectID == ExternalField) ? ParentID : FieldValue; 

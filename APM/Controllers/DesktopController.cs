@@ -878,7 +878,7 @@ namespace APM.Controllers
             //if (ResultCheckBeforUpdate == "")
             //{
             dynamic FormCollectionData = JObject.Parse(_FormCollection);
-            bool Result = Desktop.Update(_DataKey, _FormCollection);
+            bool Result = Desktop.UpdateAsync(_DataKey, _FormCollection);
             string IDName = Desktop.DataTable[_DataKey].IDField().FieldName;
             return Json(true);
             //}

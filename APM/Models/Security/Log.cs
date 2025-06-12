@@ -38,8 +38,7 @@ namespace APM.Models.Security
         public static bool Error(string FunctionName,string ErrorMessage)
         {
             try
-            {
-                //using (StreamWriter writer = new StreamWriter(ErrorLogPath + "\\Error.txt", true))
+            { 
                 using (StreamWriter writer = new StreamWriter(ErrorLogPath + "\\" +  Tools.CDateTime.GetNowshamsiDate().Replace("/", "-") + ".txt", true))
                 { 
                     writer.WriteLine("Function Name : "+FunctionName + "               " + Tools.CDateTime.GetNowshamsiDate().Replace("/", "-") + " " + Tools.CDateTime.GetNowTime().Replace(":", "-"));
